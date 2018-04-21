@@ -1,0 +1,54 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>web-input</title>
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+
+<div id="main" ></div>
+
+<script type="text/javascript">
+
+	var Button = {
+		"type": "button", 
+		"id": "6_125", 
+		"label": "Submit Application1", 
+		"theme": "black_in_white"
+	}
+
+	var design_object_1 = Button;
+
+	var is_valid_design_object = function(design_object) {
+	}
+
+	var web_input = new (function(){
+		this.click_handler = function(object_id) {
+			console.log(object_id +  " got clicked");
+		}
+	})();
+
+
+	var get_html = function(design_object) {
+		if(design_object.type === "button") {
+			return "<button class='btn "+(design_object.theme == "black_in_white" ? "btn-default": "btn-primary")+"' onclick='web_input.click_handler(\""+design_object["id"]+"\");' >"+design_object["label"]+"</button>";
+		} else {
+			return null;
+		}
+	};
+
+	document.getElementById("main").innerHTML = get_html(design_object_1);
+
+
+
+</script>
+
+
+
+</body>
+</html>
+
+
+
