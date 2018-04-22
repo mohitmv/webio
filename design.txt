@@ -16,16 +16,16 @@ Icons = list-of-valid-icon-ids
 
 Io = 
 	1. Text(HTML, onlick=None|Lambda), 
-	2. Image(src, height = Size_Unit, width = Size_Unit, opacity = x) : x in Real_Range([0, 1])
-	3. Button(label=String|None, icon=Icons|None onclick=None|Lambda, theme = "default" | "black_in_white"), 
-	4. Input(label=String, type=text|textarea|dropdown|checkbox|file, allow_multiple=True|False, options=Dropdown_Options, allow_search = True|False, default_rows=4), 
-	5. Icon(icon_id = None|Icons), 
-	6. Menu(icon_id=None|Icons, actions = List of (String, None|Lambda))
-	7. Hlist(width=list of Size_Unit, ..Cell_Attributes..)
-	8. Vlist(height=list of Size_Unit, ..Cell_Attributes..)
+	2. Image(src, height = Size_Unit, width = Size_Unit, opacity = x, rounded=True|False) : x in Real_Range([0, 1]), 
+	3. Button(label=String|None, icon=Icons|None, onclick=None|Lambda, theme = "default" | "black_in_white"), 
+	4. Input(label=String, input_type=text|textarea|dropdown|checkbox|file, allow_multiple=True|False,  options=Dropdown_Options, allow_search = True|False, default_rows=4), 
+	5. Icon(icon = None|Icons, font_size = Size_Unit_Numeric), 
+	6. Menu(icon=None|Icons, actions = List of (String, None|Lambda)), 
+	7. Hlist(width=list of Size_Unit, ..Cell_Attributes..), 
+	8. Vlist(height=list of Size_Unit, ..Cell_Attributes..), 
 
 
-HTML := String | Style(String, font_size=Size_Unit_Numeric, color=Colors, bold=True|False, italic=True|False, underline=True|False, link=None|url) | Concated List of HTML
+HTML := String | Style(String, font_size=Size_Unit_Numeric, color=Colors, bold=True|False, italic=True|False, underline=True|False, link=None|url) | Concated List of HTML 
 
 
 

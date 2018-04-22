@@ -1,0 +1,38 @@
+
+
+Size_Unit_Numeric = {x+"px", for x in {0, 1, 2, 3, ...}}
+Size_Unit = "auto" | Size_Unit_Numeric
+
+Lambda = {lambda fm: expr}
+
+Dropdown_Options = List of (String | tuple of (obj, String))
+
+Colors = Same as html colors (i.e. {fixed colors like "red", "black", ..} union {"#******" series} union {rgb(r, g, b)}
+ 
+Cell_Attributes := align=left|right|middle, valign = top|bottom|middle, padding = Size_Unit_Numeric , bgcolor = Colors, border_size= Size_Unit_Numeric, border_color = Colors, children=List-of-Io
+
+Icons = list-of-valid-icon-ids
+
+Implement Front-end display....
+
+Io = 
+
+[Done]	1. Text(HTML, onlick=None|Lambda), 
+[Done]	2. Image(src, height = Size_Unit, width = Size_Unit, opacity = x, rounded=True|False) : x in Real_Range([0, 1]), 
+[Done]	3. Button(label=String|None, icon=Icons|None, onclick=None|Lambda, theme = "default" | "black_in_white"), 
+[Done]	5. Icon(icon = None|Icons, font_size = Size_Unit_Numeric), 
+
+		4. Input(label=String, input_type=text|textarea|dropdown|checkbox|file, allow_multiple=True|False,  options=Dropdown_Options, allow_search = True|False, default_rows=4, default_value=String;Int;List of Int;List of Files), 
+			[Done]	text
+			[Done]	textarea
+			dropdown
+			checkbox
+			file
+
+
+		6. Menu(icon=None|Icons, actions = List of (String, None|Lambda)), 
+
+		7. Hlist(width=list of Size_Unit, ..Cell_Attributes..), 
+		8. Vlist(height=list of Size_Unit, ..Cell_Attributes..), 
+
+

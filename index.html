@@ -4,36 +4,163 @@
 <html>
 <head>
 	<title>web-input</title>
-	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/main.css?reload=899876987">
 </head>
 <body>
 
-<div id="main" ></div>
+<div style="margin: 30px; padding: 50px; border: solid #ccc 1px;" >
+
+	<table border="1" style="width: 100%;" ><tbody><tr>
+		<td style="width: 50%;" >
+	
+	<div class="input-div-select" >
+		<label>Name:</label><br>
+		<select class="input-input"  >
+			<option>AA</option>
+			<option>AA2</option>
+			<option>AA3 sdk hskd hkd hskd</option>
+			<option>AA4</option>
+			<option>AA5</option>
+		</select>
+	</div>
+
+
+	<div class="input-div" >
+		Name: <br>
+		<label><input type="checkbox" >Option 1</label> <br>
+		<label><input type="checkbox" >Option 2</label>
+	</div>
+
+
+
+		</td>
+		<td></td>
+	</tr></tbody></table>
+
+
+
+</div>
+
+<div id="main" style="margin: 30px; padding: 50px; border: solid #ccc 1px;" ></div>
 
 <script type="text/javascript">
 
 	var Button = {
 		"type": "button", 
 		"id": "6_125", 
-		"label": "Submit Application1", 
-		"theme": "black_in_white"
+		"label": "Submit App", 
+		"theme": "default", 
+		// "icon": "arrow_forward", 
+		"icon": null, 
+		"onclick": "api_call", 
 	}
 
-	var design_object_1 = Button;
+	var Image = {
+		type: "image", 
+		id: "5_223", 
+		src: "images/saini.jpg", 
+		width: "auto", 
+		height: "auto", 
+		opacity: 0.6945678, 
+		rounded: true
+	};
+
+	var Text = {
+		type: "text", 
+		id: "5_227", 
+		html: "<a href='Saini Ji' >Mohit Saini</a> Jai Ho Dada ki.. <span style='font-size: 30px; color: blue;' >Jai Mata Di</span> <br> New tab..... Wow... Acha hun...", 
+		onclick: null
+	};
+
+	var Icon = {
+		type: "icon", 
+		icon: "arrow_forward", 
+		font_size: "90px", 
+
+	}
+
+
+	var text_input = {
+		type: "input", 
+		input_type: "text", 
+		label: "What is your password?", 
+		default_value: "Jai Mata Di"
+	}
+	var textarea_input = {
+		type: "input", 
+		input_type: "textarea", 
+		label: "What is your password? Ji", 
+		default_rows: 4, 
+		default_value: "Jai Mata Di"
+	}
+	var dropdown_input = {
+		type: "input", 
+		input_type: "dropdown", 
+		label: "Select Your Salary ?", 
+		options: ["Abc", "Cde"], 
+		default_value: 2, 
+		allow_multiple: false
+	}
+
+
+
+
+	var design_object_1 = dropdown_input;
 
 	var is_valid_design_object = function(design_object) {
 	}
 
 	var web_input = new (function(){
-		this.click_handler = function(object_id) {
-			console.log(object_id +  " got clicked");
+		this.click_handler = function(onclick) {
+			console.log("Something got clicked, onclick = "+onclick);
 		}
 	})();
 
 
-	var get_html = function(design_object) {
+	var get_html = function(design_object) { //assert - design_object is valid.
+
+		var onclick_code = function(design_object) {
+			return (design_object.onclick===null ? '': 'onclick="web_input.click_handler(\''+design_object.onclick+'\')" ');
+		}
+
+
 		if(design_object.type === "button") {
-			return "<button class='btn "+(design_object.theme == "black_in_white" ? "btn-default": "btn-primary")+"' onclick='web_input.click_handler(\""+design_object["id"]+"\");' >"+design_object["label"]+"</button>";
+			if(design_object.label === null) {
+				return '<i '+onclick_code(design_object)+' class="my-material-icon-button" >'+design_object.icon+'</i>';
+			} else {
+				return '<button class="btn '+(design_object.theme === "black_in_white" ? "btn-default": "btn-primary")+'" '+onclick_code(design_object)+' >'+design_object["label"]+(design_object.icon === null ? '': '<i class="my-material-icons" >'+design_object.icon+'</i>')+ '</button>';
+			}
+		} else if (design_object.type === "image") {
+			return '<img src="'+design_object.src+'" width="'+design_object.width+'" height="'+design_object.height+'" style="opacity: '+design_object.opacity+'; '+(design_object.rounded ? 'border-radius: 50%;': '')+' " >';
+		} else if (design_object.type === "text") {
+			return '<span '+onclick_code(design_object)+' >'+design_object.html+'</span>';
+		} else if (design_object.type === "icon") {
+			return '<i class="my-material-icons" style="font-size: '+design_object.font_size+'" >'+design_object.icon+'</i>';
+		} else if (design_object.type === "input") {
+			if(design_object.input_type == "text") {
+				return '<div class="input-div" ><label>'+design_object.label+'</label><br><input type="text" class="input-input" placeholder="---" ></div>';
+			} else if(design_object.input_type == "textarea") {
+				return '<div class="input-div" ><label>'+design_object.label+'</label><br><textarea class="input-input" placeholder="---" rows="'+design_object.default_rows+'" ></textarea></div>';
+			}
+			} else if(design_object.input_type == "dropdown") {
+				var output = '<div class="input-div-select" ><label>'+design_object.label+'</label><br><select class="input-input" '+(design_object.allow_multiple?'multiple':'')+' >';
+				for(var i=0; i<design_object.options.length; i++) {
+					output += '<option value="'+(i+1)+'" >'+design_object.options[i]+'</option>';
+				}
+				output += '</select></div>';
+				return output;
+			} else if(design_object.input_type == "checkbox") {
+				var output = '<div class="input-div" >'+design_object.label;
+				for(var i=0; i<design_object.options.length; i++) {
+					output += '<br><label><input type="'+(design_object.allow_multiple ? 'checkbox':'radio')+'" >'+design_object.options[i]+'</label>';
+				}
+				output += '</div>';
+			}
+
+	
+
 		} else {
 			return null;
 		}
@@ -44,6 +171,9 @@
 
 
 </script>
+
+
+
 
 
 
