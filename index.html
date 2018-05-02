@@ -6,167 +6,268 @@
 	<title>web-input</title>
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="css/main.css?reload=899876987">
+	<link rel="stylesheet" type="text/css" href="css/main.css?reload=8980987987976">
 </head>
 <body>
 
-<div style="margin: 30px; padding: 50px; border: solid #ccc 1px;" >
-
-	<table border="1" style="width: 100%;" ><tbody><tr>
-		<td style="width: 50%;" >
-	
-	<div class="input-div-select" >
-		<label>Name:</label><br>
-		<select class="input-input"  >
-			<option>AA</option>
-			<option>AA2</option>
-			<option>AA3 sdk hskd hkd hskd</option>
-			<option>AA4</option>
-			<option>AA5</option>
-		</select>
-	</div>
-
-
-	<div class="input-div" >
-		Name: <br>
-		<label><input type="checkbox" >Option 1</label> <br>
-		<label><input type="checkbox" >Option 2</label>
-	</div>
 
 
 
-		</td>
-		<td></td>
-	</tr></tbody></table>
+<div style="margin: 30px; padding: 50px; border: solid #ccc 1px; display: none;" ></div>
+<div id="main" style="padding: 50px; border: solid #ccc 0px;" ></div>
+<div style='display: none;' >www<br> www<br> www<br> www<br> www<br> www<br> www<br> www<br></div>
 
-
-
-</div>
-
-<div id="main" style="margin: 30px; padding: 50px; border: solid #ccc 1px;" ></div>
 
 <script type="text/javascript">
 
-	var Button = {
-		"type": "button", 
-		"id": "6_125", 
-		"label": "Submit App", 
-		"theme": "default", 
-		// "icon": "arrow_forward", 
-		"icon": null, 
-		"onclick": "api_call", 
-	}
-
-	var Image = {
-		type: "image", 
-		id: "5_223", 
-		src: "images/saini.jpg", 
-		width: "auto", 
-		height: "auto", 
-		opacity: 0.6945678, 
-		rounded: true
-	};
-
-	var Text = {
-		type: "text", 
-		id: "5_227", 
-		html: "<a href='Saini Ji' >Mohit Saini</a> Jai Ho Dada ki.. <span style='font-size: 30px; color: blue;' >Jai Mata Di</span> <br> New tab..... Wow... Acha hun...", 
-		onclick: null
-	};
-
-	var Icon = {
-		type: "icon", 
-		icon: "arrow_forward", 
-		font_size: "90px", 
-
-	}
-
-
-	var text_input = {
-		type: "input", 
-		input_type: "text", 
-		label: "What is your password?", 
-		default_value: "Jai Mata Di"
-	}
-	var textarea_input = {
-		type: "input", 
-		input_type: "textarea", 
-		label: "What is your password? Ji", 
-		default_rows: 4, 
-		default_value: "Jai Mata Di"
-	}
-	var dropdown_input = {
-		type: "input", 
-		input_type: "dropdown", 
-		label: "Select Your Salary ?", 
-		options: ["Abc", "Cde"], 
-		default_value: 2, 
-		allow_multiple: false
-	}
 
 
 
+	var py2web = new (function(){
+		var thiso = this;
 
-	var design_object_1 = dropdown_input;
+		this.opened_menu = null;//replaced by dropdown-DOM of opened menu.
 
-	var is_valid_design_object = function(design_object) {
-	}
-
-	var web_input = new (function(){
-		this.click_handler = function(onclick) {
-			console.log("Something got clicked, onclick = "+onclick);
+		this.hide_all_dropdowns = function() {
+			if(thiso.opened_menu !== null) {
+				thiso.opened_menu.style.visibility = 'hidden';
+				thiso.opened_menu = null;
+				return true;
+			}
+			return false;
 		}
+		this.click_on_menu = function(obj, event) {
+			if(!thiso.hide_all_dropdowns()) {
+				var icon_position = obj.getBoundingClientRect();
+				var dropdown_obj = thiso.opened_menu = obj.nextElementSibling;
+				var root_obj = document.body.parentElement;
+				
+				var directional_margin = [
+					icon_position.top-dropdown_obj.clientHeight, 
+					root_obj.clientWidth-(icon_position.left+dropdown_obj.clientWidth), 
+					root_obj.clientHeight-(icon_position.top+icon_position.height+dropdown_obj.clientHeight), 
+					icon_position.left + icon_position.width - dropdown_obj.clientWidth
+				];//direction: up, right, down, left
+
+				var directions = [[1, 2], [1, 0], [3, 2], [3, 0]];//(horizonral, vertical)
+				var selected_direction = null;
+				var min_error = null;
+				var min_error_at;
+				for(var i=0; i<directions.length; i++) {
+					var c1 = directional_margin[directions[i][0]];
+					var c2 = directional_margin[directions[i][1]];
+					if(c1 >= 0 && c2 >= 0) {
+						selected_direction = i;
+						break;
+					} else {
+						var current_error = -1*(c1<0)*c1 + -1*(c2<0)*c2;
+						if(min_error === null || current_error < min_error) {
+							min_error = current_error;
+							min_error_at = i;
+						}
+					}
+				}
+				selected_direction = directions[(selected_direction === null ? min_error_at : selected_direction)];
+				var directional_postion = [
+					icon_position.top-dropdown_obj.clientHeight, 
+					icon_position.left, 
+					icon_position.top+icon_position.height, 
+					icon_position.left + icon_position.width - dropdown_obj.clientWidth
+				];// direction: up, right, down, left
+
+				var dropdown_left = directional_postion[selected_direction[0]]+ obj.offsetLeft - icon_position.left;
+				var dropdown_top = directional_postion[selected_direction[1]]+ obj.offsetTop - icon_position.top;
+
+				dropdown_obj.style.top = dropdown_top+"px";
+				dropdown_obj.style.left = dropdown_left+"px";
+				dropdown_obj.style.visibility = "visible";
+			}
+			event.stopPropagation();
+		};
+
+
+		var get_html = function(design_object) { //assert - design_object is valid.
+
+			var onclick_code = function(onclick_id) {
+				return (onclick_id===null ? '': 'onclick="py2web.api_on_click(\''+onclick_id+'\')" ');
+			}
+
+			var style_code = function(design_object, attrs) {//assert ( attrs <= style_attr_mapping.keys() )
+				var style_attr_mapping = {
+					valign: "vertical-align", 
+					padding: "padding", 
+					bgcolor: "background-color", 
+					border_width: "border-width", 
+					border_color: "border-color"
+				};
+
+				var output = "";
+				for(var i in attrs) {
+					if(design_object[attrs[i]]) {
+						output += style_attr_mapping[attrs[i]]+':'+design_object[attrs[i]]+";";
+					}
+				}
+				return output;
+			}
+
+			var inputs_objects = thiso.inputs_objects = {};
+
+			var get_html_helper = function(design_object) {
+				if (design_object.type === "null") {
+					return "";
+				} else if(design_object.type === "button") {
+					if(design_object.label === null) {
+						return '<i '+onclick_code(design_object.onclick_id)+' class="my-material-icon-button" >'+design_object.icon+'</i>';
+					} else {
+						return '<button class="btn '+(design_object.theme === "black_in_white" ? "btn-default": "btn-primary")+'" '+onclick_code(design_object.onclick_id)+' >'+design_object["label"]+(design_object.icon === null ? '': '<i class="my-material-icons" >'+design_object.icon+'</i>')+ '</button>';
+					}
+				} else if (design_object.type === "image") {
+					return '<img src="'+design_object.src+'" width="'+design_object.width+'" height="'+design_object.height+'" style="opacity: '+design_object.opacity+'; '+(design_object.rounded ? 'border-radius: 50%;': '')+' " >';
+				} else if (design_object.type === "text") {
+					return '<span '+onclick_code(design_object.onclick_id)+' >'+design_object.html+'</span>';
+				} else if (design_object.type === "icon") {
+					return '<i class="my-material-icons" style="font-size: '+design_object.font_size+'" >'+design_object.icon+'</i>';
+				} else if (design_object.type === "input") {
+					inputs_objects[design_object.id] = design_object;
+					if(design_object.input_type === "text") {
+						return '<div class="input-div" ><label>'+design_object.label+'</label><br><input id="io_element_'+design_object.id+'" type="text" class="input-input" placeholder="---" ></div>';
+					} else if(design_object.input_type === "textarea") {
+						return '<div class="input-div" ><label>'+design_object.label+'</label><br><textarea class="input-input" id="io_element_'+design_object.id+'" placeholder="---" rows="'+design_object.default_rows+'" ></textarea></div>';
+					} else if(design_object.input_type === "dropdown") {
+						var output = '<div class="input-div-select" ><label>'+design_object.label+'</label><br><select class="input-input" id="io_element_'+design_object.id+'" '+(design_object.allow_multiple?'multiple':'')+' >';
+						for(var i=0; i<design_object.options.length; i++) {
+							var is_selected = design_object.allow_multiple ? (design_object.default_value.indexOf(i+1) != -1) : (i+1 == design_object.default_value);
+							output += '<option value="'+(i+1)+'" '+(is_selected ? 'selected':'')+' >'+design_object.options[i]+'</option>';
+						}
+						output += '</select></div>';
+						return output;
+					} else if(design_object.input_type === "checkbox") {
+						var output = '<div class="input-div" id="io_element_'+design_object.id+'" >'+design_object.label;
+						for(var i=0; i<design_object.options.length; i++) {
+							var is_selected = design_object.allow_multiple ? (design_object.default_value.indexOf(i+1) != -1) : (i+1 == design_object.default_value);
+							output += '<br><label><input name="radio_'+design_object.id+'" type="'+(design_object.allow_multiple ? 'checkbox':'radio')+'" '+(is_selected ? 'checked': '')+' >'+design_object.options[i]+'</label>';
+						}
+						output += '</div>';
+						return output;
+					} else {
+						return "";
+					}
+
+				} else if(design_object.type === "menu") {
+					var output = '<span><i class="my-material-icon-button" onclick="py2web.click_on_menu(this, event);" >'+design_object.icon+'</i><div class="dropdown_content_wrapper" ><div class="dropdown_content" >';
+					for(var i=0; i<design_object.click_actions.length; i++) {
+						output += '<div class="dropdown_elements" '+onclick_code(design_object.click_actions[i][0])+' >'+design_object.click_actions[i][1]+'</div>';
+					}
+					output += '</div></div></span>';
+					return output;
+				} else if(design_object.type === "hlist" || design_object.type == "vlist") {
+					var output = '<div class="'+(design_object.type === "vlist" ? "vertical_table": "table")+'" '+(design_object.align  ? 'align="'+design_object.align+'"': '')+' style="'+style_code(design_object, ["bgcolor"])+'" >';
+					var cell_style = style_code(design_object, ["valign", "border_width", "border_color", "padding"]);
+					for(var i=0; i<design_object.children.length; i++) {
+						output += '<div class="'+(design_object.type === 'vlist' ? 'vertical_table_cell':'table_cell')+'" style="'+cell_style+(design_object.type == 'vlist' ? 'height': 'width')+':'+design_object[design_object.type === 'vlist' ? 'height' : 'width'][i]+';" >'+get_html_helper(design_object.children[i])+'</div>';
+					}
+					output += '</div>';
+					return output;
+				} else {
+					return null;
+				}
+			};
+			return get_html_helper(design_object);
+
+		};
+
+
+		var api_url = "http://127.0.0.1:5018/v1/api";
+		var api_call = function(url, data, callback) {
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					callback(this.response);
+				}
+			};
+			xhttp.open("POST", url, true);
+			xhttp.setRequestHeader("Content-type", "application/json");
+			xhttp.send(JSON.stringify(data));
+		}
+
+		var render_frame = this.render_frame = function(frame) {
+			document.getElementById("main").innerHTML = get_html(frame);
+			thiso.set_default_values();
+		}
+
+
+		this.set_default_values = function() {
+			for(var i in thiso.inputs_objects) {
+				var io = thiso.inputs_objects[i];
+				if (io.input_type === 'text' || io.input_type === 'textarea') {
+					document.getElementById("io_element_"+io.id).value = io.default_value;
+				}
+			}
+		}
+
+		this.get_input_values = function() {
+			var output = {};
+			for(var i in thiso.inputs_objects) {
+				var io = thiso.inputs_objects[i];
+				var dom_elm = document.getElementById("io_element_"+io.id);
+				if (io.input_type === 'text' || io.input_type === 'textarea' || (io.input_type === 'dropdown' && !io.allow_multiple)) {
+					output[io.id] = dom_elm.value;
+					if(io.input_type == "dropdown") {
+						output[io.id] = parseInt(output[io.id]);
+					}
+				} else if(io.input_type === "dropdown" && io.allow_multiple) {
+					var selected = [];
+					for(var i=0; i<dom_elm.options.length; i++) {
+						dom_elm.options[i].selected ? selected.push(i+1):null;
+					}
+					output[io.id] = selected;
+				} else if(io.input_type === "checkbox") {
+					var radio_buttons = document.getElementsByName("radio_"+io.id);
+					var selected = [];
+					for(var i=0; i<radio_buttons.length; i++) {
+						radio_buttons[i].checked ? selected.push(i+1):null;
+					}
+					output[io.id] = io.allow_multiple ? selected: selected[0];
+				}
+
+			}
+			return output;
+		};
+
+		this.api_on_click = function(onclick_id) {
+			console.log("Something got clicked, onclick = "+onclick_id);
+			api_call(api_url, {onclick_id: onclick_id, inputs: thiso.get_input_values()}, function(d) {
+				render_frame(JSON.parse(d));
+			});
+		}
+
+		this.window_onclick = function() {
+			thiso.hide_all_dropdowns();
+		}
+
 	})();
 
+	var tmp_frame_6703 = [null, {
+		"type": "button", 
+		"id": "6",
+		"label": "Jai Hind", 
+		"theme": "default", 
+		"icon": "more_vert", 
+		"onclick_id": null, 
+	}];
 
-	var get_html = function(design_object) { //assert - design_object is valid.
+	var initial_frame = tmp_frame_6703[1];
 
-		var onclick_code = function(design_object) {
-			return (design_object.onclick===null ? '': 'onclick="web_input.click_handler(\''+design_object.onclick+'\')" ');
-		}
+	py2web.render_frame(initial_frame);
 
 
-		if(design_object.type === "button") {
-			if(design_object.label === null) {
-				return '<i '+onclick_code(design_object)+' class="my-material-icon-button" >'+design_object.icon+'</i>';
-			} else {
-				return '<button class="btn '+(design_object.theme === "black_in_white" ? "btn-default": "btn-primary")+'" '+onclick_code(design_object)+' >'+design_object["label"]+(design_object.icon === null ? '': '<i class="my-material-icons" >'+design_object.icon+'</i>')+ '</button>';
-			}
-		} else if (design_object.type === "image") {
-			return '<img src="'+design_object.src+'" width="'+design_object.width+'" height="'+design_object.height+'" style="opacity: '+design_object.opacity+'; '+(design_object.rounded ? 'border-radius: 50%;': '')+' " >';
-		} else if (design_object.type === "text") {
-			return '<span '+onclick_code(design_object)+' >'+design_object.html+'</span>';
-		} else if (design_object.type === "icon") {
-			return '<i class="my-material-icons" style="font-size: '+design_object.font_size+'" >'+design_object.icon+'</i>';
-		} else if (design_object.type === "input") {
-			if(design_object.input_type == "text") {
-				return '<div class="input-div" ><label>'+design_object.label+'</label><br><input type="text" class="input-input" placeholder="---" ></div>';
-			} else if(design_object.input_type == "textarea") {
-				return '<div class="input-div" ><label>'+design_object.label+'</label><br><textarea class="input-input" placeholder="---" rows="'+design_object.default_rows+'" ></textarea></div>';
-			}
-			} else if(design_object.input_type == "dropdown") {
-				var output = '<div class="input-div-select" ><label>'+design_object.label+'</label><br><select class="input-input" '+(design_object.allow_multiple?'multiple':'')+' >';
-				for(var i=0; i<design_object.options.length; i++) {
-					output += '<option value="'+(i+1)+'" >'+design_object.options[i]+'</option>';
-				}
-				output += '</select></div>';
-				return output;
-			} else if(design_object.input_type == "checkbox") {
-				var output = '<div class="input-div" >'+design_object.label;
-				for(var i=0; i<design_object.options.length; i++) {
-					output += '<br><label><input type="'+(design_object.allow_multiple ? 'checkbox':'radio')+'" >'+design_object.options[i]+'</label>';
-				}
-				output += '</div>';
-			}
+	py2web.render_frame
 
-	
 
-		} else {
-			return null;
-		}
-	};
+	window.onclick = function(event) {
+		py2web.window_onclick();
+	}
 
-	document.getElementById("main").innerHTML = get_html(design_object_1);
 
 
 

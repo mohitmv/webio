@@ -1,5 +1,33 @@
 
 
+
+
+To be done
+
+#1. input sending from front-end on onclick APIs.
+#2. fixing the default-value for all possible inputs.
+
+
+3. Implementing validating functions. 
+4. Creating a set of commonly usuable elements. Like: Display-Table,  
+	4.1 Inhance the text type input.
+5. Multiple Window handling.
+6. Login and session system.
+7. Front-end -> Loading icon when API call ( and disable everything else ).
+8. How to handle Front-end chached content.
+9. Presentation and documentation.
+
+10. Core Issues. 
+	 - Session Management system. 
+	 - URL system. 
+	 - Disabling all inputs whenever an API is called. 
+	 - Onclick on Vlist and Hlist cell. 
+
+
+
+--------------------------------------------------------
+
+
 Size_Unit_Numeric = {x+"px", for x in {0, 1, 2, 3, ...}}
 Size_Unit = "auto" | Size_Unit_Numeric
 
@@ -9,11 +37,23 @@ Dropdown_Options = List of (String | tuple of (obj, String))
 
 Colors = Same as html colors (i.e. {fixed colors like "red", "black", ..} union {"#******" series} union {rgb(r, g, b)}
  
-Cell_Attributes := align=left|right|middle, valign = top|bottom|middle, padding = Size_Unit_Numeric , bgcolor = Colors, border_size= Size_Unit_Numeric, border_color = Colors, children=List-of-Io
+Cell_Attributes := 
+	align = left|right|middle, 
+	valign = top|bottom|middle, 
+	padding = Size_Unit_Numeric , 
+	bgcolor = Colors, 
+	border_width = Size_Unit_Numeric, 
+	border_color = Colors, 
+	*children = List-of-Io
+
 
 Icons = list-of-valid-icon-ids
 
 Implement Front-end display....
+
+
+
+
 
 Io = 
 
@@ -22,17 +62,50 @@ Io =
 [Done]	3. Button(label=String|None, icon=Icons|None, onclick=None|Lambda, theme = "default" | "black_in_white"), 
 [Done]	5. Icon(icon = None|Icons, font_size = Size_Unit_Numeric), 
 
-		4. Input(label=String, input_type=text|textarea|dropdown|checkbox|file, allow_multiple=True|False,  options=Dropdown_Options, allow_search = True|False, default_rows=4, default_value=String;Int;List of Int;List of Files), 
-			[Done]	text
-			[Done]	textarea
-			dropdown
-			checkbox
-			file
+[Done]	4. Input(label=String, input_type=text|textarea|dropdown|checkbox|file, allow_multiple=True|False,  options = Dropdown_Options, allow_search = True|False, default_rows=4, default_value=String;Int;List of Int;List of Files), 
+			[Done]		text
+			[Done]		textarea
+			[Done]		dropdown
+			[Done]		checkbox
+			[Skipped]	file... (Read FromData in HTML5)
 
 
-		6. Menu(icon=None|Icons, actions = List of (String, None|Lambda)), 
+[Done]	6. Menu(icon=Icons, click_actions = List of (String, None|Lambda)), 
 
-		7. Hlist(width=list of Size_Unit, ..Cell_Attributes..), 
-		8. Vlist(height=list of Size_Unit, ..Cell_Attributes..), 
+[Done]	7. Hlist(width=list of Size_Unit, ..Cell_Attributes..), 
+[Done]	8. Vlist(height=list of Size_Unit, ..Cell_Attributes..), 
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------
+
+1. Front-end display part is done...
+2. design python classes, so that I can use this to display in front-end.
+	fm1 = Button("Submit");
+	students = [["AA", "bbb", "CCC"]];
+	fm2 = Vlist(
+			Display("Welcome to our website", size="h2"), 
+			Hlist(
+				Vlist(
+					Input("Enter Your Name"), 
+					Input("Your parents Name ?"), 
+					Input("Your class ?", options=range(1, 10)), 
+					Button("Submit", onclick=lambda fm: students.append([fm[0], fm[1], fm[2]]) )
+				), 
+				Vlist([Hlist(i, padding="5px") for i in students])
+			)
+		)
+
+
+
+
+
+
+
+
 
 

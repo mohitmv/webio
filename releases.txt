@@ -1,9 +1,52 @@
 
 
+------------------------------
 
+v1:
+[..Done..] 1. design.txt except ( File type input, allow_search option )
+3. Implementing validating functions. 
+4. Creating a set of commonly usuable elements. Like: Display-Table,  
+	4.1 Inhance the text type input.
+5. Multiple Window handling.
+6. Login and session system.
+7. Front-end -> Loading icon when API call ( and disable everything else ).
+8. How to handle Front-end chached content.
+9. Presentation and documentation.
+
+------------------------------
+
+v1.2 : 
+1. File uploading system.
+2. Missing things from v1
+3. Functions for both conversion: State -> hash-string (url type) -> State
+
+
+------------------------------
 
 v2: 
+1. Rich-textarea [ Basic HTML ]
+2. Textarea - Auto Extend.
+3. Dropdown - Allow_Search.
+4. Graphs and Charts.
+5. Trigger Broadcasting.
+6. Socket.io at front-end.
+7. Filling Inputs buffers.
+8. Loading only diff from backend.
 
-Textarea - Autoscroll.
-Dropdown - Allow_Search.
+------------------------------
+
+
+v3: 
+1. - Demo with
+ 	1. chat messenger. 
+ 	2. facebook. ( uploading post, like, comments,.. etc..)
+
+2. Abstracting out all coding components w.r.t 4-branch rules of abstraction.
+3. Design system for 
+	1. Integrating it inside any project like Django or java backend. Or can be installed into front-end. 
+	2. Think about second set of IO-elements to be designed.
+	3. Design strategy to market it. 
+
+
+------------------------------
 
