@@ -25,6 +25,7 @@ html, body {
 	background-image: none;
 	border: 1px solid transparent;
 	border-radius: 4px;
+	margin: 10px;
 }
 
 
@@ -90,7 +91,7 @@ html, body {
 
 
 .input-div {
-	margin-left: 5px;
+	margin-left: 10px;
 	margin-right: 25px;
 	/*margin-top: 10px;*/
 	margin-bottom: 25px;
@@ -122,7 +123,8 @@ textarea.input-input {
 .input-div-select {
 	margin: 20px 5px;
 	margin-top: 0px;
-	margin-bottom: 25px;
+	margin-bottom: 0px;
+	/*margin-bottom: 25px;*/
 }
 
 
@@ -215,6 +217,33 @@ div.vertical_table_cell {
 }
 
 
+div.hover_cell:hover {
+	background-color: #eee;
+	cursor: pointer;
+}
+
+
+
+div.text_div {
+	width: 100%;
+	margin: 10px;
+/*	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+*/
+}
+
+a{
+	cursor: pointer;
+	color: rgb(0, 0, 230);
+}
+
+
+a:hover {
+	text-decoration: underline;
+}
 
 
 

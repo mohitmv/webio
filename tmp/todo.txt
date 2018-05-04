@@ -1,5 +1,14 @@
 
 
+Urgent Fixes
+[Done]. 1. HTML design part -
+		onclick, link, font_size, font_style, color, line_height
+[Done]. 2. Select Options.
+		[Done]- Values inside option list.
+3. Putting all the code stuff into a library.
+
+4. 
+
 
 
 To be done
@@ -18,10 +27,13 @@ To be done
 9. Presentation and documentation.
 
 10. Core Issues. 
-	 - Session Management system. 
-	 - URL system. 
-	 - Disabling all inputs whenever an API is called. 
-	 - Onclick on Vlist and Hlist cell. 
+		 - Commonly used elements like: Table, 
+		 - HTML design part.
+		 - Session Management system. 
+		 - URL system. 
+		 - Disabling all inputs whenever an API is called. 
+[Done]	 - Onclick on Vlist and Hlist cell. 
+		 - checkbox(default: allow_multiple)
 
 
 

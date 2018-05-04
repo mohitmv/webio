@@ -32,6 +32,7 @@ v2:
 6. Socket.io at front-end.
 7. Filling Inputs buffers.
 8. Loading only diff from backend.
+9. OnEnter on text|textarea type input(Activate Shift+Enter in textarea), OnChange on dropdown/checkbox.
 
 ------------------------------
 

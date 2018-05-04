@@ -29,7 +29,6 @@
 
 	var Text = {
 		type: "text", 
-		id: "5_227", 
 		html: "<a href='Saini Ji' >Mohit Saini</a> Jai Ho Dada ki.. <span style='font-size: 30px; color: blue;' >Jai Mata Di</span> <br> New tab..... Wow... Acha hun...", 
 		onclick: null
 	};
