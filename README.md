@@ -51,3 +51,8 @@ webio.ServeFrame(MyWebsite(), port=5002);
 
 ```
 
+How to install webio in a python ?
+----------
+`pip3.6 install https://github.com/mohitmv/webio.git`
+
+
