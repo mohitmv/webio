@@ -1,7 +1,5 @@
 from setuptools import setup
 
-import webio
-
 setup(
   name = 'webio',
   version = '1.0.0',
@@ -18,5 +16,4 @@ setup(
   ],
   entry_points={}
 )
-
 
