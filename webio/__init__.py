@@ -156,7 +156,7 @@ class Frame:
 		@app.route("/v1/start", methods=["GET"])
 		@flask_cors.cross_origin(supports_credentials=True)
 		def v1_start():
-			html_page = read_file("index.html");
+			html_page = read_file("../index.html");
 			html_page = html_page.replace('<link rel="stylesheet" type="text/css" href="css/main.css?reload=', 'link_style_72378');
 			html_page = re.sub('link_style_72378[0-9]+\">', '<style>'+read_file("css/main.css")+'</style>', html_page);
 			html_page = html_page.replace('tmp_frame_6703[1]', json.dumps(self.reload_frame()));
