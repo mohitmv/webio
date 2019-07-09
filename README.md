@@ -20,6 +20,7 @@ WebIO is extremely easy to use, with very simple 3-pager user manual.
 
 How to use webio in a python ?
 ----------
+```python
 import webio;
 from webio import Frame, Action, VList, HList, Tabs, Tab, TitleText, Button, TextInput, TextArea;
 
@@ -45,4 +46,6 @@ class MyWebsite:
     current_tab = index;
 
 webio.ServeFrame(MyWebsite(), port=5002);
+
+```
 
