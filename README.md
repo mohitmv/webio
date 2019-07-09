@@ -27,7 +27,8 @@ from webio import Frame, Action, VList, HList, Tabs, Tab, TitleText, Button, Tex
 class MyWebsite:
   tabs = ["Home", "About", "Contact", "Dashboard"];
   current_tab = 0;
-  content_for_tabs = {0: ["Content-01", "Content-02"], 1: ["Content-11", "Content-12"], 2: [], 3: []};
+  content_for_tabs = {0: ["Content-01", "Content-02"], 1: ["Content-11", "Content-12"],
+                      2: [], 3: []};
   def Render(self):
     frame = VList();
     frame << TitleText("Welcome to webio") << VSpace(20);
@@ -39,11 +40,12 @@ class MyWebsite:
     VSpace(10);
     Text("Want to create more content ?", font_size = 16, margin_top_bottom: 5);
     frame << TextInput("Your Name ?") << TextArea("Your content goes here", id="content");
-    frame << Button("Submit", onclick = lambda: content_for_tabs[current_tab].append(Find("content").value()));
+    frame << Button("Submit", onclick =
+               lambda: content_for_tabs[current_tab].append(Find("content").value()));
     return frame;
 
   def set_current_tab(self, index):
-    current_tab = index;
+    self.current_tab = index;
 
 webio.ServeFrame(MyWebsite(), port=5002);
 
