@@ -54,7 +54,9 @@ webio.ServeFrame(MyWebsite(), port=5002);
 How to install webio in a python ?
 ----------
 `sudo pip3.6 install git+https://github.com/mohitmv/webio.git`
-or 
+
+or
+
 `sudo pip3.6 install git+https://github.com/mohitmv/webio.git@v1.0.0`
 
 How to uninstall webio in a python ?
