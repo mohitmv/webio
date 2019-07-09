@@ -156,11 +156,13 @@ class Frame:
 		@app.route("/v1/start", methods=["GET"])
 		@flask_cors.cross_origin(supports_credentials=True)
 		def v1_start():
-			html_page = read_file("../index.html");
-			html_page = html_page.replace('<link rel="stylesheet" type="text/css" href="css/main.css?reload=', 'link_style_72378');
-			html_page = re.sub('link_style_72378[0-9]+\">', '<style>'+read_file("css/main.css")+'</style>', html_page);
-			html_page = html_page.replace('tmp_frame_6703[1]', json.dumps(self.reload_frame()));
-			return html_page;#This part will be replaced by string--- Content of index.html.
+			front_end_dir = os.path.join(os.path.dirname(__file__), '..')
+			html_page = read_file(front_end_dir + "/index.html");
+			html_page = html_page.replace('<!-- {inlined_css_here:template_arg_0} -->',
+																		read_file(front_end_dir + "/css/main.css"))
+			html_page = html_page.replace('tmp_frame_6703[1]',
+																		json.dumps(self.reload_frame()));
+			return html_page;
 
 		@app.route("/v1/api", methods=["POST"])
 		def v1_api():

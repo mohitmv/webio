@@ -8,12 +8,14 @@ setup(
   author_email = 'mohitsaini1196@gmail.com',
   description = 'Tool for building complex web interfaces easily',
   long_description = 'WebIO enables you to design the complex web interfaces without getting into HTML, CSS, JS, AngularJs, Ajax, API handling, Server management, nodejs etc.. crap.',
-  packages=["webio"],
-  install_requires=['flask_cors', 'flask'],
-  extras_require={}, 
+  packages = ["webio"],
+  package_data={'': ['front_end/**/**/*']},
+  include_package_data=True,
+  install_requires = ['flask_cors', 'flask'],
+  extras_require = {}, 
   classifiers=[
     'Programming Language :: Python :: 3',
   ],
-  entry_points={}
+  entry_points={},
 )
 
