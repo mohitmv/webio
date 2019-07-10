@@ -1,39 +1,31 @@
-
-
-Urgent Fixes
-[Done]. 1. HTML design part -
-		onclick, link, font_size, font_style, color, line_height
-[Done]. 2. Select Options.
-		[Done]- Values inside option list.
-3. Putting all the code stuff into a library.
-
-4. 
+Priority Queue
+1. 
 
 
 
-To be done
 
-#1. input sending from front-end on onclick APIs.
-#2. fixing the default-value for all possible inputs.
+----------- To be done
 
-
-3. Implementing validating functions. 
-4. Creating a set of commonly usuable elements. Like: Display-Table,  
+4. Creating a set of commonly usuable elements. Like: Display-Table,
 	4.1 Inhance the text type input.
 5. Multiple Window handling.
 6. Login and session system.
-7. Front-end -> Loading icon when API call ( and disable everything else ).
+7. Front-end -> Loading icon when API call (and disable everything else).
 8. How to handle Front-end chached content.
 9. Presentation and documentation.
-
 10. Core Issues. 
-		 - Commonly used elements like: Table, 
+		 - Commonly used elements like: Table,
 		 - HTML design part.
-		 - Session Management system. 
-		 - URL system. 
+		 - Session Management system.
 		 - Disabling all inputs whenever an API is called. 
-[Done]	 - Onclick on Vlist and Hlist cell. 
 		 - checkbox(default: allow_multiple)
+11. Use enum instead of component names.
+12. Support for C++ as well.
+
+
+----------- Long Term ToDos
+3. Implementing validating functions. 
+4. URL system.
 
 
 

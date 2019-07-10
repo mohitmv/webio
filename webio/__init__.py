@@ -1,8 +1,5 @@
 
-import flask, flask_cors
-
-import re, json, os
-
+import flask, flask_cors, re, json, os
 
 def none_default(a, b):
 	return (b if a == None else a);
@@ -24,35 +21,82 @@ class Object(dict):
 		self.__dict__ = self;
 		dict.__init__(self, initial_value, **kwargs);
 
-class ElementState:
+class Element:
 	def __init__(self, io_element_type, args, params):
 		self.io_element_type = io_element_type;
 		self.args = args;
 		self.params = params;
-
 	def __repr__(self):
-		return str(("ElementState", self.io_element_type, self.args, self.params));
+		return str(("Element", self.io_element_type, self.args, self.params));
 
-class Element:
-	def __init__(self, io_element_type, **default_params):
-		self.io_element_type = io_element_type;
-		self.default_params = default_params;
+def CoreElementsConfigs():
+	elements = ["image", "text", "icon", "button", "input", "menu", "vlist", "hlist"];
+	default_params = dict(
+		image = dict(
+			src = None,	
+			width = "auto",
+			height = "auto", 
+			opacity = 1, 
+			rounded = True, 
+		), 
+		text = dict(
+			text = "",
+			onclick_id = None,
+		), 
+		icon = dict(
+			icon = "",
+			font_size = "16px",
+		),
+		button = dict(
+			label = None, 
+			theme = "default", 
+			icon = None, 
+			onclick_id = None, 
+		), 
+		input = dict(
+			input_type = "text",
+			allow_multiple = False,
+			allow_search = False, 
+			label = "",
+			options = [],
+			default_rows = 5,
+		), 
+		menu = dict(
+			click_actions = []
+		), 
+		vlist = dict(
+			onclick_id = None
+		),
+		hlist = dict(
+			onclick_id = None
+		)
+	);
+	return dict(elements = elements, default_params = default_params);
 
-	def set_default_params(self, **new_default_params):
-		new_element = Element(self.io_element_type, **self.default_params);
-		new_element.default_params.update(new_default_params);
-		return new_element;
+
+class ElementBuilder:
+	def __init__(self, io_element, *args, **default_params):
+		if (type(io_element) == ElementBuilder):
+			self.io_element_type = io_element.io_element_type;
+			self.args = io_element.args + args;
+			self.default_params = io_element.default_params;
+			self.default_params.update(default_params);
+		else:
+			self.io_element_type = io_element;
+			self.args = args;
+			self.default_params = default_params;
 
 	def __call__(self, *args, **params):
-		params1 = dict(self.default_params);
-		params1.update(params);
-		return ElementState(self.io_element_type, args, params1);
+		new_params = dict(self.default_params);
+		new_params.update(params);
+		return Element(self.io_element_type, args, new_params);
 
 class InputState:
 	def __init__(self, input_tree):
 		self.input_tree = input_tree;
 		self.input_list = [];
 		self.indexed_input_subtree = {};
+
 		def flatten_input(input_tree):
 			if input_tree[1] != None and (input_tree[1] not in self.indexed_input_subtree):
 				self.indexed_input_subtree[input_tree[1]] = input_tree;
@@ -62,6 +106,7 @@ class InputState:
 				self.input_list.append(input_tree[2]);
 				return input_tree[2];
 		self.inputs = flatten_input(input_tree);
+
 	def __getitem__(self, i):
 		if type(i) == int:
 			return self.input_list[i];
@@ -87,45 +132,7 @@ class Frame:
 		self.frame_lambda = frame_lambda;
 		self.state_args = state_args;
 		self.state_params = state_params;
-		self.default_params = dict(
-			image = dict(
-				width = "auto", 
-				height = "auto", 
-				opacity = 1, 
-				rounded = True, 
-			), 
-			text = dict(
-				text = "", 
-				onclick_id = None, 
-			), 
-			icon = dict(
-				font_size = "16px", 
-			), 
-			button = dict(
-				label = None, 
-				theme = "default", 
-				icon = None, 
-				onclick_id = None, 
-			), 
-			input = dict(
-				input_type = "text", 
-				allow_multiple = False, 
-				allow_search = False, 
-				label = "", 
-				options = [], 
-				default_rows = 5, 
-			), 
-			menu = dict(
-				click_actions = []
-			), 
-			vlist = dict(
-				onclick_id = None
-			),
-			hlist = dict(
-				onclick_id = None
-			)
-		);
-
+		self.default_params = CoreElementsConfigs()['default_params'];
 	def get_unique_index(self):
 		self.element_index_counter += 1;
 		return str(self.element_index_counter);
@@ -158,10 +165,6 @@ class Frame:
 
 		app.run(port=5018, debug = True);
 
-
-
-		pass
-
 	def reload_frame(self):
 		new_frame = self.frame_lambda(*self.state_args, **self.state_params);
 		self.element_index_counter = 0;
@@ -172,7 +175,7 @@ class Frame:
 
 	def create_input_state(self, inputs):
 		def input_state_creater(frame):
-			if frame['type'] in ['vlist', 'hlist']: 
+			if frame['type'] in ['vlist', 'hlist']:
 				output = {};
 				for i in range(len(frame['children'])):
 					child_input = input_state_creater(frame['children'][i]);
@@ -203,13 +206,13 @@ class Frame:
 			if hasattr(x, "__iter__") and type(x) != str:
 				output=[];
 				for i in x:
-					if type(i) == ElementState or i == None:
+					if type(i) == Element or i == None:
 						output.append(i);
 					else:
 						output += get_children_list(i);
 				return output;
 			else:
-				return [Element("text")(str(x))]
+				return [ElementBuilder("text")(str(x))]
 
 		frame.params["type"] = frame.io_element_type;
 		if frame.io_element_type == 'text':
@@ -292,24 +295,9 @@ class Frame:
 		return frame.params;
 
 
-
-
-
-
-
-
-Vlist = Element("vlist", border_width="0px");
-Vlist1 = Vlist.set_default_params(border_width="0px");
-Hlist = Element("hlist", border_width="0px");
-Button = Element("button");
-Input = Element("input");
-Menu = Element("menu");
-Text = Element("text");
-
-Button1 = Button.set_default_params(theme="black_in_white");
-
-
-
-
-
-
+VList = ElementBuilder("vlist", border_width = "0px");
+HList = ElementBuilder("hlist", border_width="0px");
+Button = ElementBuilder("button", theme = "black_in_white");
+Input = ElementBuilder("input");
+Menu = ElementBuilder("menu");
+Text = ElementBuilder("text");
