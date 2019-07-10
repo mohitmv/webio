@@ -7,13 +7,11 @@ import re, json, os
 def none_default(a, b):
 	return (b if a == None else a);
 
-
 def soft_update(a,b):
 	for i in b:
 		if i not in a:
 			a[i] = b[i];
 	return a;
-
 
 def read_file(fn):
 	fd = open(fn);
@@ -21,13 +19,10 @@ def read_file(fn):
 	fd.close();
 	return output;
 
-
 class Object(dict):
 	def __init__(self, initial_value={}, **kwargs):
 		self.__dict__ = self;
 		dict.__init__(self, initial_value, **kwargs);
-
-
 
 class ElementState:
 	def __init__(self, io_element_type, args, params):
@@ -37,7 +32,6 @@ class ElementState:
 
 	def __repr__(self):
 		return str(("ElementState", self.io_element_type, self.args, self.params));
-
 
 class Element:
 	def __init__(self, io_element_type, **default_params):
@@ -54,13 +48,6 @@ class Element:
 		params1.update(params);
 		return ElementState(self.io_element_type, args, params1);
 
-
-
-class Py2web:
-	def __init__(self):
-		pass
-
-
 class InputState:
 	def __init__(self, input_tree):
 		self.input_tree = input_tree;
@@ -75,8 +62,6 @@ class InputState:
 				self.input_list.append(input_tree[2]);
 				return input_tree[2];
 		self.inputs = flatten_input(input_tree);
-
-
 	def __getitem__(self, i):
 		if type(i) == int:
 			return self.input_list[i];
@@ -89,17 +74,13 @@ class InputState:
 	def __repr__(self):
 		return str(self.inputs);
 
-
-class Bind:
+class Action:
 	def __init__(self, main_lambda, *args, **params):
 		self.main_lambda = main_lambda;
 		self.args = args;
 		self.params = params;
-
 	def __call__(self, *x):
 		return self.main_lambda(*x, *self.args, **self.params);
-
-
 
 class Frame:
 	def __init__(self, frame_lambda, *state_args, **state_params):
@@ -149,17 +130,17 @@ class Frame:
 		self.element_index_counter += 1;
 		return str(self.element_index_counter);
 
-
 	def run(self):
-		app = flask.Flask("py2web");
+		app = flask.Flask("webio");
 
 		@app.route("/v1/start", methods=["GET"])
 		@flask_cors.cross_origin(supports_credentials=True)
 		def v1_start():
-			front_end_dir = os.path.join(os.path.dirname(__file__), '..')
+			front_end_dir = os.path.join(os.path.dirname(__file__), 'front_end')
 			html_page = read_file(front_end_dir + "/index.html");
-			html_page = html_page.replace('<!-- {inlined_css_here:template_arg_0} -->',
-																		read_file(front_end_dir + "/css/main.css"))
+			html_page = html_page.replace(
+				'<!-- {inlined_css_here:template_arg_0} -->',
+				"<style>" + read_file(front_end_dir + "/css/main.css")+"</style>")
 			html_page = html_page.replace('tmp_frame_6703[1]',
 																		json.dumps(self.reload_frame()));
 			return html_page;

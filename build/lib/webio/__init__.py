@@ -156,10 +156,11 @@ class Frame:
 		@app.route("/v1/start", methods=["GET"])
 		@flask_cors.cross_origin(supports_credentials=True)
 		def v1_start():
-			front_end_dir = os.path.join(os.path.dirname(__file__), '..')
+			front_end_dir = os.path.join(os.path.dirname(__file__), 'front_end')
 			html_page = read_file(front_end_dir + "/index.html");
-			html_page = html_page.replace('<!-- {inlined_css_here:template_arg_0} -->',
-																		read_file(front_end_dir + "/css/main.css"))
+			html_page = html_page.replace(
+				'<!-- {inlined_css_here:template_arg_0} -->',
+				"<style>" + read_file(front_end_dir + "/css/main.css")+"</style>")
 			html_page = html_page.replace('tmp_frame_6703[1]',
 																		json.dumps(self.reload_frame()));
 			return html_page;
