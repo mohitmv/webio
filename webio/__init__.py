@@ -49,7 +49,7 @@ def CoreElementsConfigs():
 		),
 		button = dict(
 			label = None, 
-			theme = "default", 
+			theme = "default",
 			icon = None, 
 			onclick_id = None, 
 		), 
