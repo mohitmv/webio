@@ -20,9 +20,9 @@ class FrontEndElement(dict):
   def __lshift__(self, arg):
     self.children.append(arg);
 
-def Text(text_string, **params):
+def Text(*text_strings, **params):
   return FrontEndElement(ElementType.TEXT,
-                         text_string = text_string,
+                         text_strings = text_strings,
                          **params);
 
 def Button(label_string = None, icon = None, **params):
