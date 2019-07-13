@@ -58,37 +58,30 @@ class Action:
     return self.main_lambda(*x, *self.args, **self.params);
 
 class Rendering:
-  def Reset(self):
+  def __init__(self, frame):
     self.element_index_counter = 0;
-    self.registered_onclicks = {}; # onclick_id => lambda 
-    self.registered_resources = {}; # element_id => Data ( Json )
-    self.current_frame = None;
-
-  def NewFrame(self, web_interface_class, args=[], params={}):
-    web_interface_class(*args, **params);
-
-  def EvaluateFramePhase1(self, frame):
-    if frame.element_type == ElementType.TEXT:
-      self.EvaluateText(frame);
-    elif frame.element_type in set([ElementType.VLIST, ElementType.HLIST]):
-      self.EvaluateHListVList(frame);
+    self.registered_actions = {}; # dict(action_id => action_lambda)
+    self.registered_resources = {}; # element_id => Data
+    self.EvaluateFrame(frame);
 
   def EvaluateFrame(self, frame):
     if frame.element_type == ElementType.TEXT:
       self.EvaluateText(frame);
+      self.HandleOnClick(frame);
     elif frame.element_type in set([ElementType.VLIST, ElementType.HLIST]):
       self.EvaluateHListVList(frame);
+      self.HandleOnClick(frame);
+    elif frame.element_type == ElementType.MENU:
+      self.HandleOnClickForMenu(frame);
+    elif frame.element_type == ElementType.BUTTON:
+      self.HandleOnClick(frame);
     elif frame.element_type == ElementType.DROP_DOWN:
-      self.HandleDropDown();
-    else:
-      pass
-    if frame.element_type == ElementType.MENU:
-      HandleOnClickForMenu(frame);
-    elif frame.element_type in set([ElementType.BUTTON,
-                                    ElementType.TEXT,
-                                    ElementType.VLIST,
-                                    ElementType.HLIST]):
-      HandleOnClick(frame);
+      frame.element_id = self.GetUniqueIndex();
+      self.HandleDropDown(frame);
+    elif frame.element_type in set([ElementType.TEXT_INPUT,
+                                    ElementType.TEXT_AREA]):
+      frame.element_id = self.GetUniqueIndex();
+      self.HandleOnChange(frame);
 
   def GetChildrenList(self, x):
     if hasattr(x, "__iter__") and type(x) != str:
@@ -114,11 +107,8 @@ class Rendering:
       if (i != width_or_height) and (i.split("_")[0] == width_or_height):
         frame[width_or_height][int(i.split("_")[1])-1] = frame[i];
         frame.pop(i);
-    if frame.get("onclick") != None:
-      unique_id = frame["_unique_id"] = self.GetUniqueIndex();
-      self.registered_onclicks[unique_id] = frame.onclick;
     frame.update(
-      children = list(self.EvaluateFramePhase1(i) for i in children)
+      children = list(self.EvaluateFrame(i) for i in children)
     );
     return frame;
 
@@ -128,23 +118,19 @@ class Rendering:
     return frame;
 
   def HandleOnClickForMenu(self, frame):
-    if frame.element_type == ElementType.MENU:
-      for i in range(len(frame.click_actions)):
-        onclick_lambda = frame.click_actions[i][0];
-        if onclick_lambda != None:
-          onclick_id = self.GetUniqueIndex();
-          self.registered_onclicks[onclick_id] = onclick_lambda;
-          frame.click_actions[i] = [onclick_id, frame.click_actions[i][1]];
+    for i in range(len(frame.click_actions)):
+      onclick_lambda = frame.click_actions[i][0];
+      if onclick_lambda != None:
+        onclick_id = self.GetUniqueIndex();
+        self.registered_onclicks[onclick_id] = onclick_lambda;
+        frame.click_actions[i] = [onclick_id, frame.click_actions[i][1]];
+    return frame;
 
   def HandleOnClick(self, frame):
-    if (frame.element_type in set([ElementType.BUTTON,
-                                   ElementType.TEXT,
-                                   ElementType.VLIST,
-                                   ElementType.HLIST])
-          and frame.get("onclick") != None):
-      frame.onclick_id = button_index = self.GetUniqueIndex();
-      self.registered_onclicks[button_index] = frame.onclick;
-      frame.pop('onclick');
+    if (frame.get("onclick") != None):
+      frame.element_id = frame.onclick_id = self.GetUniqueIndex();
+      self.registered_onclicks[frame.onclick_id] = frame.onclick;
+    return frame;
 
   def HandleDropDown():
     option_values = list((i[0] if type(i) == tuple else i) for i in frame.options)
@@ -164,12 +150,21 @@ class Rendering:
           frame.value_integer = index;
     return frame;
 
+# def Serve(cls, args=[], params={}):
 
-def Serve(cls, args=[], params={}):
-  cls();
-  def run(self):
+
+def FrameServer():
+  def __init__(self, cls, args=[], params={}):
+    self.website_instance = cls(*args, **params).Render();
+
+  def ReloadFrame(self):
+    self.current_frame = self.website_instance.Render();
+    return self.current_frame;
+
+  def Serve(self):
+
+  def Run(self):
     app = flask.Flask("webio");
-
     @app.route("/index", methods = ["GET"])
     @flask_cors.cross_origin(supports_credentials = True)
     def v1_start():
