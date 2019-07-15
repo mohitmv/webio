@@ -1,5 +1,4 @@
 from enum import IntEnum
-import webio.utils
 
 class ElementType(IntEnum):
   TEXT = 1
@@ -21,7 +20,6 @@ class FrontEndElement(dict):
 
   def __lshift__(self, arg):
     self.children.append(arg);
-    return self;
 
   def Export(self):
     def ExportHelper(element):
@@ -42,7 +40,7 @@ class FrontEndElement(dict):
 
 def Text(*text_strings, **params):
   return FrontEndElement(ElementType.TEXT,
-                         text_strings = list(text_strings),
+                         text_strings = text_strings,
                          **params);
 
 def Button(label_string = None, icon = None, **params):
@@ -101,12 +99,12 @@ def Icon(icon, **params):
 
 def HList(*children, **params):
   return FrontEndElement(ElementType.HLIST,
-                         children = list(children),
+                         children = children,
                          **params);
 
 def VList(*children, **params):
   return FrontEndElement(ElementType.VLIST,
-                         children = list(children),
+                         children = children,
                          **params);
 
 def CheckBox(label_string, **params):

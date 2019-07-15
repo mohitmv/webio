@@ -1,6 +1,9 @@
 README.md
 setup.py
 webio/__init__.py
+webio/elements.py
+webio/utils.py
+webio/v1.py
 webio.egg-info/PKG-INFO
 webio.egg-info/SOURCES.txt
 webio.egg-info/dependency_links.txt
