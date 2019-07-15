@@ -1,4 +1,5 @@
 from enum import IntEnum
+import webio.utils as utils
 
 class ElementType(IntEnum):
   TEXT = 1
@@ -12,6 +13,8 @@ class ElementType(IntEnum):
   HLIST = 9
   VLIST = 10
   CHECK_BOX = 11
+  IMAGE = 12
+  CHECK_BOX_LIST = 13
 
 class FrontEndElement(dict):
   def __init__(self, element_type, **kwargs):
@@ -20,33 +23,41 @@ class FrontEndElement(dict):
 
   def __lshift__(self, arg):
     self.children.append(arg);
+    return self;
 
   def Export(self):
     def ExportHelper(element):
       output = utils.Object();
-      if element.element_type in set([ElementType.HLIST, ElementType.VLIST]):
+      if element.element_type in set([ElementType.HLIST,
+                                      ElementType.VLIST,
+                                      ElementType.TEXT]):
         output.children = list(ExportHelper(i) for i in element.children);
       output.element_type = element.element_type.__str__().split(".")[1];
-      if (element.element_type != ElementType.DROP_DOWN):
-        output.value = element.value;
-      for i in ["text_string", "disabled", "icon",
+      considered_fields = ["text_string", "disabled", "icon",
                 "label_string", "onclick_id", "onchange_id", "options",
                 "color_theme", "allow_multiple", "click_actions", "font_size",
-                "margin", "value_integer", "value_integer_list"]:
+                "margin", "value_integer", "value_integer_list"];
+      if (element.element_type != ElementType.DROP_DOWN):
+        considered_fields.append("value");
+      for i in considered_fields:
         if i in element:
           output[i] = element[i];
       return output;
     return ExportHelper(self);
 
-def Text(*text_strings, **params):
+def Text(*children, **params):
   return FrontEndElement(ElementType.TEXT,
-                         text_strings = text_strings,
+                         children = list(children),
                          **params);
 
-def Button(label_string = None, icon = None, **params):
+def Image(src, **params):
+  return FrontEndElement(ElementType.IMAGE,
+                         src = src,
+                         **params);
+
+def Button(label_string = None, **params):
   return FrontEndElement(ElementType.BUTTON,
                          label_string = label_string,
-                         icon = icon,
                          disabled = False,
                          # default | back_in_white | blue
                          color_theme = "default",
@@ -76,6 +87,15 @@ def DropDown(label_string, **params):
                          allow_multiple = False,
                          **params);
 
+def CheckBoxList(label_string, **params):
+  return FrontEndElement(ElementType.CHECK_BOX_LIST,
+                         label_string = label_string,
+                         disabled = False,
+                         allow_multiple = False,
+                         options = [],
+                         value = None,
+                         **params);
+
 def Toggle(label_string, **params):
   return FrontEndElement(ElementType.TOGGLE,
                          label_string = label_string,
@@ -99,12 +119,12 @@ def Icon(icon, **params):
 
 def HList(*children, **params):
   return FrontEndElement(ElementType.HLIST,
-                         children = children,
+                         children = list(children),
                          **params);
 
 def VList(*children, **params):
   return FrontEndElement(ElementType.VLIST,
-                         children = children,
+                         children = list(children),
                          **params);
 
 def CheckBox(label_string, **params):
@@ -112,6 +132,7 @@ def CheckBox(label_string, **params):
                          label_string = label_string,
                          value = False,
                          **params);
+
 
 
 ############# Composite Elements ###########################

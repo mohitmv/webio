@@ -69,25 +69,24 @@
 			event.stopPropagation();
 		};
 
-
 		var get_html = function(design_object) { //assert - design_object is valid.
-
 			var onclick_code = function(onclick_id) {
-				return (onclick_id===null ? '': 'onclick="py2web.api_on_click(\''+onclick_id+'\', event)" ');
-			}
-
+				return (onclick_id===null ? '': ' onclick="py2web.action_api(\''+onclick_id+'\', event)" ');
+			};
+			var onchange_code = function(onchange_id) {
+				return (onchange_id===null ? '': ' onchange="py2web.action_api(\''+onchange_id+'\', event)" ');
+			};
 			var style_code = function(design_object, attrs) {//assert ( attrs <= style_attr_mapping.keys() )
 				var style_attr_mapping = {
-					valign: "vertical-align", 
-					padding: "padding", 
-					bgcolor: "background-color", 
-					border_width: "border-width", 
-					border_color: "border-color", 
-					font_size: "font-size", 
-					color: "color", 
+					valign: "vertical-align",
+					padding: "padding",
+					bgcolor: "background-color",
+					border_width: "border-width",
+					border_color: "border-color",
+					font_size: "font-size",
+					color: "color",
 					line_height: "line-height"
 				};
-
 				var output = "";
 				for(var i in attrs) {
 					if(design_object[attrs[i]]) {
@@ -95,10 +94,7 @@
 					}
 				}
 				return output;
-			}
-
-
-
+			};
 			var get_text_io_helper = function(design_object) {
 				var tag = (design_object.link || design_object.onclick_id) ? "a": "span";
 				var font_style_css = "";
@@ -112,7 +108,15 @@
 						font_style_css += font_styles[design_object.font_style[i]];
 					}
 				}
-				var output = '<'+tag+' '+(design_object.link ? 'href="'+design_object.link+'" ': '')+' '+onclick_code(design_object.onclick_id)+' style="'+style_code(design_object, ["font_size", "color", "line_height"])+font_style_css+'"  >'+design_object.text;
+				var output = '<' + tag + ' ';
+				if (design_object.link) {
+					output += 'href="'+design_object.link+'" ';
+				}
+				output += onclick_code(design_object.onclick_id);
+				output += onchange_code(design_object.onchange_id);
+				output += ' style="' + style_code(design_object, ["font_size", "color", "line_height"])
+														 + font_style_css + '"  >';
+				output += (design_object.text_string || "");
 				for(var i in design_object.children) {
 					output += get_text_io_helper(design_object.children[i]);
 				}
@@ -123,69 +127,66 @@
 			var inputs_objects = thiso.inputs_objects = {};
 
 			var get_html_helper = function(design_object) {
-				if (design_object.type === "null") {
+				if (design_object.element_type === "NONE") {
 					return "";
-				} else if(design_object.type === "button") {
-					if(design_object.label === null) {
+				} else if(design_object.element_type === "BUTTON") {
+					if(design_object.label_string === null) {
 						return '<i '+onclick_code(design_object.onclick_id)+' class="my-material-icon-button" >'+design_object.icon+'</i>';
 					} else {
 						return '<button class="btn '+(design_object.theme === "black_in_white" ? "btn-default": "btn-primary")+'" '+onclick_code(design_object.onclick_id)+' >'+design_object["label"]+(design_object.icon === null ? '': '<i class="my-material-icons" >'+design_object.icon+'</i>')+ '</button>';
 					}
-				} else if (design_object.type === "image") {
+				} else if (design_object.element_type === "IMAGE") {
 					return '<img src="'+design_object.src+'" width="'+design_object.width+'" height="'+design_object.height+'" style="opacity: '+design_object.opacity+'; '+(design_object.rounded ? 'border-radius: 50%;': '')+' " >';
-				} else if (design_object.type === "text") {
+				} else if (design_object.element_type === "TEXT") {
 					return '<div class="text_div"  >'+get_text_io_helper(design_object)+'</div>';
-				} else if (design_object.type === "icon") {
+				} else if (design_object.element_type === "ICON") {
 					return '<i class="my-material-icons" style="font-size: '+design_object.font_size+'" >'+design_object.icon+'</i>';
-				} else if (design_object.type === "input") {
-					inputs_objects[design_object.id] = design_object;
-					if(design_object.input_type === "text") {
-						return '<div class="input-div" ><label>'+design_object.label+'</label><br><input id="io_element_'+design_object.id+'" type="text" class="input-input" placeholder="---" ></div>';
-					} else if(design_object.input_type === "textarea") {
-						return '<div class="input-div" ><label>'+design_object.label+'</label><br><textarea class="input-input" id="io_element_'+design_object.id+'" placeholder="---" rows="'+design_object.default_rows+'" ></textarea></div>';
-					} else if(design_object.input_type === "dropdown") {
-						var output = '<div class="input-div-select" ><label>'+design_object.label+'</label>'+(design_object.label === "" ? '':'<br>')+'<select class="input-input" id="io_element_'+design_object.id+'" '+(design_object.allow_multiple?'multiple':'')+' >';
-						for(var i=0; i<design_object.options.length; i++) {
-							var is_selected = design_object.allow_multiple ? (design_object.default_value.indexOf(i+1) != -1) : (i+1 == design_object.default_value);
-							output += '<option value="'+(i+1)+'" '+(is_selected ? 'selected':'')+' >'+design_object.options[i]+'</option>';
-						}
-						output += '</select></div>';
-						return output;
-					} else if(design_object.input_type === "checkbox") {
-						var output = '<div class="input-div" id="io_element_'+design_object.id+'" >'+design_object.label;
-						for(var i=0; i<design_object.options.length; i++) {
-							var is_selected = design_object.allow_multiple ? (design_object.default_value.indexOf(i+1) != -1) : (i+1 == design_object.default_value);
-							output += '<br><label><input name="radio_'+design_object.id+'" type="'+(design_object.allow_multiple ? 'checkbox':'radio')+'" '+(is_selected ? 'checked': '')+' >'+design_object.options[i]+'</label>';
-						}
-						output += '</div>';
-						return output;
-					} else {
-						return "";
+				} else if (design_object.element_type === "TEXT_INPUT") {
+					inputs_objects[design_object.element_id] = design_object;
+				 	return '<div class="input-div" ><label>'+design_object.label_string+'</label><br><input id="io_element_'+design_object.element_id+'" type="text" class="input-input" placeholder="---" ></div>';
+			  } else if (design_object.element_type === "TEXT_AREA") {
+					inputs_objects[design_object.element_id] = design_object;
+					return '<div class="input-div" ><label>'+design_object.label_string+'</label><br><textarea class="input-input" id="io_element_'+design_object.element_id+'" placeholder="---" rows="'+design_object.default_rows+'" ></textarea></div>';
+			  } else if (design_object.element_type === "DROP_DOWN") {
+					inputs_objects[design_object.element_id] = design_object;
+					var output = '<div class="input-div-select" ><label>'+design_object.label_string+'</label>'+(design_object.label_string === "" ? '':'<br>')+'<select class="input-input" id="io_element_'+design_object.element_id+'" '+(design_object.allow_multiple?'multiple':'')+' >';
+					for(var i=0; i<design_object.options.length; i++) {
+						var is_selected = design_object.allow_multiple ? (design_object.value.indexOf(i) != -1) : (i == design_object.value);
+						output += '<option value="'+(i)+'" '+(is_selected ? 'selected':'')+' >'+design_object.options[i]+'</option>';
 					}
-
-				} else if(design_object.type === "menu") {
+					output += '</select></div>';
+					return output;
+			  } else if(design_object.element_type === "CHECK_BOX_LIST") {
+					inputs_objects[design_object.element_id] = design_object;
+					var output = '<div class="input-div" id="io_element_'+design_object.element_id+'" >'+design_object.label_string;
+					for(var i = 0; i < design_object.options.length; i++) {
+						var is_selected = design_object.allow_multiple ? (design_object.value.indexOf(i) != -1) : (i == design_object.value);
+						output += '<br><label><input name="radio_'+design_object.element_id+'" type="'+(design_object.allow_multiple ? 'checkbox':'radio')+'" '+(is_selected ? 'checked': '')+' >'+design_object.options[i]+'</label>';
+					}
+					output += '</div>';
+					return output;
+				} else if(design_object.element_type === "MENU") {
 					var output = '<span><i class="my-material-icon-button" onclick="py2web.click_on_menu(this, event);" >'+design_object.icon+'</i><div class="dropdown_content_wrapper" ><div class="dropdown_content" >';
-					for(var i=0; i<design_object.click_actions.length; i++) {
+					for(var i = 0; i < design_object.click_actions.length; i++) {
 						output += '<div class="dropdown_elements" '+onclick_code(design_object.click_actions[i][0])+' >'+design_object.click_actions[i][1]+'</div>';
 					}
 					output += '</div></div></span>';
 					return output;
-				} else if(design_object.type === "hlist" || design_object.type == "vlist") {
-					var output = '<div '+onclick_code(design_object.onclick_id)+' class="'+(design_object.type === "vlist" ? "vertical_table": "table")+ " "+(design_object.onclick_id === null ?'':'hover_cell')+'" '+(design_object.align  ? 'align="'+design_object.align+'"': '')+' style="'+style_code(design_object, ["bgcolor"])+'" >';
+				} else if(design_object.element_type === "HLIST" || design_object.element_type == "VLIST") {
+					var output = '<div '+onclick_code(design_object.onclick_id)+' class="'+(design_object.element_type === "VLIST" ? "vertical_table": "table")+ " "+(design_object.onclick_id === null ?'':'hover_cell')+'" '+(design_object.align  ? 'align="'+design_object.align+'"': '')+' style="'+style_code(design_object, ["bgcolor"])+'" >';
 					var cell_style = style_code(design_object, ["valign", "border_width", "border_color", "padding"]);
-					for(var i=0; i<design_object.children.length; i++) {
-						output += '<div class="'+(design_object.type === 'vlist' ? 'vertical_table_cell':'table_cell')+'" style="'+cell_style+(design_object.type == 'vlist' ? 'height': 'width')+':'+design_object[design_object.type === 'vlist' ? 'height' : 'width'][i]+';" >'+get_html_helper(design_object.children[i])+'</div>';
+					for(var i = 0; i < design_object.children.length; i++) {
+						output += '<div class="'+(design_object.element_type === 'VLIST' ? 'vertical_table_cell':'table_cell')+'" style="'+cell_style+(design_object.element_type == 'VLIST' ? 'height': 'width')+':'+design_object[design_object.element_type === 'VLIST' ? 'height' : 'width'][i]+';" >'+get_html_helper(design_object.children[i])+'</div>';
 					}
 					output += '</div>';
 					return output;
 				} else {
+					console.log("Handle the " + design_object.element_type + " element");
 					return null;
 				}
 			};
 			return get_html_helper(design_object);
-
 		};
-
 
 		var api_url = "http://127.0.0.1:5018/v1/api";
 		var api_call = function(url, data, callback) {
@@ -209,8 +210,8 @@
 		this.set_default_values = function() {
 			for(var i in thiso.inputs_objects) {
 				var io = thiso.inputs_objects[i];
-				if (io.input_type === 'text' || io.input_type === 'textarea') {
-					document.getElementById("io_element_"+io.id).value = io.default_value;
+				if (io.element_type === 'TEXT_INPUT' || io.element_type === 'TEXT_AREA') {
+					document.getElementById("io_element_"+io.element_id).value = io.value;
 				}
 			}
 		}
@@ -219,35 +220,36 @@
 			var output = {};
 			for(var i in thiso.inputs_objects) {
 				var io = thiso.inputs_objects[i];
-				var dom_elm = document.getElementById("io_element_"+io.id);
-				if (io.input_type === 'text' || io.input_type === 'textarea' || (io.input_type === 'dropdown' && !io.allow_multiple)) {
-					output[io.id] = dom_elm.value;
-					if(io.input_type == "dropdown") {
-						output[io.id] = parseInt(output[io.id]);
+				var dom_elm = document.getElementById("io_element_"+io.element_id);
+				if (io.element_type === 'TEXT_INPUT' ||
+					  io.element_type === 'TEXT_AREA' ||
+					  (io.input_type === 'DROP_DOWN' && !io.allow_multiple)) {
+					output[io.element_type] = dom_elm.value;
+					if(io.element_type == "DROP_DOWN") {
+						output[io.element_id] = parseInt(output[io.element_id]);
 					}
-				} else if(io.input_type === "dropdown" && io.allow_multiple) {
+				} else if(io.element_type === "DROP_DOWN" && io.allow_multiple) {
 					var selected = [];
 					for(var i=0; i<dom_elm.options.length; i++) {
-						dom_elm.options[i].selected ? selected.push(i+1):null;
+						dom_elm.options[i].selected ? selected.push(i):null;
 					}
-					output[io.id] = selected;
+					output[io.element_id] = selected;
 				} else if(io.input_type === "checkbox") {
-					var radio_buttons = document.getElementsByName("radio_"+io.id);
+					var radio_buttons = document.getElementsByName("radio_"+io.element_id);
 					var selected = [];
 					for(var i=0; i<radio_buttons.length; i++) {
-						radio_buttons[i].checked ? selected.push(i+1):null;
+						radio_buttons[i].checked ? selected.push(i):null;
 					}
 					output[io.id] = io.allow_multiple ? selected: selected[0];
 				}
-
 			}
 			return output;
 		};
 
-		this.api_on_click = function(onclick_id, event) {
+		this.action_api = function(action_id, event) {
 			thiso.hide_all_dropdowns();
-			console.log("Something got clicked, onclick = "+onclick_id);
-			api_call(api_url, {onclick_id: onclick_id, inputs: thiso.get_input_values()}, function(d) {
+			console.log("Triggered action: " + action_id);
+			api_call(api_url, {action_id: action_id, inputs: thiso.get_input_values()}, function(d) {
 				render_frame(JSON.parse(d));
 			});
 			event.stopPropagation();
@@ -256,10 +258,9 @@
 		this.window_onclick = function() {
 			thiso.hide_all_dropdowns();
 		}
-
 	})();
 	var tmp_frame_6703 = [null, {
-		"type": "button",
+		"element_type": "button",
 		"id": "6",
 		"label": "Default Button",
 		"theme": "default",
@@ -268,7 +269,6 @@
 	}];
 	var initial_frame = tmp_frame_6703[1];
 	py2web.render_frame(initial_frame);
-	py2web.render_frame
 	window.onclick = function(event) {
 		py2web.window_onclick();
 	}

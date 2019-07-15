@@ -1,4 +1,4 @@
-import webio, json
+import json, webio
 from webio import HList, VList, Text, Button
 
 class TestWebsite:
@@ -16,16 +16,7 @@ class TestWebsite:
       wout << HList(Button("Row Button" + str(i)) for i in range(2));
     return wout;
 
-frame_server = webio.FrameServer(TestWebsite);
+# frame_server = webio.FrameServer(TestWebsite);
 
-first_frame = frame_server.ReloadFrame();
-
-second_frame = frame_server.HandleEvent(dict(action_id = 1));
-
-assert(first_frame != second_frame);
-assert(len(json.dumps(first_frame)) < len(json.dumps(second_frame)));
-assert(json.dumps(first_frame).count("Row Button") == 4);
-assert(json.dumps(second_frame).count("Row Button") == 6);
-
-print("Basic Test Passed");
+webio.Serve(TestWebsite, port = 5001);
 

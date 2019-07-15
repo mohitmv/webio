@@ -1,6 +1,10 @@
 
 import flask, flask_cors, re, json, os, webio.elements
 
+from webio.elements import ElementType, FrontEndElement, HList, VList, Button,\
+													 Text
+
+
 def none_default(a, b):
   return (b if a == None else a);
 
@@ -34,7 +38,11 @@ class Rendering:
     self.element_index_counter = 0;
     self.registered_actions = {}; # dict(action_id => action_lambda)
     self.registered_resources = {}; # element_id => Data
-    self.EvaluateFrame(frame);
+    self.frame = self.EvaluateFrame(frame);
+
+  def GetUniqueIndex(self):
+  	self.element_index_counter += 1;
+  	return self.element_index_counter;
 
   def EvaluateFrame(self, frame):
     if frame.element_type == ElementType.TEXT:
@@ -45,7 +53,8 @@ class Rendering:
       self.HandleOnClick(frame);
     elif frame.element_type == ElementType.MENU:
       self.HandleOnClickForMenu(frame);
-    elif frame.element_type == ElementType.BUTTON:
+    elif frame.element_type in set([ElementType.BUTTON,
+                                    ElementType.IMAGE]):
       self.HandleOnClick(frame);
     elif frame.element_type == ElementType.DROP_DOWN:
       frame.element_id = self.GetUniqueIndex();
@@ -54,6 +63,7 @@ class Rendering:
                                     ElementType.TEXT_AREA]):
       frame.element_id = self.GetUniqueIndex();
       self.HandleOnChange(frame);
+    return frame;
 
   def GetChildrenList(self, x):
     if hasattr(x, "__iter__") and type(x) != str:
@@ -64,7 +74,7 @@ class Rendering:
         elif isinstance(i, FrontEndElement):
           output.append(i);
         else:
-          output += GetChildrenList(i);
+          output += self.GetChildrenList(i);
       return output;
     else:
       return [elements.Text(str(x))];
@@ -72,10 +82,10 @@ class Rendering:
   def EvaluateHListVList(self, frame):
     width_or_height = ("width" if frame.element_type == ElementType.HLIST
                                else 'height');
-    children = GetChildrenList(frame.children);
+    children = self.GetChildrenList(frame.children);
     if width_or_height not in frame:
       frame[width_or_height] = ["auto"]*len(children);
-    for i in frame.keys():
+    for i in list(frame.keys()):
       if (i != width_or_height) and (i.split("_")[0] == width_or_height):
         frame[width_or_height][int(i.split("_")[1])-1] = frame[i];
         frame.pop(i);
@@ -85,8 +95,14 @@ class Rendering:
     return frame;
 
   def EvaluateText(self, frame):
-    frame.text_string = "<br>".join(frame.text_strings);
-    frame.pop("text_strings");
+    if len(frame.children) == 1 and type(frame.children[0]) == str:
+      frame.text_string = frame.children[0];
+      frame.children = [];
+    else:
+      children = self.GetChildrenList(frame.children);
+      assert (sum(((i.element_type == ElementType.TEXT) for i in children))
+                 == len(children));
+      frame.children = list(self.EvaluateFrame(i) for i in children);
     return frame;
 
   def HandleOnClickForMenu(self, frame):
@@ -94,14 +110,18 @@ class Rendering:
       onclick_lambda = frame.click_actions[i][0];
       if onclick_lambda != None:
         onclick_id = self.GetUniqueIndex();
-        self.registered_onclicks[onclick_id] = onclick_lambda;
+        self.registered_actions[onclick_id] = onclick_lambda;
         frame.click_actions[i] = [onclick_id, frame.click_actions[i][1]];
     return frame;
+
+  def HandleOnChange(self, frame):
+    assert(False, "ToDo(Mohit): Implement HandleOnChange");
+
 
   def HandleOnClick(self, frame):
     if (frame.get("onclick") != None):
       frame.element_id = frame.onclick_id = self.GetUniqueIndex();
-      self.registered_onclicks[frame.onclick_id] = frame.onclick;
+      self.registered_actions[frame.onclick_id] = frame.onclick;
     return frame;
 
   def HandleDropDown():
@@ -122,13 +142,19 @@ class Rendering:
           frame.value_integer = index;
     return frame;
 
-def FrameServer():
+class FrameServer:
   def __init__(self, cls, args=[], params={}):
     self.website_instance = cls(*args, **params);
 
   def ReloadFrame(self):
-    self.current_frame = self.website_instance.Render();
-    return self.current_frame.Export();
+    self.current_frame = Rendering(self.website_instance.Render());
+    return self.current_frame.frame.Export();
+
+  def HandleEvent(self, input_data):
+  	if input_data.get("action_id") in self.current_frame.registered_actions:
+  		self.website_instance.inputs = None;
+  		self.current_frame.registered_actions[input_data["action_id"]]();
+  		return self.ReloadFrame();
 
   def Run(self):
     app = flask.Flask("webio");
@@ -146,18 +172,21 @@ def FrameServer():
 
     @app.route("/v1/api", methods=["POST"])
     def v1_api():
-      input_data = flask.request.json;
-      if input_data.get("onclick_id") in self.registered_onclicks:
-        frame = self.create_input_state(input_data['inputs']);
-        frame.__dict__.update(self.state_params);
-        frame.args = self.state_args;
-        frame.params = self.state_params;
-        self.registered_onclicks[input_data["onclick_id"]](frame);
-      return flask.Response(response = json.dumps(self.ReloadFrame()),
-                            mimetype = "application/json");
+      return flask.Response(
+      	response = json.dumps(self.HandleEvent(flask.request.json)),
+      	mimetype = "application/json"
+      );
+
     app.run(port=5018, debug = True);
 
 
 def Serve(cls, args=[], params={}):
   return FrameServer(cls, args, params).Run();
+
+
+
+
+
+
+
 

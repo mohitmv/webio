@@ -53,7 +53,8 @@ class Rendering:
       self.HandleOnClick(frame);
     elif frame.element_type == ElementType.MENU:
       self.HandleOnClickForMenu(frame);
-    elif frame.element_type == ElementType.BUTTON:
+    elif frame.element_type in set([ElementType.BUTTON,
+                                    ElementType.IMAGE]):
       self.HandleOnClick(frame);
     elif frame.element_type == ElementType.DROP_DOWN:
       frame.element_id = self.GetUniqueIndex();
@@ -84,7 +85,7 @@ class Rendering:
     children = self.GetChildrenList(frame.children);
     if width_or_height not in frame:
       frame[width_or_height] = ["auto"]*len(children);
-    for i in frame.keys():
+    for i in list(frame.keys()):
       if (i != width_or_height) and (i.split("_")[0] == width_or_height):
         frame[width_or_height][int(i.split("_")[1])-1] = frame[i];
         frame.pop(i);
@@ -94,8 +95,14 @@ class Rendering:
     return frame;
 
   def EvaluateText(self, frame):
-    frame.text_string = "<br>".join(frame.text_strings);
-    frame.pop("text_strings");
+    if len(frame.children) == 1 and type(frame.children[0]) == str:
+      frame.text_string = frame.children[0];
+      frame.children = [];
+    else:
+      children = self.GetChildrenList(frame.children);
+      assert (sum(((i.element_type == ElementType.TEXT) for i in children))
+                 == len(children));
+      frame.children = list(self.EvaluateFrame(i) for i in children);
     return frame;
 
   def HandleOnClickForMenu(self, frame):
@@ -106,6 +113,10 @@ class Rendering:
         self.registered_actions[onclick_id] = onclick_lambda;
         frame.click_actions[i] = [onclick_id, frame.click_actions[i][1]];
     return frame;
+
+  def HandleOnChange(self, frame):
+    assert(False, "ToDo(Mohit): Implement HandleOnChange");
+
 
   def HandleOnClick(self, frame):
     if (frame.get("onclick") != None):
@@ -132,11 +143,33 @@ class Rendering:
     return frame;
 
 class FrameServer:
-  def __init__(self, cls, args=[], params={}):
-    self.website_instance = cls(*args, **params);
+  class ErrorCodes(IntEnum):
+    CLIENT_INSTANCE_TIMEOUT = 1
+    INCORRECT_SERVER_INSTANCE = 2
+    INTERNAL_ERROR = 3
 
-  def ReloadFrame(self):
-    self.current_frame = Rendering(self.website_instance.Render());
+  def __init__(self, cls, args=[], params={}):
+    self.cls = cls;
+    self.args = args;
+    self.params = params;
+    self.client_instances = dict();
+    self.client_instance_id_counter = 1;
+    self.server_instance_id = GetEpochTimenow()*10000 + random.randint(1, 1000);
+
+  def CreateClientInstance(self):
+    instance_id = self.client_instance_id_counter;
+    self.client_instance_id_counter += 1;
+    self.client_instances[instance_id] = dict(
+      client_instance = self.cls(*self.args, **self.params),
+      instance_id = instance_id,
+      current_frame = None,
+      recent_active_timestamp = GetEpochTimenow()
+    );
+    return instance_id;
+
+  def ReloadFrame(self, instance_id):
+    raw_rendered = self.client_instances[instance_id].client_instance.Render();
+    internal_rendered_object = Rendering(raw_rendered);
     return self.current_frame.frame.Export();
 
   def HandleEvent(self, input_data):
@@ -145,11 +178,12 @@ class FrameServer:
   		self.current_frame.registered_actions[input_data["action_id"]]();
   		return self.ReloadFrame();
 
-  def Run(self):
+  def Run(self, port):
     app = flask.Flask("webio");
     @app.route("/", methods = ["GET"])
     @flask_cors.cross_origin(supports_credentials = True)
     def v1_start():
+      instance_id = CreateInstance();
       front_end_dir = os.path.join(os.path.dirname(__file__), 'front_end')
       html_page = read_file(front_end_dir + "/index.html");
       html_page = html_page.replace(
@@ -165,12 +199,11 @@ class FrameServer:
       	response = json.dumps(self.HandleEvent(flask.request.json)),
       	mimetype = "application/json"
       );
+    app.run(port = port, debug = True);
 
-    app.run(port=5018, debug = True);
 
-
-def Serve(cls, args=[], params={}):
-  return FrameServer(cls, args, params).Run();
+def Serve(cls, args=[], params={}, port = 5018):
+  return FrameServer(cls, args, params).Run(port = port);
 
 
 
