@@ -251,8 +251,13 @@
 		this.action_api = function(action_id, event) {
 			thiso.hide_all_dropdowns();
 			console.log("Triggered action: " + action_id);
-			api_call(api_url, {action_id: action_id, inputs: thiso.get_input_values()}, function(d) {
-				render_frame(JSON.parse(d));
+			api_call(api_url, {action_id: parseInt(action_id),
+												 inputs: thiso.get_input_values(),
+												 client_instance_id: initial_frame_info.client_instance_id,
+												 server_instance_id: initial_frame_info.server_instance_id
+												}, function(d) {
+				var json_response = JSON.parse(d);
+				render_frame(json_response.data);
 			});
 			event.stopPropagation();
 		}
@@ -270,8 +275,8 @@
 		"onclick_id": null,
 	}];
 	// tmp_frame_6703[0] = {"children": [{"children": [{"children": [{"children": [], "element_type": "TEXT", "text_string": "Mohit"}, {"children": [], "element_type": "TEXT", "text_string": "  "}, {"children": [], "element_type": "TEXT", "text_string": "Saini", "onclick_id": 1}], "element_type": "TEXT", "onclick_id": 2}], "element_type": "VLIST", "onclick_id": 3}, {"children": [{"children": [{"children": [], "element_type": "TEXT", "text_string": "Mohit"}, {"children": [], "element_type": "TEXT", "text_string": "  "}, {"children": [], "element_type": "TEXT", "text_string": "Saini", "onclick_id": 4}], "element_type": "TEXT", "onclick_id": 5}], "element_type": "VLIST", "onclick_id": 6}], "element_type": "HLIST"};
-	var initial_frame = tmp_frame_6703[1];
-	py2web.render_frame(initial_frame);
+	var initial_frame_info = tmp_frame_6703[1];
+	py2web.render_frame(initial_frame_info.data);
 	window.onclick = function(event) {
 		py2web.window_onclick();
 	}
