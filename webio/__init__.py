@@ -4,6 +4,9 @@ import flask, flask_cors, re, json, os, webio.elements
 from webio.elements import ElementType, FrontEndElement, HList, VList, Button,\
 													 Text
 
+import webio.utils
+
+from enum import IntEnum
 
 def none_default(a, b):
   return (b if a == None else a);
@@ -154,7 +157,7 @@ class FrameServer:
     self.params = params;
     self.client_instances = dict();
     self.client_instance_id_counter = 1;
-    self.server_instance_id = GetEpochTimenow()*10000 + random.randint(1, 1000);
+    self.server_instance_id = utils.GetEpochTimenow()*10000 + random.randint(1, 1000);
 
   def CreateClientInstance(self):
     instance_id = self.client_instance_id_counter;
@@ -163,14 +166,15 @@ class FrameServer:
       client_instance = self.cls(*self.args, **self.params),
       instance_id = instance_id,
       current_frame = None,
-      recent_active_timestamp = GetEpochTimenow()
+      recent_active_timestamp = utils.GetEpochTimenow()
     );
     return instance_id;
 
   def ReloadFrame(self, instance_id):
-    raw_rendered = self.client_instances[instance_id].client_instance.Render();
-    internal_rendered_object = Rendering(raw_rendered);
-    return self.current_frame.frame.Export();
+  	instance = self.client_instances[instance_id];
+    raw_rendered = instance.client_instance.Render();
+    instance.current_frame = Rendering(raw_rendered);
+    return instance.current_frame.Export();
 
   def HandleEvent(self, input_data):
   	if input_data.get("action_id") in self.current_frame.registered_actions:
