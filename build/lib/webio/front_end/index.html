@@ -9,7 +9,7 @@
 <body>
 <div id="main" style="border: solid #ccc 0px;" ></div>
 <script type="text/javascript">
-	var py2web = new (function(){
+	var py2web = new (function() {
 		var thiso = this;
 		this.opened_menu = null;//replaced by dropdown-DOM of opened menu.
 		this.hide_all_dropdowns = function() {
@@ -71,10 +71,10 @@
 
 		var get_html = function(design_object) { //assert - design_object is valid.
 			var onclick_code = function(onclick_id) {
-				return (onclick_id===null ? '': ' onclick="py2web.action_api(\''+onclick_id+'\', event)" ');
+				return (onclick_id === undefined ? '': ' onclick="py2web.action_api(\''+onclick_id+'\', event)" ');
 			};
 			var onchange_code = function(onchange_id) {
-				return (onchange_id===null ? '': ' onchange="py2web.action_api(\''+onchange_id+'\', event)" ');
+				return (onchange_id === undefined ? '': ' onchange="py2web.action_api(\''+onchange_id+'\', event)" ');
 			};
 			var style_code = function(design_object, attrs) {//assert ( attrs <= style_attr_mapping.keys() )
 				var style_attr_mapping = {
@@ -127,13 +127,15 @@
 			var inputs_objects = thiso.inputs_objects = {};
 
 			var get_html_helper = function(design_object) {
-				if (design_object.element_type === "NONE") {
+				if (design_object == null) {
+					alert("Server Error");
 					return "";
 				} else if(design_object.element_type === "BUTTON") {
 					if(design_object.label_string === null) {
 						return '<i '+onclick_code(design_object.onclick_id)+' class="my-material-icon-button" >'+design_object.icon+'</i>';
 					} else {
-						return '<button class="btn '+(design_object.theme === "black_in_white" ? "btn-default": "btn-primary")+'" '+onclick_code(design_object.onclick_id)+' >'+design_object["label"]+(design_object.icon === null ? '': '<i class="my-material-icons" >'+design_object.icon+'</i>')+ '</button>';
+						return '<button class="btn ' +(design_object.theme === "black_in_white" ? "btn-default": "btn-primary")+'" '
+							+ onclick_code(design_object.onclick_id)+' >'+(design_object.label_string||"")+(design_object.icon === null ? '': '<i class="my-material-icons" >'+design_object.icon+'</i>')+ '</button>';
 					}
 				} else if (design_object.element_type === "IMAGE") {
 					return '<img src="'+design_object.src+'" width="'+design_object.width+'" height="'+design_object.height+'" style="opacity: '+design_object.opacity+'; '+(design_object.rounded ? 'border-radius: 50%;': '')+' " >';
@@ -188,7 +190,7 @@
 			return get_html_helper(design_object);
 		};
 
-		var api_url = "http://127.0.0.1:5018/v1/api";
+		var api_url = "/v1/api";
 		var api_call = function(url, data, callback) {
 			var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
@@ -224,7 +226,7 @@
 				if (io.element_type === 'TEXT_INPUT' ||
 					  io.element_type === 'TEXT_AREA' ||
 					  (io.input_type === 'DROP_DOWN' && !io.allow_multiple)) {
-					output[io.element_type] = dom_elm.value;
+					output[io.element_id] = dom_elm.value;
 					if(io.element_type == "DROP_DOWN") {
 						output[io.element_id] = parseInt(output[io.element_id]);
 					}
@@ -249,8 +251,13 @@
 		this.action_api = function(action_id, event) {
 			thiso.hide_all_dropdowns();
 			console.log("Triggered action: " + action_id);
-			api_call(api_url, {action_id: action_id, inputs: thiso.get_input_values()}, function(d) {
-				render_frame(JSON.parse(d));
+			api_call(api_url, {action_id: parseInt(action_id),
+												 inputs: thiso.get_input_values(),
+												 client_instance_id: initial_frame_info.client_instance_id,
+												 server_instance_id: initial_frame_info.server_instance_id
+												}, function(d) {
+				var json_response = JSON.parse(d);
+				render_frame(json_response.data);
 			});
 			event.stopPropagation();
 		}
@@ -260,15 +267,16 @@
 		}
 	})();
 	var tmp_frame_6703 = [null, {
-		"element_type": "button",
-		"id": "6",
-		"label": "Default Button",
+		"element_type": "BUTTON",
+		"element_id": "6",
+		"label_string": "Default Button",
 		"theme": "default",
 		"icon": "more_vert",
 		"onclick_id": null,
 	}];
-	var initial_frame = tmp_frame_6703[1];
-	py2web.render_frame(initial_frame);
+	// tmp_frame_6703[0] = {"children": [{"children": [{"children": [{"children": [], "element_type": "TEXT", "text_string": "Mohit"}, {"children": [], "element_type": "TEXT", "text_string": "  "}, {"children": [], "element_type": "TEXT", "text_string": "Saini", "onclick_id": 1}], "element_type": "TEXT", "onclick_id": 2}], "element_type": "VLIST", "onclick_id": 3}, {"children": [{"children": [{"children": [], "element_type": "TEXT", "text_string": "Mohit"}, {"children": [], "element_type": "TEXT", "text_string": "  "}, {"children": [], "element_type": "TEXT", "text_string": "Saini", "onclick_id": 4}], "element_type": "TEXT", "onclick_id": 5}], "element_type": "VLIST", "onclick_id": 6}], "element_type": "HLIST"};
+	var initial_frame_info = tmp_frame_6703[1];
+	py2web.render_frame(initial_frame_info.data);
 	window.onclick = function(event) {
 		py2web.window_onclick();
 	}

@@ -26,5 +26,5 @@ class TestWebsite:
 
 # frame_server = webio.FrameServer(TestWebsite);
 
-webio.Serve(TestWebsite, port = 5001, activate_instance_cleaner = False);
+webio.Serve(TestWebsite, port = 5001);
 

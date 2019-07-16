@@ -205,7 +205,7 @@ class FrameServer:
     self.client_instances = dict();
     self.client_instance_id_counter = 1;
     self.server_instance_id = utils.GetEpochTimenow()*10000 + random.randint(1, 1000);
-    self.lock = threading.Lock();
+    self.last_instance_clean_timestamp = None;
 
   def CreateClientInstance(self):
     instance_id = self.client_instance_id_counter;
@@ -227,24 +227,18 @@ class FrameServer:
     return instance.current_frame.frame.Export();
 
   def HandleFirstTimeLoad(self):
-    self.lock.acquire();
-    try:
-      client_instance_id = self.CreateClientInstance();
-      output = Object(
-        error = Object(error_code = ErrorCodes.SUCCESS.__str__()),
-        data = self.ReloadFrame(client_instance_id),
-        client_instance_id = client_instance_id,
-        server_instance_id = self.server_instance_id,
-      );
-    finally:
-      self.lock.release();
+    client_instance_id = self.CreateClientInstance();
+    output = Object(
+      error = Object(error_code = ErrorCodes.SUCCESS.__str__()),
+      data = self.ReloadFrame(client_instance_id),
+      client_instance_id = client_instance_id,
+      server_instance_id = self.server_instance_id,
+    );
     return output;
 
   def PopulateInputs(self, instance_id, inputs):
-    print(inputs);
     output_findall = Object();
     instance = self.client_instances[instance_id];
-    print(instance.current_frame.input_acceser);
     def PopulateInputsHelper(nodes):
       output = Object();
       for node in nodes:
@@ -263,7 +257,6 @@ class FrameServer:
     instance.client_instance.all_inputs = output_findall;
 
   def HandleActionEvent(self, input_data):
-    self.lock.acquire();
     output = Object(error = Object(error_code = ErrorCodes.SUCCESS.__str__()));
     instance_id = input_data["client_instance_id"];
     if instance_id not in self.client_instances:
@@ -285,14 +278,12 @@ class FrameServer:
           error_trace = traceback.format_exc();
           print(error_trace);
           output.error.error_code = ErrorCodes.INTERNAL_ERROR.__str__();
-    self.lock.release();
     return output;
 
-  def InstanceCleaner(self):
-    print("InstanceCleaner thread started");
-    while True:
-      time.sleep(Configs.client_instance_cleaner_frequency);
-      self.lock.acquire();
+  def CleanupOldInstancesIfRequired(self):
+    timenow = utils.GetEpochTimenow();
+    if (timenow > self.last_instance_clean_timestamp
+                  + Configs.client_instance_cleaner_frequency):
       old_client_instances = [];
       for i,v in self.client_instances.items():
         if (utils.GetEpochTimenow() >
@@ -300,13 +291,15 @@ class FrameServer:
           old_client_instances.append(i);
       list(self.client_instances.pop(i) for i in old_client_instances);
       print("[cleanup] deleted client_instances ", old_client_instances);
-      self.lock.release();
+      self.last_instance_clean_timestamp = timenow;
 
-  def Run(self, port, activate_instance_cleaner):
+  def Run(self, port):
+    self.last_instance_clean_timestamp = utils.GetEpochTimenow();
     app = flask.Flask("webio");
     @app.route("/", methods = ["GET"])
     @flask_cors.cross_origin(supports_credentials = True)
     def v1_start():
+      self.CleanupOldInstancesIfRequired();
       front_end_dir = os.path.join(os.path.dirname(__file__), 'front_end')
       html_page = read_file(front_end_dir + "/index.html");
       html_page = html_page.replace(
@@ -323,16 +316,10 @@ class FrameServer:
         mimetype = "application/json"
       );
 
-    if activate_instance_cleaner:
-      cleaner_thread = threading.Thread(name = "cleaner_thread",
-                                        target = self.InstanceCleaner);
-      cleaner_thread.start();
     app.run(port = port, debug = True);
-    if activate_instance_cleaner:
-      cleaner_thread.join();
 
-def Serve(cls, args=[], params={}, port = 5018, activate_instance_cleaner = True):
-  return FrameServer(cls, args, params).Run(port = port, activate_instance_cleaner = activate_instance_cleaner);
+def Serve(cls, args=[], params={}, port = 5018):
+  return FrameServer(cls, args, params).Run(port = port);
 
 
 
