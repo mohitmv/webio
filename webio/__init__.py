@@ -92,6 +92,19 @@ class Rendering:
     CreateInputAccesserHelper(frame, output);
     return output;
 
+  def CreateInputValue(self, element_id, front_end_value):
+    if (element_id in self.registered_resources):
+      element = self.registered_resources[element_id].element;
+      option = self.registered_resources[element_id].options;
+      if (element.element_type in set([ElementType.DROP_DOWN,
+                                       ElementType.CHECK_BOX_LIST])):
+        if element.allow_multiple:
+          front_end_value = set(front_end_value);
+          return list(v for i,v in enumurate(options) if i in front_end_value);
+        else:
+          return options[front_end_value];
+    return front_end_value;
+
   def GetChildrenList(self, x):
     if hasattr(x, "__iter__") and type(x) != str:
       output = [];
@@ -156,6 +169,7 @@ class Rendering:
   def HandleDropDown():
     option_values = list((i[0] if type(i) == tuple else i) for i in frame.options)
     self.registered_resources[frame.unique_id] = dict(
+      element = frame,
       options = option_values
     );
     frame.options = list((index, str(option[1] if type(option) == tuple else option))
@@ -181,6 +195,7 @@ class ErrorCodes(IntEnum):
   INTERNAL_ERROR = 3
   SUCCESS = 4
   INVALID_ACTION = 5
+  INCOMPLETE_INPUT_VALUES = 6
 
 class FrameServer:
   def __init__(self, cls, args=[], params={}):
@@ -213,30 +228,39 @@ class FrameServer:
 
   def HandleFirstTimeLoad(self):
     self.lock.acquire();
-    client_instance_id = self.CreateClientInstance();
-    output = Object(
-      error = Object(error_code = ErrorCodes.SUCCESS.__str__()),
-      data = self.ReloadFrame(client_instance_id),
-      client_instance_id = client_instance_id,
-      server_instance_id = self.server_instance_id,
-    );
-    self.lock.release();
+    try:
+      client_instance_id = self.CreateClientInstance();
+      output = Object(
+        error = Object(error_code = ErrorCodes.SUCCESS.__str__()),
+        data = self.ReloadFrame(client_instance_id),
+        client_instance_id = client_instance_id,
+        server_instance_id = self.server_instance_id,
+      );
+    finally:
+      self.lock.release();
     return output;
 
   def PopulateInputs(self, instance_id, inputs):
-    output = Object();
+    print(inputs);
     output_findall = Object();
     instance = self.client_instances[instance_id];
-    def PopulateInputsHelper(node):
-      if (type(node[1]) != list):
-        output_findall[node[0]].append(inputs[node[1]]);
-        return {node[0], inputs[node[1]]};
-      else:
-        output = {};
-        for i in node[1]:
-          output.update(node[0] = PopulateInputsHelper(i));
-        return output;
-    return PopulateInputsHelper(instance.current_frame.input_acceser);
+    print(instance.current_frame.input_acceser);
+    def PopulateInputsHelper(nodes):
+      output = Object();
+      for node in nodes:
+        if (type(node[1]) != list):
+          input_value = instance.current_frame.CreateInputValue(node[1],
+                                                                inputs[str(node[1])]);
+          if node[0] not in output_findall:
+            output_findall[node[0]] = [];
+          output_findall[node[0]].append(input_value);
+          output.update({node[0]: input_value});
+        else:
+          output.update({node[0]: PopulateInputsHelper(node[1])});
+      return output;
+    output = PopulateInputsHelper(instance.current_frame.input_acceser);
+    instance.client_instance.inputs = output;
+    instance.client_instance.all_inputs = output_findall;
 
   def HandleActionEvent(self, input_data):
     self.lock.acquire();
@@ -252,8 +276,8 @@ class FrameServer:
       if input_data.get("action_id") not in current_frame.registered_actions:
         output.error.error_code = ErrorCodes.INVALID_ACTION.__str__();
       else:
-        instance.client_instance.inputs = self.PrepareInputs(input_data['inputs']);
         try:
+          self.PopulateInputs(instance_id, input_data.get('inputs', {}));
           current_frame.registered_actions[input_data["action_id"]]();
           output.error.error_code = ErrorCodes.SUCCESS.__str__();
           output.data = self.ReloadFrame(instance_id);
@@ -278,7 +302,7 @@ class FrameServer:
       print("[cleanup] deleted client_instances ", old_client_instances);
       self.lock.release();
 
-  def Run(self, port):
+  def Run(self, port, activate_instance_cleaner):
     app = flask.Flask("webio");
     @app.route("/", methods = ["GET"])
     @flask_cors.cross_origin(supports_credentials = True)
@@ -298,16 +322,17 @@ class FrameServer:
         response = json.dumps(self.HandleActionEvent(flask.request.json)),
         mimetype = "application/json"
       );
-    cleaner_thread = threading.Thread(name = "cleaner_thread",
-                                      target = self.InstanceCleaner);
-    cleaner_thread.start();
-    app.run(port = port, debug = False);
-    cleaner_thread.join();
 
+    if activate_instance_cleaner:
+      cleaner_thread = threading.Thread(name = "cleaner_thread",
+                                        target = self.InstanceCleaner);
+      cleaner_thread.start();
+    app.run(port = port, debug = True);
+    if activate_instance_cleaner:
+      cleaner_thread.join();
 
-
-def Serve(cls, args=[], params={}, port = 5018):
-  return FrameServer(cls, args, params).Run(port = port);
+def Serve(cls, args=[], params={}, port = 5018, activate_instance_cleaner = True):
+  return FrameServer(cls, args, params).Run(port = port, activate_instance_cleaner = activate_instance_cleaner);
 
 
 

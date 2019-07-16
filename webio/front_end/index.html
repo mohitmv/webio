@@ -9,7 +9,7 @@
 <body>
 <div id="main" style="border: solid #ccc 0px;" ></div>
 <script type="text/javascript">
-	var py2web = new (function(){
+	var py2web = new (function() {
 		var thiso = this;
 		this.opened_menu = null;//replaced by dropdown-DOM of opened menu.
 		this.hide_all_dropdowns = function() {
@@ -226,7 +226,7 @@
 				if (io.element_type === 'TEXT_INPUT' ||
 					  io.element_type === 'TEXT_AREA' ||
 					  (io.input_type === 'DROP_DOWN' && !io.allow_multiple)) {
-					output[io.element_type] = dom_elm.value;
+					output[io.element_id] = dom_elm.value;
 					if(io.element_type == "DROP_DOWN") {
 						output[io.element_id] = parseInt(output[io.element_id]);
 					}

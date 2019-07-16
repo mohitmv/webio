@@ -26,22 +26,24 @@ class TestWebsite:
 
 frame_server = webio.FrameServer(TestWebsite);
 
-
 frames = {}
 frames[0] = frame_server.HandleFirstTimeLoad();
 
-frames[1] = frame_server.HandleActionEvent(dict(action_id = 1,
-                                                   client_instance_id = frames[0]['client_instance_id'],
-                                                   server_instance_id = frames[0]['server_instance_id']));
+frames[1] = frame_server.HandleActionEvent(
+                dict(action_id = 1,
+                     client_instance_id = frames[0]['client_instance_id'],
+                     server_instance_id = frames[0]['server_instance_id'],
+                     inputs = {2: "Sample Input"}));
 
-frames[2] = frame_server.HandleActionEvent(dict(action_id = 3,
-                                                   client_instance_id = frames[0]['client_instance_id'],
-                                                   server_instance_id = frames[0]['server_instance_id']));
+frames[2] = frame_server.HandleActionEvent(
+                dict(action_id = 3,
+                     client_instance_id = frames[0]['client_instance_id'],
+                     server_instance_id = frames[0]['server_instance_id'],
+                     inputs = {2: "Sample Input"}));
 
-print(frames[0]);
 assert(frames[0].error.error_code == "ErrorCodes.SUCCESS");
 assert(frames[1].error.error_code == "ErrorCodes.SUCCESS");
-print(frames[2]);
 assert(frames[2].error.error_code == "ErrorCodes.SUCCESS");
 
 
+print("elements test passed");

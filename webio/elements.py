@@ -47,7 +47,7 @@ class FrontEndElement(dict):
                 "label_string", "onclick_id", "onchange_id", "options",
                 "color_theme", "allow_multiple", "click_actions", "font_size",
                 "margin", "value_integer", "value_integer_list", "height",
-                "width"];
+                "width", "element_id"];
       if (element.element_type != ElementType.DROP_DOWN):
         considered_fields.append("value");
       for i in considered_fields:
