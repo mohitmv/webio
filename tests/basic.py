@@ -1,5 +1,5 @@
 import webio, json
-from webio import HList, VList, Text, Button
+from webio import Div, HDiv, Text, Button
 
 class TestWebsite:
   def __init__(self):
@@ -9,11 +9,11 @@ class TestWebsite:
     self.num_row += 1;
 
   def Render(self):
-    wout = VList();
+    wout = Div();
     wout << Text("Test Website") << Button("Test Submit Button");
     wout << Button("Real Click", onclick=lambda: self.inc_num_rows());
     for i in range(self.num_row):
-      wout << HList(Button("Row Button" + str(i)) for i in range(2));
+      wout << HDiv(Button("Row Button" + str(i)) for i in range(2));
     return wout;
 
 frame_server = webio.FrameServer(TestWebsite);

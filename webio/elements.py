@@ -47,7 +47,7 @@ class FrontEndElement(dict):
                 "label_string", "onclick_id", "onchange_id", "options",
                 "color_theme", "allow_multiple", "click_actions", "font_size",
                 "margin", "value_integer", "value_integer_list", "height",
-                "width"];
+                "width", "element_id"];
       if (element.element_type != ElementType.DROP_DOWN):
         considered_fields.append("value");
       for i in considered_fields:
@@ -129,7 +129,7 @@ def Icon(icon, **params):
                          **params);
 
 def HDiv(*children, **params):
-  return FrontEndElement(ElementType.HDIV,
+  return FrontEndElement(ElementType.HORIZONTAL_DIV,
                          children = list(children),
                          **params);
 
@@ -144,6 +144,15 @@ def CheckBox(label_string, **params):
                          value = False,
                          **params);
 
+def HTabs(*children, **params):
+  return FrontEndElement(ElementType.HORIZONTAL_TABS,
+                         children = children,
+                         **params);
+
+def Tab(text_string, **params):
+  return FrontEndElement(ElementType.TAB,
+                         text_string = text_string,
+                         **params);
 
 
 ############# Composite Elements ###########################

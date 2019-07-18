@@ -86,6 +86,19 @@ class Rendering:
     CreateInputAccesserHelper(frame, output);
     return output;
 
+  def CreateInputValue(self, element_id, front_end_value):
+    if (element_id in self.registered_resources):
+      element = self.registered_resources[element_id].element;
+      option = self.registered_resources[element_id].options;
+      if (element.element_type in set([ElementType.DROP_DOWN,
+                                       ElementType.CHECK_BOX_LIST])):
+        if element.allow_multiple:
+          front_end_value = set(front_end_value);
+          return list(v for i,v in enumurate(options) if i in front_end_value);
+        else:
+          return options[front_end_value];
+    return front_end_value;
+
   def GetChildrenList(self, x):
     if hasattr(x, "__iter__") and type(x) != str:
       output = [];
@@ -142,6 +155,7 @@ class Rendering:
   def HandleDropDown():
     option_values = list((i[0] if type(i) == tuple else i) for i in frame.options)
     self.registered_resources[frame.unique_id] = dict(
+      element = frame,
       options = option_values
     );
     frame.options = list((index, str(option[1] if type(option) == tuple else option))
@@ -167,6 +181,7 @@ class ErrorCodes(IntEnum):
   INTERNAL_ERROR = 3
   SUCCESS = 4
   INVALID_ACTION = 5
+  INCOMPLETE_INPUT_VALUES = 6
 
 class FrameServer:
   def __init__(self, cls, args=[], params={}):
@@ -176,7 +191,7 @@ class FrameServer:
     self.client_instances = dict();
     self.client_instance_id_counter = 1;
     self.server_instance_id = utils.GetEpochTimenow()*10000 + random.randint(1, 1000);
-    self.lock = threading.Lock();
+    self.last_instance_clean_timestamp = None;
 
   def CreateClientInstance(self):
     instance_id = self.client_instance_id_counter;
@@ -198,7 +213,6 @@ class FrameServer:
     return instance.current_frame.frame.Export();
 
   def HandleFirstTimeLoad(self):
-    self.lock.acquire();
     client_instance_id = self.CreateClientInstance();
     output = Object(
       error = Object(error_code = ErrorCodes.SUCCESS.__str__()),
@@ -206,26 +220,30 @@ class FrameServer:
       client_instance_id = client_instance_id,
       server_instance_id = self.server_instance_id,
     );
-    self.lock.release();
     return output;
 
   def PopulateInputs(self, instance_id, inputs):
-    output = Object();
+    inputs = dict((int(k), v) for k,v in inputs.items());
     output_findall = Object();
     instance = self.client_instances[instance_id];
-    def PopulateInputsHelper(node):
-      if (type(node[1]) != list):
-        output_findall[node[0]].append(inputs[node[1]]);
-        return {node[0], inputs[node[1]]};
-      else:
-        output = {};
-        for i in node[1]:
-          output.update({node[0]: PopulateInputsHelper(i)});
-        return output;
-    return PopulateInputsHelper(instance.current_frame.input_acceser);
+    def PopulateInputsHelper(nodes):
+      output = Object();
+      for node in nodes:
+        if (type(node[1]) != list):
+          input_value = instance.current_frame.CreateInputValue(node[1],
+                                                                inputs[node[1]]);
+          if node[0] not in output_findall:
+            output_findall[node[0]] = [];
+          output_findall[node[0]].append(input_value);
+          output.update({node[0]: input_value});
+        else:
+          output.update({node[0]: PopulateInputsHelper(node[1])});
+      return output;
+    output = PopulateInputsHelper(instance.current_frame.input_acceser);
+    instance.client_instance.inputs = output;
+    instance.client_instance.all_inputs = output_findall;
 
   def HandleActionEvent(self, input_data):
-    self.lock.acquire();
     output = Object(error = Object(error_code = ErrorCodes.SUCCESS.__str__()));
     instance_id = input_data["client_instance_id"];
     if instance_id not in self.client_instances:
@@ -238,8 +256,8 @@ class FrameServer:
       if input_data.get("action_id") not in current_frame.registered_actions:
         output.error.error_code = ErrorCodes.INVALID_ACTION.__str__();
       else:
-        instance.client_instance.inputs = self.PrepareInputs(input_data['inputs']);
         try:
+          self.PopulateInputs(instance_id, input_data.get('inputs', {}));
           current_frame.registered_actions[input_data["action_id"]]();
           output.error.error_code = ErrorCodes.SUCCESS.__str__();
           output.data = self.ReloadFrame(instance_id);
@@ -247,14 +265,12 @@ class FrameServer:
           error_trace = traceback.format_exc();
           print(error_trace);
           output.error.error_code = ErrorCodes.INTERNAL_ERROR.__str__();
-    self.lock.release();
     return output;
 
-  def InstanceCleaner(self):
-    print("InstanceCleaner thread started");
-    while True:
-      time.sleep(Configs.client_instance_cleaner_frequency);
-      self.lock.acquire();
+  def CleanupOldInstancesIfRequired(self):
+    timenow = utils.GetEpochTimenow();
+    if (timenow > self.last_instance_clean_timestamp
+                  + Configs.client_instance_cleaner_frequency):
       old_client_instances = [];
       for i,v in self.client_instances.items():
         if (utils.GetEpochTimenow() >
@@ -262,13 +278,15 @@ class FrameServer:
           old_client_instances.append(i);
       list(self.client_instances.pop(i) for i in old_client_instances);
       print("[cleanup] deleted client_instances ", old_client_instances);
-      self.lock.release();
+      self.last_instance_clean_timestamp = timenow;
 
   def Run(self, port):
+    self.last_instance_clean_timestamp = utils.GetEpochTimenow();
     app = flask.Flask("webio");
     @app.route("/", methods = ["GET"])
     @flask_cors.cross_origin(supports_credentials = True)
     def v1_start():
+      self.CleanupOldInstancesIfRequired();
       front_end_dir = os.path.join(os.path.dirname(__file__), 'front_end')
       html_page = read_file(front_end_dir + "/index.html");
       html_page = html_page.replace(
@@ -284,13 +302,8 @@ class FrameServer:
         response = json.dumps(self.HandleActionEvent(flask.request.json)),
         mimetype = "application/json"
       );
-    cleaner_thread = threading.Thread(name = "cleaner_thread",
-                                      target = self.InstanceCleaner);
-    cleaner_thread.start();
-    app.run(port = port, debug = False);
-    cleaner_thread.join();
 
-
+    app.run(port = port, debug = True);
 
 def Serve(cls, args=[], params={}, port = 5018):
   return FrameServer(cls, args, params).Run(port = port);

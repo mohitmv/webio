@@ -1,2 +1,6 @@
-webio/__pycache__/*
-tests/__pycache__/*
+*.pyc
+*/*.pyc
+*/*/*.pyc
+__pycache__/
+*/__pycache__
+*/*/__pycache__

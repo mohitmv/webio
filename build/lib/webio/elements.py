@@ -15,6 +15,16 @@ class ElementType(IntEnum):
   CHECK_BOX = 11
   IMAGE = 12
   CHECK_BOX_LIST = 13
+  HORIZONTAL_TABS = 14
+  VERTICAL_TABS = 15
+  TAB = 16
+  def IsInputElement(self):
+    return self in set([self.DROP_DOWN, self.CHECK_BOX, self.CHECK_BOX_LIST,
+                        self.TOGGLE, self.TEXT_INPUT, self.TEXT_AREA]);
+
+  def HaveChildren(self):
+    return self in set([self.TEXT, self.HLIST, self.VLIST,
+                        self.HORIZONTAL_TABS, self.VERTICAL_TABS]);
 
 class FrontEndElement(dict):
   def __init__(self, element_type, **kwargs):
@@ -36,7 +46,8 @@ class FrontEndElement(dict):
       considered_fields = ["text_string", "disabled", "icon",
                 "label_string", "onclick_id", "onchange_id", "options",
                 "color_theme", "allow_multiple", "click_actions", "font_size",
-                "margin", "value_integer", "value_integer_list"];
+                "margin", "value_integer", "value_integer_list", "height",
+                "width", "element_id"];
       if (element.element_type != ElementType.DROP_DOWN):
         considered_fields.append("value");
       for i in considered_fields:

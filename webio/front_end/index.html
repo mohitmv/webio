@@ -9,7 +9,7 @@
 <body>
 <div id="main" style="border: solid #ccc 0px;" ></div>
 <script type="text/javascript">
-	var py2web = new (function(){
+	var py2web = new (function() {
 		var thiso = this;
 		this.opened_menu = null;//replaced by dropdown-DOM of opened menu.
 		this.hide_all_dropdowns = function() {
@@ -178,7 +178,7 @@
 					var attrs = " ";
 					attrs += onclick_code(design_object.onclick_id);
 					var class_str = "vertical_table ";
-					if (design_object.onclick_id !== null) {
+					if (design_object.onclick_id !== undefined) {
 						class_str += "hover_cell";
 					}
 					attrs += ' class="'+class_str+'" ';
@@ -194,7 +194,7 @@
 					var attrs = " ";
 					attrs += onclick_code(design_object.onclick_id);
 					var class_str = "table ";
-					if (design_object.onclick_id !== null) {
+					if (design_object.onclick_id !== undefined) {
 						class_str += "hover_cell";
 					}
 					attrs += ' class="'+class_str+'" ';
@@ -251,7 +251,7 @@
 				if (io.element_type === 'TEXT_INPUT' ||
 					  io.element_type === 'TEXT_AREA' ||
 					  (io.input_type === 'DROP_DOWN' && !io.allow_multiple)) {
-					output[io.element_type] = dom_elm.value;
+					output[io.element_id] = dom_elm.value;
 					if(io.element_type == "DROP_DOWN") {
 						output[io.element_id] = parseInt(output[io.element_id]);
 					}
@@ -297,7 +297,7 @@
 		"label_string": "Default Button",
 		"theme": "default",
 		"icon": "more_vert",
-		"onclick_id": null,
+		"onclick_id": undefined,
 	}];
 	// tmp_frame_6703[0] = {"children": [{"children": [{"children": [{"children": [], "element_type": "TEXT", "text_string": "Mohit"}, {"children": [], "element_type": "TEXT", "text_string": "  "}, {"children": [], "element_type": "TEXT", "text_string": "Saini", "onclick_id": 1}], "element_type": "TEXT", "onclick_id": 2}], "element_type": "VLIST", "onclick_id": 3}, {"children": [{"children": [{"children": [], "element_type": "TEXT", "text_string": "Mohit"}, {"children": [], "element_type": "TEXT", "text_string": "  "}, {"children": [], "element_type": "TEXT", "text_string": "Saini", "onclick_id": 4}], "element_type": "TEXT", "onclick_id": 5}], "element_type": "VLIST", "onclick_id": 6}], "element_type": "HLIST"};
 	var initial_frame_info = tmp_frame_6703[1];

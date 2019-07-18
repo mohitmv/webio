@@ -3,23 +3,23 @@ Welcome to webio
 
 
 WebIO enables you to design the complex web interfaces without getting into HTML, CSS, JS, AngularJs, Ajax,
-API handling, Server management, nodejs etc.. crap.
+API handling, Server management, nodejs etc...
 
-Resultant web interface will look ugly enough to prevent us from releasing it for customers, but it’s still good enough
- to support all the interaction we want, and not as bad as required to suicide out of frustration.
+The web interface built by webio doesn't look pixel-perfect but it's good enough to support all the desired interaction.
 
-Think about designing admin panels, cluster creation dashboard,server monitoring page, product controlling page,
- jenkin’s website etc.., all of these websites can be built by adding a few more lines of code to the backend itself.
+Web interfaces which don't require pixel-perfect graphics like: admin panels, internal dashboard, server monitoring page, application's intenal control, jenkins website, etc.. can be built on webio.
 
-webio offers a simple set of web elements to be included in your program ( C++ or Python), which internally
-translates to build a fully functional web interface we desired. Once you integrate webio program, it does
-everything internally to support backend API handle, as well as auto-generate the front-end of your web-interface.
-WebIO is extremely easy to use, with very simple 3-pager user manual.
+webio offers a simple set of web elements to be included in your backend code ( C++ , Python or Java), which internally
+build a fully functional web interface as desired. Once webio is integrated in program, it does everything to support backend API handling, as well as auto-generate the front-end of desired web-interface.
+webio is extremely easy to use, having a 3-pager user manual.
 
 
 
-How to use webio in a python ?
+How to use webio in python ?
 ----------
+
+Here is an example of simple web interface having 4 tabs in navbar. Corrosponding to each tab, there is a list of cards, displaying some text. At the bottom, there is a form, which is used for adding more cards.
+
 ```python
 import webio;
 from webio import Frame, Action, VList, HList, Tabs, Tab, TitleText, Button, TextInput, TextArea;
@@ -51,7 +51,9 @@ webio.ServeFrame(MyWebsite(), port=5002);
 
 ```
 
-How to install webio in a python ?
+
+
+How to install webio in python ?
 ----------
 `sudo pip3.6 install git+https://github.com/mohitmv/webio.git`
 
@@ -59,7 +61,7 @@ or
 
 `sudo pip3.6 install git+https://github.com/mohitmv/webio.git@v1.0.0`
 
-How to uninstall webio in a python ?
+How to uninstall webio in python ?
 ----------
 `sudo pip3.6 uninstall webio`
 
