@@ -9,11 +9,9 @@ The web interface built by webio doesn't look pixel-perfect but it's good enough
 
 Web interfaces which don't require pixel-perfect graphics like: admin panels, internal dashboard, server monitoring page, application's intenal control, jenkins website, etc.. can be built on webio.
 
- , all of these websites can be built by adding a few more lines of code to the backend itself.
-
 webio offers a simple set of web elements to be included in your backend code ( C++ , Python or Java), which internally
 build a fully functional web interface as desired. Once webio is integrated in program, it does everything to support backend API handling, as well as auto-generate the front-end of desired web-interface.
-webio is extremely easy to use, with very simple 3-pager user manual.
+webio is extremely easy to use, having a 3-pager user manual.
 
 
 
