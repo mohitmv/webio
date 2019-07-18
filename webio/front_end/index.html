@@ -174,11 +174,36 @@
 					}
 					output += '</div></div></span>';
 					return output;
-				} else if(design_object.element_type === "HLIST" || design_object.element_type == "VLIST") {
-					var output = '<div '+onclick_code(design_object.onclick_id)+' class="'+(design_object.element_type === "VLIST" ? "vertical_table": "table")+ " "+(design_object.onclick_id === null ?'':'hover_cell')+'" '+(design_object.align  ? 'align="'+design_object.align+'"': '')+' style="'+style_code(design_object, ["bgcolor"])+'" >';
-					var cell_style = style_code(design_object, ["valign", "border_width", "border_color", "padding"]);
-					for(var i = 0; i < design_object.children.length; i++) {
-						output += '<div class="'+(design_object.element_type === 'VLIST' ? 'vertical_table_cell':'table_cell')+'" style="'+cell_style+(design_object.element_type == 'VLIST' ? 'height': 'width')+':'+design_object[design_object.element_type === 'VLIST' ? 'height' : 'width'][i]+';" >'+get_html_helper(design_object.children[i])+'</div>';
+				} else if(design_object.element_type === "DIV") {
+					var attrs = " ";
+					attrs += onclick_code(design_object.onclick_id);
+					var class_str = "vertical_table ";
+					if (design_object.onclick_id !== null) {
+						class_str += "hover_cell";
+					}
+					attrs += ' class="'+class_str+'" ';
+					attrs += (design_object.align  ? 'align="'+design_object.align+'"': '');
+					attrs += ' style="' + style_code(design_object, ["bgcolor", "width", "height", "border_width", "border_color", "margin", "color"]) + '" ';
+					output = "<div " + attrs + ">";
+					for (var i = 0; i < design_object.children.length; i++) {
+						output += get_html_helper(design_object.children[i]);
+					}
+					output += "</div>";
+					return output;
+				} else if (design_object.element_type === "HORIZONTAL_DIV") {
+					var attrs = " ";
+					attrs += onclick_code(design_object.onclick_id);
+					var class_str = "table ";
+					if (design_object.onclick_id !== null) {
+						class_str += "hover_cell";
+					}
+					attrs += ' class="'+class_str+'" ';
+					attrs += (design_object.align  ? 'align="'+design_object.align+'"': '');
+					attrs += ' style="' + style_code(design_object, ["bgcolor", "width", "height", "border_width", "border_color", "margin", "color"]) + '" ';
+					output = "<div " + attrs + ">";
+					var cell_style = style_code(design_object, ["valign", "padding"]);
+					for (var i = 0; i < design_object.children.length; i++) {
+						output += '<div class="table_cell" style="' + cell_style + 'width :'+(design_object.children[i].width || "auto") +';" >'+get_html_helper(design_object.children[i])+'</div>';
 					}
 					output += '</div>';
 					return output;

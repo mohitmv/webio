@@ -1,6 +1,6 @@
 import flask, flask_cors, re, json, os, webio.elements, random, threading, time
 
-from webio.elements import ElementType, FrontEndElement, HList, VList, Button
+from webio.elements import ElementType, FrontEndElement, Div, HDiv, Button
 from webio.elements import Text, TextArea, Image, DropDown, CheckBoxList
 from webio.elements import CheckBox, Toggle, Menu, Icon, TitleText, TextInput
 
@@ -10,12 +10,6 @@ from enum import IntEnum
 
 def none_default(a, b):
   return (b if a == None else a);
-
-def soft_update(a,b):
-  for i in b:
-    if i not in a:
-      a[i] = b[i];
-  return a;
 
 def read_file(fn):
   fd = open(fn);
@@ -56,8 +50,8 @@ class Rendering:
     if frame.element_type == ElementType.TEXT:
       self.EvaluateText(frame);
       self.HandleOnClick(frame);
-    elif frame.element_type in set([ElementType.VLIST, ElementType.HLIST]):
-      self.EvaluateHListVList(frame);
+    elif frame.element_type in set([ElementType.DIV, ElementType.HORIZONTAL_DIV]):
+      self.EvaluateDivHDiv(frame);
       self.HandleOnClick(frame);
     elif frame.element_type == ElementType.MENU:
       self.HandleOnClickForMenu(frame);
@@ -106,16 +100,8 @@ class Rendering:
     else:
       return [elements.Text(str(x))];
 
-  def EvaluateHListVList(self, frame):
-    width_or_height = ("width" if frame.element_type == ElementType.HLIST
-                               else 'height');
+  def EvaluateDivHDiv(self, frame):
     children = self.GetChildrenList(frame.children);
-    if width_or_height not in frame:
-      frame[width_or_height] = ["auto"]*len(children);
-    for i in list(frame.keys()):
-      if (i != width_or_height) and (i.split("_")[0] == width_or_height):
-        frame[width_or_height][int(i.split("_")[1])-1] = frame[i];
-        frame.pop(i);
     frame.update(
       children = list(self.EvaluateFrame(i) for i in children)
     );
@@ -234,7 +220,7 @@ class FrameServer:
       else:
         output = {};
         for i in node[1]:
-          output.update(node[0] = PopulateInputsHelper(i));
+          output.update({node[0]: PopulateInputsHelper(i)});
         return output;
     return PopulateInputsHelper(instance.current_frame.input_acceser);
 

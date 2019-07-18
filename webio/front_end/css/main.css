@@ -177,9 +177,6 @@ textarea.input-input {
 	visibility: hidden;
 }
 
-
-
-
 div.table {
 	display: table;
 	width: 100%;
@@ -187,8 +184,6 @@ div.table {
 	border-collapse: collapse;
 	box-sizing: border-box;
 }
-
-
 
 div.table > div.table_cell {
 	display: table-cell;
@@ -198,22 +193,14 @@ div.table > div.table_cell {
 
 
 div.vertical_table {
-	/*display: table;*/
 	border-collapse: collapse;
 	box-sizing: border-box;
 	width: 100%;
 }
 
-
-/*div.vertical_table:first-child {
-	border-top: solid #ccc 1px;
-}
-*/
-
 div.vertical_table_cell {
 	border: solid #ccc 1px;
 	border-collapse: collapse;
-	/*display:table-row;*/
 }
 
 
@@ -227,15 +214,9 @@ div.hover_cell:hover {
 div.text_div {
 	width: 100%;
 	margin: 10px;
-/*	position: relative;
-	top: 50%;
-	transform: translateY(-50%);
-	-webkit-transform: translateY(-50%);
-	-ms-transform: translateY(-50%);
-*/
 }
 
-a{
+a {
 	cursor: pointer;
 	color: rgb(0, 0, 230);
 }

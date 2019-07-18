@@ -17,7 +17,7 @@ Priority Queue
 		 - Commonly used elements like: Table,
 		 - HTML design part.
 		 - Session Management system.
-		 - Disabling all inputs whenever an API is called. 
+		 - Disabling all inputs whenever an API is called.
 		 - checkbox(default: allow_multiple)
 11. Use enum instead of component names.
 12. Support for C++ as well.
