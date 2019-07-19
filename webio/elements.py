@@ -40,14 +40,17 @@ class FrontEndElement(dict):
       output = utils.Object();
       if element.element_type in set([ElementType.HORIZONTAL_DIV,
                                       ElementType.DIV,
-                                      ElementType.TEXT]):
+                                      ElementType.TEXT,
+                                      ElementType.HORIZONTAL_TABS,
+                                      ElementType.VERTICAL_TABS]):
         output.children = list(ExportHelper(i) for i in element.children);
       output.element_type = element.element_type.__str__().split(".")[1];
       considered_fields = ["text_string", "disabled", "icon",
                 "label_string", "onclick_id", "onchange_id", "options",
                 "color_theme", "allow_multiple", "click_actions", "font_size",
                 "margin", "value_integer", "value_integer_list", "height",
-                "width", "element_id"];
+                "width", "element_id", "padding", "selected_tab",
+                "border_width"];
       if (element.element_type != ElementType.DROP_DOWN):
         considered_fields.append("value");
       for i in considered_fields:
@@ -146,6 +149,7 @@ def CheckBox(label_string, **params):
 
 def HTabs(*children, **params):
   return FrontEndElement(ElementType.HORIZONTAL_TABS,
+                         selected_tab = -1,
                          children = children,
                          **params);
 
@@ -167,4 +171,5 @@ def VSpace(size):
   return Div(height = size);
 
 def Card(text_string, **params):
-  return Div(text_string, padding = 10, **params);
+  return Div(text_string, padding = "5px", margin = "5px", border_width = "1px", **params);
+

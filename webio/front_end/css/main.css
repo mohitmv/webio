@@ -3,6 +3,7 @@
 html, body {
 	margin: 0px;
 	padding: 0px;
+  font-family: 'Roboto';
 }
 
 .btn {
@@ -196,13 +197,9 @@ div.vertical_table {
 	border-collapse: collapse;
 	box-sizing: border-box;
 	width: 100%;
+  border: solid #ccc 0px;
+  border-collapse: collapse;
 }
-
-div.vertical_table_cell {
-	border: solid #ccc 1px;
-	border-collapse: collapse;
-}
-
 
 div.hover_cell:hover {
 	background-color: #eee;
@@ -212,7 +209,7 @@ div.hover_cell:hover {
 
 
 div.text_div {
-	width: 100%;
+	/*width: 100%;*/
 	margin: 10px;
 }
 
@@ -227,5 +224,28 @@ a:hover {
 }
 
 
+div.horizontal_tab {
+  -webkit-box-shadow: inset 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14);
+  box-shadow: inset 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14);
+}
 
+div.horizontal_tab_element {
+  display: inline-block;
+  height: 40px;
+  line-height: 40px;
+  padding: 0px 10px;
+  cursor: pointer;
+  vertical-align: middle;
+}
 
+div.horizontal_tab_element:hover, div.horizontal_tab_element.selected {
+  background-color: #ccc;
+}
+
+div.card_div {
+  padding: 10px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}

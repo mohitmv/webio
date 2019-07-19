@@ -17,7 +17,7 @@ class TestWebsite:
     wout = Div();
     wout << Text("Test Website") << Button("Test Submit Button")
     wout << Button("Real Click", onclick=lambda: self.inc_num_rows());
-    wout << TextInput("Your Name ?", index = "name")
+    wout << TextInput("Your Name ?", id = "name")
     wout << Text("Content was : " + self.content)
     wout << Button("Real Click 2", onclick = self.update_content);
     for i in range(self.num_row):

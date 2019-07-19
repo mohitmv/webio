@@ -3,6 +3,7 @@ import flask, flask_cors, re, json, os, webio.elements, random, threading, time
 from webio.elements import ElementType, FrontEndElement, Div, HDiv, Button
 from webio.elements import Text, TextArea, Image, DropDown, CheckBoxList
 from webio.elements import CheckBox, Toggle, Menu, Icon, TitleText, TextInput
+from webio.elements import HTabs, Tab, VSpace, Card
 
 import webio.utils, traceback
 
@@ -51,12 +52,15 @@ class Rendering:
       self.EvaluateText(frame);
       self.HandleOnClick(frame);
     elif frame.element_type in set([ElementType.DIV, ElementType.HORIZONTAL_DIV]):
-      self.EvaluateDivHDiv(frame);
+      self.EvaluateDivHDivTab(frame);
       self.HandleOnClick(frame);
+    elif frame.element_type in set([ElementType.HORIZONTAL_TABS]):
+      self.EvaluateDivHDivTab(frame);
     elif frame.element_type == ElementType.MENU:
       self.HandleOnClickForMenu(frame);
     elif frame.element_type in set([ElementType.BUTTON,
-                                    ElementType.IMAGE]):
+                                    ElementType.IMAGE,
+                                    ElementType.TAB]):
       self.HandleOnClick(frame);
     elif frame.element_type in set([ElementType.DROP_DOWN,
                                     ElementType.CHECK_BOX_LIST]):
@@ -73,11 +77,11 @@ class Rendering:
   def CreateInputAccesser(self, frame):
     output = [];
     def CreateInputAccesserHelper(frame, target):
-      if (frame.element_type.IsInputElement()) and ("index" in frame):
-          target.append((frame.index, frame.element_id));
+      if (frame.element_type.IsInputElement()) and ("id" in frame):
+          target.append((frame.id, frame.element_id));
       if frame.element_type.HaveChildren():
-        if ("index" in frame):
-          target.append((frame.index, []));
+        if ("id" in frame):
+          target.append((frame.id, []));
           new_target = target[-1][1];
         else:
           new_target = target;
@@ -111,9 +115,9 @@ class Rendering:
           output += self.GetChildrenList(i);
       return output;
     else:
-      return [elements.Text(str(x))];
+      return [elements.Text(str(x).replace("\n", "<br>"))];
 
-  def EvaluateDivHDiv(self, frame):
+  def EvaluateDivHDivTab(self, frame):
     children = self.GetChildrenList(frame.children);
     frame.update(
       children = list(self.EvaluateFrame(i) for i in children)
@@ -122,7 +126,7 @@ class Rendering:
 
   def EvaluateText(self, frame):
     if len(frame.children) == 1 and type(frame.children[0]) == str:
-      frame.text_string = frame.children[0];
+      frame.text_string = frame.children[0].replace("\n", "<br>");
       frame.children = [];
     else:
       children = self.GetChildrenList(frame.children);
