@@ -306,7 +306,11 @@
 												 server_instance_id: initial_frame_info.server_instance_id
 												}, function(d) {
 				var json_response = JSON.parse(d);
-				render_frame(json_response.data);
+				if(json_response.error.error_code == "ErrorCodes.SUCCESS") {
+					render_frame(json_response.data);
+				} else {
+					alert(json_response.error.error_code + " - Please reload !");
+				}
 			});
 			event.stopPropagation();
 		}

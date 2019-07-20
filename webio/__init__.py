@@ -250,10 +250,10 @@ class FrameServer:
   def HandleActionEvent(self, input_data):
     output = Object(error = Object(error_code = ErrorCodes.SUCCESS.__str__()));
     instance_id = input_data["client_instance_id"];
-    if instance_id not in self.client_instances:
-      output.error.error_code = ErrorCodes.CLIENT_INSTANCE_TIMEOUT.__str__();
-    elif input_data["server_instance_id"] != self.server_instance_id:
+    if input_data["server_instance_id"] != self.server_instance_id:
       output.error.error_code = ErrorCodes.INCORRECT_SERVER_INSTANCE.__str__();
+    elif instance_id not in self.client_instances:
+      output.error.error_code = ErrorCodes.CLIENT_INSTANCE_TIMEOUT.__str__();
     else:
       instance = self.client_instances[instance_id];
       current_frame = instance.current_frame;

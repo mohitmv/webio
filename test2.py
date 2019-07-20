@@ -13,7 +13,10 @@ class MyWebsite:
     frame << HTabs((Tab(self.tabs[index],
                       onclick = Action(lambda index: self.set_current_tab(index),
                                        index)
-                    ) for index in range(4)), padding = "0px 0px 0px 10px");
+                    ) for index in range(4)),
+                   padding = "0px 0px 0px 10px",
+                   selected_tab = self.current_tab
+                   );
     frame << VSpace("10px")
     for c in self.content_for_tabs[self.current_tab]:
       frame << Card(c, color = ("blue" if self.current_tab == 2 else "default"),
@@ -21,9 +24,11 @@ class MyWebsite:
     frame << VSpace("20px");
     Text("Want to create more content ?", font_size = "16px",
                                           margin = "5px");
-    frame << TextInput("Your Name ?") << TextArea("Your content goes here", id = "content");
+    frame << TextInput("Your Name ?") << TextArea("Your content goes here",
+                                                  id = "content");
     frame << Button("Submit", onclick =
-               lambda: self.content_for_tabs[self.current_tab].append(self.inputs["content"]));
+               lambda: self.content_for_tabs[self.current_tab].append(
+                                                     self.inputs["content"]));
     return frame;
 
   def set_current_tab(self, index):

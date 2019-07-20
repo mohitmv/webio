@@ -50,7 +50,7 @@ class FrontEndElement(dict):
                 "color_theme", "allow_multiple", "click_actions", "font_size",
                 "margin", "value_integer", "value_integer_list", "height",
                 "width", "element_id", "padding", "selected_tab",
-                "border_width"];
+                "border_width", "default_rows"];
       if (element.element_type != ElementType.DROP_DOWN):
         considered_fields.append("value");
       for i in considered_fields:
@@ -148,10 +148,11 @@ def CheckBox(label_string, **params):
                          **params);
 
 def HTabs(*children, **params):
-  return FrontEndElement(ElementType.HORIZONTAL_TABS,
-                         selected_tab = -1,
-                         children = children,
-                         **params);
+  output = FrontEndElement(ElementType.HORIZONTAL_TABS,
+                           selected_tab = -1,
+                           children = children);
+  output.update(params);
+  return output;
 
 def Tab(text_string, **params):
   return FrontEndElement(ElementType.TAB,
