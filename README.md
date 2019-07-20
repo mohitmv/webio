@@ -21,22 +21,24 @@ How to use webio in python ?
 Here is an example of simple web interface having 4 tabs in navbar. Corrosponding to each tab, there is a list of cards, displaying some text. At the bottom, there is a form, which is used for adding more cards.
 
 ```python
-import webio
+import webio;
 from webio import Action, Div, HDiv, HTabs, Tab, TitleText, Button, TextInput
-from webio import TextArea, VSpace, Tab, HTabs, Card, Text
+from webio import TextArea, VSpace, Tab, HTabs, Card, Text;
 
 class MyWebsite:
   tabs = ["Home", "About", "Contact", "Dashboard"];
-  current_tab = 0;
   content_for_tabs = {0: ["Home-01", "Home-02"], 1: ["About-11", "About-12"],
                       2: ["Contact-01"], 3: ["Dashboard-01"]};
+  def __init__(self):
+    self.current_tab = 0;
+
   def Render(self):
     frame = Div();
     frame << TitleText("Welcome to webio") << VSpace("20px");
     frame << HTabs((Tab(self.tabs[index],
                       onclick = Action(lambda index: self.set_current_tab(index),
                                        index)
-                    ) for index in range(4)),
+                    ) for index in range(len(self.tabs))),
                    padding = "0px 0px 0px 10px",
                    selected_tab = self.current_tab
                    );
@@ -58,7 +60,6 @@ class MyWebsite:
     self.current_tab = index;
 
 webio.Serve(MyWebsite, port=5002);
-
 ```
 
 ![alt text](https://raw.githubusercontent.com/mohitmv/webio/master/docs/webio_demo_slow_gif.gif "webio demo")
