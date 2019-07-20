@@ -61,6 +61,8 @@ webio.Serve(MyWebsite, port=5002);
 
 ```
 
+![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "webio demo")
+
 
 
 How to install webio in python ?
