@@ -4,16 +4,18 @@ from webio import TextArea, VSpace, Tab, HTabs, Card, Text;
 
 class MyWebsite:
   tabs = ["Home", "About", "Contact", "Dashboard"];
-  current_tab = 0;
   content_for_tabs = {0: ["Home-01", "Home-02"], 1: ["About-11", "About-12"],
                       2: ["Contact-01"], 3: ["Dashboard-01"]};
+  def __init__(self):
+    self.current_tab = 0;
+
   def Render(self):
     frame = Div();
     frame << TitleText("Welcome to webio") << VSpace("20px");
     frame << HTabs((Tab(self.tabs[index],
                       onclick = Action(lambda index: self.set_current_tab(index),
                                        index)
-                    ) for index in range(4)),
+                    ) for index in range(len(self.tabs))),
                    padding = "0px 0px 0px 10px",
                    selected_tab = self.current_tab
                    );
