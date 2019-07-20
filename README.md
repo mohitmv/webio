@@ -61,7 +61,7 @@ webio.Serve(MyWebsite, port=5002);
 
 ```
 
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "webio demo")
+![alt text](https://raw.githubusercontent.com/mohitmv/webio/master/docs/webio_demo_slow_gif.gif "webio demo")
 
 
 
