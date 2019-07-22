@@ -20,6 +20,8 @@ class ElementType(IntEnum):
   TAB = 16
   VERTICAL_DIV = 17
   INLINED_DIV = 18
+  ICON_BUTTON = 19
+
   def IsInputElement(self):
     return self in set([self.DROP_DOWN, self.CHECK_BOX, self.CHECK_BOX_LIST,
                         self.TOGGLE, self.TEXT_INPUT, self.TEXT_AREA]);
@@ -50,7 +52,7 @@ class FrontEndElement(dict):
       output.element_type = element.element_type.__str__().split(".")[1];
       considered_fields = ["text_string", "disabled", "icon",
                 "label_string", "onclick_id", "onchange_id", "options",
-                "color_theme", "allow_multiple", "click_actions", "font_size",
+                "color_theme", "allow_multiple", "font_size",
                 "margin", "value_integer", "value_integer_list", "height",
                 "width", "element_id", "padding", "selected_tab",
                 "border_width", "default_rows"];
@@ -72,13 +74,22 @@ def Image(src, **params):
                          src = src,
                          **params);
 
-def Button(label_string = None, **params):
-  return FrontEndElement(ElementType.BUTTON,
+def Button(label_string, **params):
+  output = FrontEndElement(ElementType.BUTTON,
                          label_string = label_string,
+                         icon = None,
                          disabled = False,
                          # default | back_in_white | blue
-                         color_theme = "default",
-                         **params);
+                         color_theme = "default");
+  output.update(params);
+  return output;
+
+def IconButton(icon, **params):
+  output = FrontEndElement(ElementType.ICON_BUTTON,
+                         icon = icon,
+                         disabled = False);
+  output.update(params);
+  return output;
 
 def TextInput(label_string, **params):
   return FrontEndElement(ElementType.TEXT_INPUT,
@@ -96,22 +107,24 @@ def TextArea(label_string, **params):
                          **params);
 
 def DropDown(label_string, **params):
-  return FrontEndElement(ElementType.DROP_DOWN,
+  output = FrontEndElement(ElementType.DROP_DOWN,
                          label_string = label_string,
                          disabled = False,
                          options = [],
                          value = None,
-                         allow_multiple = False,
-                         **params);
+                         allow_multiple = False);
+  output.update(params);
+  return output;
 
 def CheckBoxList(label_string, **params):
-  return FrontEndElement(ElementType.CHECK_BOX_LIST,
+  output = FrontEndElement(ElementType.CHECK_BOX_LIST,
                          label_string = label_string,
                          disabled = False,
                          allow_multiple = False,
                          options = [],
-                         value = None,
-                         **params);
+                         value = None);
+  output.update(params);
+  return output;
 
 def Toggle(label_string, **params):
   return FrontEndElement(ElementType.TOGGLE,
@@ -121,18 +134,20 @@ def Toggle(label_string, **params):
                          **params);
 
 def Menu(icon = "menu", **params):
-  return FrontEndElement(ElementType.MENU,
+  output = FrontEndElement(ElementType.MENU,
                          icon = icon,  # https://material.io/tools/icons
                          font_size = "16px",
                          disabled = False,
-                         click_actions = [],
-                         **params);
+                         options = []);
+  output.update(params);
+  return output;
 
 def Icon(icon, **params):
-  return FrontEndElement(ElementType.ICON,
+  output = FrontEndElement(ElementType.ICON,
                          icon = icon,  # https://material.io/tools/icons
-                         font_size = "16px",
-                         **params);
+                         font_size = "16px");
+  output.update(params);
+  return output;
 
 def HDiv(*children, **params):
   return FrontEndElement(ElementType.HORIZONTAL_DIV,
@@ -155,10 +170,11 @@ def InlinedDiv(*children, **params):
                          **params);
 
 def CheckBox(label_string, **params):
-  return FrontEndElement(ElementType.CHECK_BOX,
+  output = FrontEndElement(ElementType.CHECK_BOX,
                          label_string = label_string,
-                         value = False,
-                         **params);
+                         value = False);
+  output.update(params);
+  return output;
 
 def HTabs(*children, **params):
   output = FrontEndElement(ElementType.HORIZONTAL_TABS,

@@ -58,6 +58,22 @@ html, body {
   border-color: #adadad;
 }
 
+.btn:disabled {
+  opacity: .65;
+  cursor: initial;
+}
+
+.btn-default:disabled {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+
+.btn-primary:disabled {
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
 
 
 .my-material-icons, .my-material-icon-button {
@@ -188,7 +204,7 @@ div.table {
 
 div.table > div.table_cell {
 	display: table-cell;
-	border: solid #ccc 1px;
+	border: solid #ccc 0px;
 	border-collapse: collapse;
 }
 

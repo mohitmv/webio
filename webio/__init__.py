@@ -4,6 +4,7 @@ from webio.elements import ElementType, FrontEndElement, Div, HDiv, Button
 from webio.elements import Text, TextArea, Image, DropDown, CheckBoxList
 from webio.elements import CheckBox, Toggle, Menu, Icon, TitleText, TextInput
 from webio.elements import HTabs, Tab, VSpace, Card, VDiv, InlinedDiv
+from webio.elements import IconButton
 
 import webio.utils, traceback
 
@@ -59,6 +60,7 @@ class Rendering:
     elif frame.element_type == ElementType.MENU:
       self.HandleOnClickForMenu(frame);
     elif frame.element_type in set([ElementType.BUTTON,
+                                    ElementType.ICON_BUTTON,
                                     ElementType.IMAGE,
                                     ElementType.TAB]):
       self.HandleOnClick(frame);
@@ -136,12 +138,12 @@ class Rendering:
     return frame;
 
   def HandleOnClickForMenu(self, frame):
-    for i in range(len(frame.click_actions)):
-      onclick_lambda = frame.click_actions[i][0];
+    for i in range(len(frame.options)):
+      onclick_lambda = frame.options[i][1];
       if onclick_lambda != None:
         onclick_id = self.GetUniqueIndex();
         self.registered_actions[onclick_id] = onclick_lambda;
-        frame.click_actions[i] = [onclick_id, frame.click_actions[i][1]];
+        frame.options[i] = [frame.options[i][0], onclick_id];
     return frame;
 
   def HandleOnChange(self, frame):

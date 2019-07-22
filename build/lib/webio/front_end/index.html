@@ -147,13 +147,11 @@
 					}
 					output += "</div>";
 					return output;
+				} else if(design_object.element_type === "ICON_BUTTON") {
+					return '<i '+onclick_code1(design_object.onclick_id)+' class="my-material-icon-button" title="444" >'+design_object.icon+'</i>';
 				} else if(design_object.element_type === "BUTTON") {
-					if(design_object.label_string === null) {
-						return '<i '+onclick_code1(design_object.onclick_id)+' class="my-material-icon-button" >'+design_object.icon+'</i>';
-					} else {
-						return '<button class="btn ' +(design_object.theme === "black_in_white" ? "btn-default": "btn-primary")+'" '
-							+ onclick_code1(design_object.onclick_id)+' >'+(design_object.label_string||"")+(design_object.icon === null ? '': '<i class="my-material-icons" >'+design_object.icon+'</i>')+ '</button>';
-					}
+					return '<button class="btn ' +(design_object.theme === "black_in_white" ? "btn-default": "btn-primary")+'"  '+(design_object.disabled ? "disabled": "")+' '
+						+ onclick_code1(design_object.onclick_id)+' >'+(design_object.label_string||"")+(design_object.icon === null ? '': '<i class="my-material-icons" >'+design_object.icon+'</i>')+ '</button>';
 				} else if (design_object.element_type === "IMAGE") {
 					return '<img src="'+design_object.src+'" width="'+design_object.width+'" height="'+design_object.height+'" style="opacity: '+design_object.opacity+'; '+(design_object.rounded ? 'border-radius: 50%;': '')+' " >';
 				} else if (design_object.element_type === "TEXT") {
@@ -186,8 +184,8 @@
 					return output;
 				} else if(design_object.element_type === "MENU") {
 					var output = '<span><i class="my-material-icon-button" onclick="webio.click_on_menu(this, event);" >'+design_object.icon+'</i><div class="dropdown_content_wrapper" ><div class="dropdown_content" >';
-					for(var i = 0; i < design_object.click_actions.length; i++) {
-						output += '<div class="dropdown_elements" '+onclick_code1(design_object.click_actions[i][0])+' >'+design_object.click_actions[i][1]+'</div>';
+					for(var i = 0; i < design_object.options.length; i++) {
+						output += '<div class="dropdown_elements" '+onclick_code1(design_object.options[i][1])+' >'+design_object.options[i][0]+'</div>';
 					}
 					output += '</div></div></span>';
 					return output;
