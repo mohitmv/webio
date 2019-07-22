@@ -1,8 +1,9 @@
 import flask, flask_cors, re, json, os, webio.elements, random, threading, time
 
-from webio.elements import ElementType, FrontEndElement, HList, VList, Button
+from webio.elements import ElementType, FrontEndElement, Div, HDiv, Button
 from webio.elements import Text, TextArea, Image, DropDown, CheckBoxList
 from webio.elements import CheckBox, Toggle, Menu, Icon, TitleText, TextInput
+from webio.elements import HTabs, Tab, VSpace, Card
 
 import webio.utils, traceback
 
@@ -10,12 +11,6 @@ from enum import IntEnum
 
 def none_default(a, b):
   return (b if a == None else a);
-
-def soft_update(a,b):
-  for i in b:
-    if i not in a:
-      a[i] = b[i];
-  return a;
 
 def read_file(fn):
   fd = open(fn);
@@ -56,13 +51,16 @@ class Rendering:
     if frame.element_type == ElementType.TEXT:
       self.EvaluateText(frame);
       self.HandleOnClick(frame);
-    elif frame.element_type in set([ElementType.VLIST, ElementType.HLIST]):
-      self.EvaluateHListVList(frame);
+    elif frame.element_type in set([ElementType.DIV, ElementType.HORIZONTAL_DIV]):
+      self.EvaluateDivHDivTab(frame);
       self.HandleOnClick(frame);
+    elif frame.element_type in set([ElementType.HORIZONTAL_TABS]):
+      self.EvaluateDivHDivTab(frame);
     elif frame.element_type == ElementType.MENU:
       self.HandleOnClickForMenu(frame);
     elif frame.element_type in set([ElementType.BUTTON,
-                                    ElementType.IMAGE]):
+                                    ElementType.IMAGE,
+                                    ElementType.TAB]):
       self.HandleOnClick(frame);
     elif frame.element_type in set([ElementType.DROP_DOWN,
                                     ElementType.CHECK_BOX_LIST]):
@@ -79,11 +77,11 @@ class Rendering:
   def CreateInputAccesser(self, frame):
     output = [];
     def CreateInputAccesserHelper(frame, target):
-      if (frame.element_type.IsInputElement()) and ("index" in frame):
-          target.append((frame.index, frame.element_id));
+      if (frame.element_type.IsInputElement()) and ("id" in frame):
+          target.append((frame.id, frame.element_id));
       if frame.element_type.HaveChildren():
-        if ("index" in frame):
-          target.append((frame.index, []));
+        if ("id" in frame):
+          target.append((frame.id, []));
           new_target = target[-1][1];
         else:
           new_target = target;
@@ -117,18 +115,10 @@ class Rendering:
           output += self.GetChildrenList(i);
       return output;
     else:
-      return [elements.Text(str(x))];
+      return [elements.Text(str(x).replace("\n", "<br>"))];
 
-  def EvaluateHListVList(self, frame):
-    width_or_height = ("width" if frame.element_type == ElementType.HLIST
-                               else 'height');
+  def EvaluateDivHDivTab(self, frame):
     children = self.GetChildrenList(frame.children);
-    if width_or_height not in frame:
-      frame[width_or_height] = ["auto"]*len(children);
-    for i in list(frame.keys()):
-      if (i != width_or_height) and (i.split("_")[0] == width_or_height):
-        frame[width_or_height][int(i.split("_")[1])-1] = frame[i];
-        frame.pop(i);
     frame.update(
       children = list(self.EvaluateFrame(i) for i in children)
     );
@@ -136,7 +126,7 @@ class Rendering:
 
   def EvaluateText(self, frame):
     if len(frame.children) == 1 and type(frame.children[0]) == str:
-      frame.text_string = frame.children[0];
+      frame.text_string = frame.children[0].replace("\n", "<br>");
       frame.children = [];
     else:
       children = self.GetChildrenList(frame.children);
@@ -237,6 +227,7 @@ class FrameServer:
     return output;
 
   def PopulateInputs(self, instance_id, inputs):
+    inputs = dict((int(k), v) for k,v in inputs.items());
     output_findall = Object();
     instance = self.client_instances[instance_id];
     def PopulateInputsHelper(nodes):
@@ -244,7 +235,7 @@ class FrameServer:
       for node in nodes:
         if (type(node[1]) != list):
           input_value = instance.current_frame.CreateInputValue(node[1],
-                                                                inputs[str(node[1])]);
+                                                                inputs[node[1]]);
           if node[0] not in output_findall:
             output_findall[node[0]] = [];
           output_findall[node[0]].append(input_value);
@@ -259,10 +250,10 @@ class FrameServer:
   def HandleActionEvent(self, input_data):
     output = Object(error = Object(error_code = ErrorCodes.SUCCESS.__str__()));
     instance_id = input_data["client_instance_id"];
-    if instance_id not in self.client_instances:
-      output.error.error_code = ErrorCodes.CLIENT_INSTANCE_TIMEOUT.__str__();
-    elif input_data["server_instance_id"] != self.server_instance_id:
+    if input_data["server_instance_id"] != self.server_instance_id:
       output.error.error_code = ErrorCodes.INCORRECT_SERVER_INSTANCE.__str__();
+    elif instance_id not in self.client_instances:
+      output.error.error_code = ErrorCodes.CLIENT_INSTANCE_TIMEOUT.__str__();
     else:
       instance = self.client_instances[instance_id];
       current_frame = instance.current_frame;
