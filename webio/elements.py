@@ -10,7 +10,7 @@ class ElementType(IntEnum):
   TOGGLE = 6
   MENU = 7
   ICON = 8
-  DIV = 9
+  SIMPLE_DIV = 9
   HORIZONTAL_DIV = 10
   CHECK_BOX = 11
   IMAGE = 12
@@ -18,13 +18,20 @@ class ElementType(IntEnum):
   HORIZONTAL_TABS = 14
   VERTICAL_TABS = 15
   TAB = 16
+  VERTICAL_DIV = 17
+  INLINED_DIV = 18
   def IsInputElement(self):
     return self in set([self.DROP_DOWN, self.CHECK_BOX, self.CHECK_BOX_LIST,
                         self.TOGGLE, self.TEXT_INPUT, self.TEXT_AREA]);
 
   def HaveChildren(self):
-    return self in set([self.TEXT, self.HORIZONTAL_DIV, self.DIV,
-                        self.HORIZONTAL_TABS, self.VERTICAL_TABS]);
+    return self in set([self.TEXT, self.HORIZONTAL_TABS, self.VERTICAL_TABS,
+                        self.HORIZONTAL_DIV, self.VERTICAL_DIV,
+                        self.SIMPLE_DIV, self.INLINED_DIV]);
+
+  def IsDiv(self):
+    return self in set([self.HORIZONTAL_DIV, self.VERTICAL_DIV,
+                        self.SIMPLE_DIV, self.INLINED_DIV]);
 
 class FrontEndElement(dict):
   def __init__(self, element_type, **kwargs):
@@ -38,11 +45,7 @@ class FrontEndElement(dict):
   def Export(self):
     def ExportHelper(element):
       output = utils.Object();
-      if element.element_type in set([ElementType.HORIZONTAL_DIV,
-                                      ElementType.DIV,
-                                      ElementType.TEXT,
-                                      ElementType.HORIZONTAL_TABS,
-                                      ElementType.VERTICAL_TABS]):
+      if element.element_type.HaveChildren():
         output.children = list(ExportHelper(i) for i in element.children);
       output.element_type = element.element_type.__str__().split(".")[1];
       considered_fields = ["text_string", "disabled", "icon",
@@ -137,7 +140,17 @@ def HDiv(*children, **params):
                          **params);
 
 def Div(*children, **params):
-  return FrontEndElement(ElementType.DIV,
+  return FrontEndElement(ElementType.SIMPLE_DIV,
+                         children = list(children),
+                         **params);
+
+def VDiv(*children, **params):
+  return FrontEndElement(ElementType.VERTICAL_DIV,
+                         children = list(children),
+                         **params);
+
+def InlinedDiv(*children, **params):
+  return FrontEndElement(ElementType.INLINED_DIV,
                          children = list(children),
                          **params);
 

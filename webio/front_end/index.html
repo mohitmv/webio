@@ -191,7 +191,39 @@
 					}
 					output += '</div></div></span>';
 					return output;
-				} else if(design_object.element_type === "DIV") {
+				} else if(design_object.element_type === "INLINED_DIV") {
+					var attrs = " ";
+					attrs += onclick_code1(design_object.onclick_id);
+					var class_str = "vertical_table ";
+					if (design_object.onclick_id !== undefined) {
+						class_str += "hover_cell";
+					}
+					attrs += ' class="'+class_str+'" ';
+					attrs += (design_object.align  ? 'align="'+design_object.align+'"': '');
+					attrs += ' style="display: inline-block;' + style_code(design_object, ["bgcolor", "width", "height", "border_width", "border_color", "margin", "color", "padding"]) + '" ';
+					var output = "<div " + attrs + ">";
+					for (var i = 0; i < design_object.children.length; i++) {
+						output += get_html_helper(design_object.children[i]);
+					}
+					output += "</div>";
+					return output;
+				} else if(design_object.element_type === "VERTICAL_DIV") {
+					var attrs = " ";
+					attrs += onclick_code1(design_object.onclick_id);
+					var class_str = "vertical_table ";
+					if (design_object.onclick_id !== undefined) {
+						class_str += "hover_cell";
+					}
+					attrs += ' class="'+class_str+'" ';
+					attrs += (design_object.align  ? 'align="'+design_object.align+'"': '');
+					attrs += ' style="' + style_code(design_object, ["bgcolor", "width", "height", "border_width", "border_color", "margin", "color", "padding"]) + '" ';
+					var output = "<div " + attrs + ">";
+					for (var i = 0; i < design_object.children.length; i++) {
+						output += "<div>" + get_html_helper(design_object.children[i]) + "</div>";
+					}
+					output += "</div>";
+					return output;
+				} else if(design_object.element_type === "SIMPLE_DIV") {
 					var attrs = " ";
 					attrs += onclick_code1(design_object.onclick_id);
 					var class_str = "vertical_table ";

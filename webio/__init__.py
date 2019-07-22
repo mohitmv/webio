@@ -3,7 +3,7 @@ import flask, flask_cors, re, json, os, webio.elements, random, threading, time
 from webio.elements import ElementType, FrontEndElement, Div, HDiv, Button
 from webio.elements import Text, TextArea, Image, DropDown, CheckBoxList
 from webio.elements import CheckBox, Toggle, Menu, Icon, TitleText, TextInput
-from webio.elements import HTabs, Tab, VSpace, Card
+from webio.elements import HTabs, Tab, VSpace, Card, VDiv, InlinedDiv
 
 import webio.utils, traceback
 
@@ -19,7 +19,7 @@ def read_file(fn):
   return output;
 
 class Object(dict):
-  def __init__(self, initial_value={}, **kwargs):
+  def __init__(self, initial_value = {}, **kwargs):
     self.__dict__ = self;
     dict.__init__(self, initial_value, **kwargs);
 
@@ -51,11 +51,11 @@ class Rendering:
     if frame.element_type == ElementType.TEXT:
       self.EvaluateText(frame);
       self.HandleOnClick(frame);
-    elif frame.element_type in set([ElementType.DIV, ElementType.HORIZONTAL_DIV]):
-      self.EvaluateDivHDivTab(frame);
+    elif frame.element_type.IsDiv():
+      self.EvaluateDivTab(frame);
       self.HandleOnClick(frame);
     elif frame.element_type in set([ElementType.HORIZONTAL_TABS]):
-      self.EvaluateDivHDivTab(frame);
+      self.EvaluateDivTab(frame);
     elif frame.element_type == ElementType.MENU:
       self.HandleOnClickForMenu(frame);
     elif frame.element_type in set([ElementType.BUTTON,
@@ -117,7 +117,7 @@ class Rendering:
     else:
       return [elements.Text(str(x).replace("\n", "<br>"))];
 
-  def EvaluateDivHDivTab(self, frame):
+  def EvaluateDivTab(self, frame):
     children = self.GetChildrenList(frame.children);
     frame.update(
       children = list(self.EvaluateFrame(i) for i in children)
