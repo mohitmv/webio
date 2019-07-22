@@ -10,8 +10,8 @@ class ElementType(IntEnum):
   TOGGLE = 6
   MENU = 7
   ICON = 8
-  HLIST = 9
-  VLIST = 10
+  DIV = 9
+  HORIZONTAL_DIV = 10
   CHECK_BOX = 11
   IMAGE = 12
   CHECK_BOX_LIST = 13
@@ -23,7 +23,7 @@ class ElementType(IntEnum):
                         self.TOGGLE, self.TEXT_INPUT, self.TEXT_AREA]);
 
   def HaveChildren(self):
-    return self in set([self.TEXT, self.HLIST, self.VLIST,
+    return self in set([self.TEXT, self.HORIZONTAL_DIV, self.DIV,
                         self.HORIZONTAL_TABS, self.VERTICAL_TABS]);
 
 class FrontEndElement(dict):
@@ -38,16 +38,19 @@ class FrontEndElement(dict):
   def Export(self):
     def ExportHelper(element):
       output = utils.Object();
-      if element.element_type in set([ElementType.HLIST,
-                                      ElementType.VLIST,
-                                      ElementType.TEXT]):
+      if element.element_type in set([ElementType.HORIZONTAL_DIV,
+                                      ElementType.DIV,
+                                      ElementType.TEXT,
+                                      ElementType.HORIZONTAL_TABS,
+                                      ElementType.VERTICAL_TABS]):
         output.children = list(ExportHelper(i) for i in element.children);
       output.element_type = element.element_type.__str__().split(".")[1];
       considered_fields = ["text_string", "disabled", "icon",
                 "label_string", "onclick_id", "onchange_id", "options",
                 "color_theme", "allow_multiple", "click_actions", "font_size",
                 "margin", "value_integer", "value_integer_list", "height",
-                "width", "element_id"];
+                "width", "element_id", "padding", "selected_tab",
+                "border_width", "default_rows"];
       if (element.element_type != ElementType.DROP_DOWN):
         considered_fields.append("value");
       for i in considered_fields:
@@ -128,13 +131,13 @@ def Icon(icon, **params):
                          font_size = "16px",
                          **params);
 
-def HList(*children, **params):
-  return FrontEndElement(ElementType.HLIST,
+def HDiv(*children, **params):
+  return FrontEndElement(ElementType.HORIZONTAL_DIV,
                          children = list(children),
                          **params);
 
-def VList(*children, **params):
-  return FrontEndElement(ElementType.VLIST,
+def Div(*children, **params):
+  return FrontEndElement(ElementType.DIV,
                          children = list(children),
                          **params);
 
@@ -144,6 +147,17 @@ def CheckBox(label_string, **params):
                          value = False,
                          **params);
 
+def HTabs(*children, **params):
+  output = FrontEndElement(ElementType.HORIZONTAL_TABS,
+                           selected_tab = -1,
+                           children = children);
+  output.update(params);
+  return output;
+
+def Tab(text_string, **params):
+  return FrontEndElement(ElementType.TAB,
+                         text_string = text_string,
+                         **params);
 
 
 ############# Composite Elements ###########################
@@ -151,6 +165,12 @@ def CheckBox(label_string, **params):
 def TitleText(text_string, **params):
   return Text(text_string,
               font_size = "25px",
-              margin_top_bottom = "5px"
+              margin = "5px 0px",
               **params);
+
+def VSpace(size):
+  return Div(height = size);
+
+def Card(text_string, **params):
+  return Div(text_string, padding = "5px", margin = "5px", border_width = "1px", **params);
 

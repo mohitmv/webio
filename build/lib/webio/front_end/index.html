@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>web-input</title>
+	<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
   <!-- {inlined_css_here:template_arg_0} -->
@@ -9,7 +10,7 @@
 <body>
 <div id="main" style="border: solid #ccc 0px;" ></div>
 <script type="text/javascript">
-	var py2web = new (function() {
+	var webio = new (function() {
 		var thiso = this;
 		this.opened_menu = null;//replaced by dropdown-DOM of opened menu.
 		this.hide_all_dropdowns = function() {
@@ -71,26 +72,28 @@
 
 		var get_html = function(design_object) { //assert - design_object is valid.
 			var onclick_code = function(onclick_id) {
-				return (onclick_id === undefined ? '': ' onclick="py2web.action_api(\''+onclick_id+'\', event)" ');
+				return (onclick_id === undefined ? '': 'webio.action_api(\''+onclick_id+'\', event); ');
 			};
+			var onclick_code1 = function(onclick_id) {
+				return (onclick_id === undefined ? '': ' onclick="webio.action_api(\''+onclick_id+'\', event)" ');
+			};
+
 			var onchange_code = function(onchange_id) {
-				return (onchange_id === undefined ? '': ' onchange="py2web.action_api(\''+onchange_id+'\', event)" ');
+				return (onchange_id === undefined ? '': ' onchange="webio.action_api(\''+onchange_id+'\', event)" ');
 			};
 			var style_code = function(design_object, attrs) {//assert ( attrs <= style_attr_mapping.keys() )
 				var style_attr_mapping = {
 					valign: "vertical-align",
-					padding: "padding",
 					bgcolor: "background-color",
 					border_width: "border-width",
 					border_color: "border-color",
 					font_size: "font-size",
-					color: "color",
 					line_height: "line-height"
 				};
 				var output = "";
 				for(var i in attrs) {
 					if(design_object[attrs[i]]) {
-						output += style_attr_mapping[attrs[i]]+':'+design_object[attrs[i]]+";";
+						output += (style_attr_mapping[attrs[i]] || attrs[i])+':'+design_object[attrs[i]]+";";
 					}
 				}
 				return output;
@@ -112,7 +115,7 @@
 				if (design_object.link) {
 					output += 'href="'+design_object.link+'" ';
 				}
-				output += onclick_code(design_object.onclick_id);
+				output += onclick_code1(design_object.onclick_id);
 				output += onchange_code(design_object.onchange_id);
 				output += ' style="' + style_code(design_object, ["font_size", "color", "line_height"])
 														 + font_style_css + '"  >';
@@ -130,12 +133,26 @@
 				if (design_object == null) {
 					alert("Server Error");
 					return "";
+				} else if(design_object.element_type === "HORIZONTAL_TABS") {
+					var output = '<div class="horizontal_tab" style="'+style_code(design_object, ["bgcolor", "color", "padding"])+'" >';
+					for (var i = 0; i < design_object.children.length; i++) {
+						var classes = " horizontal_tab_element ";
+						if (design_object.selected_tab === i) {
+							classes += " selected ";
+						}
+						output += '<div class="' + classes + '" ';
+						output += ' style="' + style_code(design_object.children[i], ["bgcolor", "color"]) + '" ';
+						output += ' onclick="' + onclick_code(design_object.children[i].onclick_id) + ' webio.select_tab('+i+', event) " >'
+						output += design_object.children[i].text_string +'</div>';
+					}
+					output += "</div>";
+					return output;
 				} else if(design_object.element_type === "BUTTON") {
 					if(design_object.label_string === null) {
-						return '<i '+onclick_code(design_object.onclick_id)+' class="my-material-icon-button" >'+design_object.icon+'</i>';
+						return '<i '+onclick_code1(design_object.onclick_id)+' class="my-material-icon-button" >'+design_object.icon+'</i>';
 					} else {
 						return '<button class="btn ' +(design_object.theme === "black_in_white" ? "btn-default": "btn-primary")+'" '
-							+ onclick_code(design_object.onclick_id)+' >'+(design_object.label_string||"")+(design_object.icon === null ? '': '<i class="my-material-icons" >'+design_object.icon+'</i>')+ '</button>';
+							+ onclick_code1(design_object.onclick_id)+' >'+(design_object.label_string||"")+(design_object.icon === null ? '': '<i class="my-material-icons" >'+design_object.icon+'</i>')+ '</button>';
 					}
 				} else if (design_object.element_type === "IMAGE") {
 					return '<img src="'+design_object.src+'" width="'+design_object.width+'" height="'+design_object.height+'" style="opacity: '+design_object.opacity+'; '+(design_object.rounded ? 'border-radius: 50%;': '')+' " >';
@@ -168,17 +185,44 @@
 					output += '</div>';
 					return output;
 				} else if(design_object.element_type === "MENU") {
-					var output = '<span><i class="my-material-icon-button" onclick="py2web.click_on_menu(this, event);" >'+design_object.icon+'</i><div class="dropdown_content_wrapper" ><div class="dropdown_content" >';
+					var output = '<span><i class="my-material-icon-button" onclick="webio.click_on_menu(this, event);" >'+design_object.icon+'</i><div class="dropdown_content_wrapper" ><div class="dropdown_content" >';
 					for(var i = 0; i < design_object.click_actions.length; i++) {
-						output += '<div class="dropdown_elements" '+onclick_code(design_object.click_actions[i][0])+' >'+design_object.click_actions[i][1]+'</div>';
+						output += '<div class="dropdown_elements" '+onclick_code1(design_object.click_actions[i][0])+' >'+design_object.click_actions[i][1]+'</div>';
 					}
 					output += '</div></div></span>';
 					return output;
-				} else if(design_object.element_type === "HLIST" || design_object.element_type == "VLIST") {
-					var output = '<div '+onclick_code(design_object.onclick_id)+' class="'+(design_object.element_type === "VLIST" ? "vertical_table": "table")+ " "+(design_object.onclick_id === null ?'':'hover_cell')+'" '+(design_object.align  ? 'align="'+design_object.align+'"': '')+' style="'+style_code(design_object, ["bgcolor"])+'" >';
-					var cell_style = style_code(design_object, ["valign", "border_width", "border_color", "padding"]);
-					for(var i = 0; i < design_object.children.length; i++) {
-						output += '<div class="'+(design_object.element_type === 'VLIST' ? 'vertical_table_cell':'table_cell')+'" style="'+cell_style+(design_object.element_type == 'VLIST' ? 'height': 'width')+':'+design_object[design_object.element_type === 'VLIST' ? 'height' : 'width'][i]+';" >'+get_html_helper(design_object.children[i])+'</div>';
+				} else if(design_object.element_type === "DIV") {
+					var attrs = " ";
+					attrs += onclick_code1(design_object.onclick_id);
+					var class_str = "vertical_table ";
+					if (design_object.onclick_id !== undefined) {
+						class_str += "hover_cell";
+					}
+					attrs += ' class="'+class_str+'" ';
+					attrs += (design_object.align  ? 'align="'+design_object.align+'"': '');
+					attrs += ' style="' + style_code(design_object, ["bgcolor", "width", "height", "border_width", "border_color", "margin", "color", "padding"]) + '" ';
+					var output = "<div " + attrs + ">";
+					for (var i = 0; i < design_object.children.length; i++) {
+						output += get_html_helper(design_object.children[i]);
+					}
+					output += "</div>";
+					return output;
+				} else if (design_object.element_type === "HORIZONTAL_DIV") {
+					var attrs = " ";
+					attrs += onclick_code1(design_object.onclick_id);
+					var class_str = "table ";
+					if (design_object.onclick_id !== undefined) {
+						class_str += "hover_cell";
+					}
+					attrs += ' class="'+class_str+'" ';
+					attrs += (design_object.align  ? 'align="'+design_object.align+'"': '');
+					attrs += ' style="' + style_code(design_object, ["bgcolor", "width", "height", "border_width", "border_color", "margin", "color"]) + '" ';
+					output = "<div " + attrs + ">";
+					var cell_style = style_code(design_object, ["valign", "padding"]);
+					for (var i = 0; i < design_object.children.length; i++) {
+						var child_width = design_object.children[i].width;
+						design_object.children[i].width = undefined;
+						output += '<div class="table_cell" style="' + cell_style + 'width :'+(child_width || "auto") +';" >'+get_html_helper(design_object.children[i])+'</div>';
 					}
 					output += '</div>';
 					return output;
@@ -248,6 +292,11 @@
 			return output;
 		};
 
+		this.select_tab = function(tab_index, event) {
+			// event.target.classList.add("selected");
+			// console.log(tab_index, event);
+		}
+
 		this.action_api = function(action_id, event) {
 			thiso.hide_all_dropdowns();
 			console.log("Triggered action: " + action_id);
@@ -257,7 +306,11 @@
 												 server_instance_id: initial_frame_info.server_instance_id
 												}, function(d) {
 				var json_response = JSON.parse(d);
-				render_frame(json_response.data);
+				if(json_response.error.error_code == "ErrorCodes.SUCCESS") {
+					render_frame(json_response.data);
+				} else {
+					alert(json_response.error.error_code + " - Please reload !");
+				}
 			});
 			event.stopPropagation();
 		}
@@ -272,13 +325,13 @@
 		"label_string": "Default Button",
 		"theme": "default",
 		"icon": "more_vert",
-		"onclick_id": null,
+		"onclick_id": undefined,
 	}];
 	// tmp_frame_6703[0] = {"children": [{"children": [{"children": [{"children": [], "element_type": "TEXT", "text_string": "Mohit"}, {"children": [], "element_type": "TEXT", "text_string": "  "}, {"children": [], "element_type": "TEXT", "text_string": "Saini", "onclick_id": 1}], "element_type": "TEXT", "onclick_id": 2}], "element_type": "VLIST", "onclick_id": 3}, {"children": [{"children": [{"children": [], "element_type": "TEXT", "text_string": "Mohit"}, {"children": [], "element_type": "TEXT", "text_string": "  "}, {"children": [], "element_type": "TEXT", "text_string": "Saini", "onclick_id": 4}], "element_type": "TEXT", "onclick_id": 5}], "element_type": "VLIST", "onclick_id": 6}], "element_type": "HLIST"};
 	var initial_frame_info = tmp_frame_6703[1];
-	py2web.render_frame(initial_frame_info.data);
+	webio.render_frame(initial_frame_info.data);
 	window.onclick = function(event) {
-		py2web.window_onclick();
+		webio.window_onclick();
 	}
 </script>
 </body>
