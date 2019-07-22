@@ -192,5 +192,28 @@ Serve(MyWebsite, port = 5004);
 In this example: value of `button_data["num]` is incremented whenever user click on Button. Which cause re-calculation of current frame and re-rendering of front-end elements displayed. Note that re-rendering doesn't reload the entire front-end. In the process of re-rendering, differences from previous frame are updated in current frame to reflect the minimum change in front-end.
 
 
-3. 
+3. Front-end elements
+Front-end elements are used in `Render` method to create current frame of web interface. A frame is nothing but combination of front-end elements in tree like structure.
+These front-end elements can be divided into 2 catogeries
+1. Atomic Elements - elements, which are used for rendering an atomic entity on front-end. ex: icon, button, text-area, text etc. These elements remains leaf node in frame-tree.
+2. Combining Elements - elements, which are used for combining other front-end elements. ex: HDiv (Horizontal-Division), VDiv (vertical division), etc.. These elements remains intermediate node in frame-tree.
+Example:
+```
+VDiv(
+  Button("Click Me"),
+  Text("Hello"),
+  HDiv(
+    Button("Click-1"),
+    Button("Click-2"),
+    VDiv(
+      Button("Click-3"),
+      Text("Some text below Click-3")
+    )
+  )
+)
+```
+Demo: https://i.imgur.com/xRUdDdw.png
+In this frame, VDiv is used for creating vertical divison. VDiv displays the child elements in vertical list.
+HDiv is used for creating horizontal division. HDiv displays the child elements in horizontal list. By default HDiv allocates equal width to each of it's children from available width. However height is allocated as much as used.
+
 
