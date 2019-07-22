@@ -66,7 +66,7 @@ webio.Serve(MyWebsite, port=5002);
 
 
 
-How to install webio in python ?
+How to install webio in python3 ?
 ----------
 `sudo pip3.6 install git+https://github.com/mohitmv/webio.git`
 
@@ -74,9 +74,25 @@ or
 
 `sudo pip3.6 install git+https://github.com/mohitmv/webio.git@v1.0.0`
 
-How to uninstall webio in python ?
+How to uninstall webio in python3 ?
 ----------
 `sudo pip3.6 uninstall webio`
 
 
+webio-python documentation
+----------
+
+1. Syntax
+
+```python
+import webio
+class MyWebsite:
+  def Render(self):
+    return webio.Text("Hello World");
+
+webio.Serve(MyWebsite, port = 5002);
+```
+To create a web interface using webio-python, you need to create a python-class, having `Render` method. This class, known as named serving-class can be served with `webio.Serve` method. Run this hello_world python script (python3) and desired web interface is served on `http://<IP>:<PORT>` ( ex: `http://127.0.0.1:5002`) url. Everytime a user opens the url in a new tab, a new object of `MyWebsite` class will be created to serve that perticular instance.
+
+Serving-class can have static variable to maintain the persistent state across different instances of web interface. ( To store global information ex: comments, posts, etc..). Similarly serving-class can have non-static variables to maintain and menupulate current state of an instance of web-interface. Ex: variable `current_tab` is non-static variable, since it's specific to an instance of web-interface.
 
