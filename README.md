@@ -92,8 +92,7 @@ class MyWebsite:
 
 webio.Serve(MyWebsite, port = 5002);
 ```
+To create a web interface using webio-python, you need to create a python-class, having `Render` method. This class, known as named serving-class can be served with `webio.Serve` method. Run this hello_world python script (python3) and desired web interface is served on `http://<IP>:<PORT>` ( ex: `http://127.0.0.1:5002`) url. Everytime a user opens the url in a new tab, a new object of `MyWebsite` class will be created to serve that perticular instance.
 
-To create a web interface using webio-python, you need to create a python-class named serving-class, having `Render` method. This class can be served with `webio.Serve` method. Run this hello_world python script (python3) and desired web interface is served on `http://<IP>:<PORT>` ( ex: `http://127.0.0.1:5002`) url in browser. Everytime a user opens the url in a new tab, a new object of `MyWebsite` class will be created to serve that perticular instance.
-
-Serving-class class can have static variable to maintain the state across different instances of web interface. ( ex: comments, posts, etc.). Similarly serving-class can have non-static variables to maintain, menupulate state of an instance of web-interface. Ex: variable `current_tab` is non-static variable, since it's specific to an instance of web-interface.
+Serving-class can have static variable to maintain the persistent state across different instances of web interface. ( To store global information ex: comments, posts, etc..). Similarly serving-class can have non-static variables to maintain and menupulate current state of an instance of web-interface. Ex: variable `current_tab` is non-static variable, since it's specific to an instance of web-interface.
 
