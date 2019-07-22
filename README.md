@@ -132,6 +132,11 @@ webio.Serve(MyWebsite, port=5002);
 ```
 
 
+
+![alt text](https://i.imgur.com/A5c2SuS.gif "webio demo filesystem")
+
+
+
 How to install webio in python3 ?
 ----------
 `sudo pip3.6 install git+https://github.com/mohitmv/webio.git`
