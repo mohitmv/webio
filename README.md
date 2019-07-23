@@ -1,7 +1,6 @@
 Welcome to webio
 ===================
 
-
 WebIO enables you to design the complex web interfaces without getting into HTML, CSS, JS, AngularJs, Ajax,
 API handling, Server management, nodejs etc...
 
@@ -14,127 +13,10 @@ build a fully functional web interface as desired. Once webio is integrated in p
 webio is extremely easy to use, having a 3-pager user manual.
 
 
-
 How to use webio in python ?
 ----------
-
-Here is an example of simple web interface having 4 tabs in navbar. Corrosponding to each tab, there is a list of cards, displaying some text. At the bottom, there is a form, which is used for adding more cards.
-
-```python
-import webio;
-from webio import Action, Div, HDiv, HTabs, Tab, TitleText, Button, TextInput
-from webio import TextArea, VSpace, Tab, HTabs, Card, Text;
-
-class MyWebsite:
-  tabs = ["Home", "About", "Contact", "Dashboard"];
-  content_for_tabs = {0: ["Home-01", "Home-02"], 1: ["About-11", "About-12"],
-                      2: ["Contact-01"], 3: ["Dashboard-01"]};
-  def __init__(self):
-    self.current_tab = 0;
-
-  def Render(self):
-    frame = Div();
-    frame << TitleText("Welcome to webio") << VSpace("20px");
-    frame << HTabs((Tab(self.tabs[index],
-                      onclick = Action(lambda index: self.set_current_tab(index),
-                                       index)
-                    ) for index in range(len(self.tabs))),
-                   padding = "0px 0px 0px 10px",
-                   selected_tab = self.current_tab
-                   );
-    frame << VSpace("10px")
-    for c in self.content_for_tabs[self.current_tab]:
-      frame << Card(c, color = ("blue" if self.current_tab == 2 else "default"),
-                       width = "50%");
-    frame << VSpace("20px");
-    Text("Want to create more content ?", font_size = "16px",
-                                          margin = "5px");
-    frame << TextInput("Your Name ?") << TextArea("Your content goes here",
-                                                  id = "content");
-    frame << Button("Submit", onclick =
-               lambda: self.content_for_tabs[self.current_tab].append(
-                                                     self.inputs["content"]));
-    return frame;
-
-  def set_current_tab(self, index):
-    self.current_tab = index;
-
-webio.Serve(MyWebsite, port=5002);
-```
-
-![alt text](https://raw.githubusercontent.com/mohitmv/webio/master/docs/webio_demo_slow_gif.gif "webio demo")
-
-
-Here is simple GUI of file system, supporting file/folder nevigation, deletion, cope-paste, cut-paste operation.
-
-```python
-import os;
-import webio;
-from webio import Action, Div, HDiv, HTabs, Tab, TitleText, Button, TextInput
-from webio import TextArea, VSpace, Tab, HTabs, Card, Text, Menu, VDiv;
-from webio import IconButton, Icon
-
-class MyWebsite:
-  def __init__(self):
-    self.current_dir = os.getcwd();
-    self.copied_moved_file = None;
-    self.is_copied = True;
-
-  def Back(self):
-    self.current_dir = os.path.abspath(self.current_dir + "/..");
-
-  def CopyMove(self, file_folder_name, is_copied = True):
-    self.is_copied = is_copied;
-    self.copied_moved_file = self.current_dir + "/" + file_folder_name;
-
-  def Paste(self):
-    os.system(("cp -r " if self.is_copied else "mv ") + self.copied_moved_file + " " + self.current_dir);
-    self.copied_moved_file = None;
-
-  def Render(self):
-    frame = VDiv(padding = "0 0 0 20px");
-    frame << TitleText("Welcome to filesystem") << VSpace("20px");
-    frame << Text("Current: " + self.current_dir) << VSpace("10px");
-    frame << Div(
-              Button("Paste Here",
-                     onclick = self.Paste,
-                     disabled = (self.copied_moved_file == None)),
-              Button("Home",
-                     icon = "home",
-                     onclick = lambda: self.__dict__.update(
-                                                current_dir = os.getcwd())));
-    frame << IconButton("arrow_back", onclick = self.Back);
-    for i in os.listdir(self.current_dir):
-      is_dir = os.path.isdir(self.current_dir + "/" + i);
-      frame << HDiv(
-                  Menu(
-                    options = [
-                      ["Delete", Action(lambda i: 
-                                  os.system("rm -rf " + self.current_dir + "/" + i), i)],
-                      ["Copy", Action(self.CopyMove, i, True)],
-                      ["Move", Action(self.CopyMove, i, False)],
-                     ],
-                    width = "30px",
-                    icon = "more_vert"
-                  ),
-                  Icon("folder" if is_dir else "insert_drive_file",
-                       width = "30px"),
-                  Div(Text(i),
-                      onclick = Action(lambda i:
-                          self.__dict__.update(
-                            current_dir = self.current_dir + "/" + i
-                          ), i) if is_dir else None),
-
-              );
-    return frame;
-
-webio.Serve(MyWebsite, port=5002);
-```
-
-
-
-![alt text](https://i.imgur.com/A5c2SuS.gif "webio demo filesystem")
-
+[Demo-1](https://github.com/mohitmv/webio/blob/master/docs/demo/tabs_and_card.md) : Navbar with 4 tabs, each having cards and option to add more cards.
+[Demo-2](https://github.com/mohitmv/webio/blob/master/docs/demo/file_system_ui.md) : GUI of linux file system
 
 
 How to install webio in python3 ?
@@ -187,7 +69,7 @@ class MyWebsite:
 
 Serve(MyWebsite, port = 5004);
 ```
-![alt text](https://i.imgur.com/2WwVRv4.gif "webio demo2")
+![alt text](https://i.imgur.com/2WwVRv4.gif "webio demo variable buttons")
 
 In this example: value of `button_data["num]` is incremented whenever user click on Button. Which cause re-calculation of current frame and re-rendering of front-end elements displayed. Note that re-rendering doesn't reload the entire front-end. In the process of re-rendering, differences from previous frame are updated in current frame to reflect the minimum change in front-end.
 
@@ -213,7 +95,18 @@ VDiv(
 )
 ```
 Demo: https://i.imgur.com/xRUdDdw.png
+
 In this frame, VDiv is used for creating vertical divison. VDiv displays the child elements in vertical list.
 HDiv is used for creating horizontal division. HDiv displays the child elements in horizontal list. By default HDiv allocates equal width to each of it's children from available width. However height is allocated as much as used.
 
 
+4. Reserved variables in serving-class
+- `Render`: this method must be defined by developer. It should return the current frame.
+- `inputs`: this dictionary object can be used for accessing front-end-values. example: self.inputs["email"] can be used for getting user-filled email id on TextInput element, which is having id="email".
+
+5. [Front-end elements complete reference](https://github.com/mohitmv/webio/blob/master/docs/reference.md)
+
+VDiv - Vertical division. Renders the provided list of front-end elements, aligning them vertically.
+HDiv - Horizontal division. Renders the provided list of front-end elements, aligning them horizontally.
+Button - Renders a button.
+Text - Displays simple text.

@@ -1,4 +1,4 @@
-Sample web interface : navbar with 4 tabs and cards for comments.
+Sample web interface : navbar with 4 tabs, each having cards for comments.
 
 Here is an example of simple web interface having 4 tabs in navbar. Corrosponding to each tab, there is a list of cards, displaying some text. At the bottom, there is a form, which is used for adding more cards.
 
@@ -44,5 +44,5 @@ class MyWebsite:
 webio.Serve(MyWebsite, port=5002);
 ```
 
-![alt text](https://raw.githubusercontent.com/mohitmv/webio/master/docs/webio_demo_slow_gif.gif "webio demo")
+![alt text](https://i.imgur.com/wpiVJ14.gif "webio demo")
 
