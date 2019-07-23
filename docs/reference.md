@@ -55,6 +55,8 @@ Optional params:
              if a TextInput box is disabled, user won't be able to type anything.
  - **onchange**: lambda function to be executed whenever user edit (type something or delete something) on this input box.
  - **value**: default value to be present in rendered input box. ex: "123"
+ - **id**: identifier of this input box. ex: "name", "email" etc.
+           if present, it can be accessed by `self.inputs[id]` i.e. `self.inputs["email"]`
 
 Sample use cases:
 
@@ -76,12 +78,29 @@ Optional params:
              if a TextInput box is disabled, user won't be able to type anything.
  - **onchange**: lambda function to be executed whenever user edit (type something or delete something) on this input box.
  - **value**: default value to be present in rendered input box. ex: "123"
- - **default_rows** : number of rows by default.
+ - **default_rows** : number of rows by default. ex: 5
+ - **id**: identifier of this input box. ex: "name", "email" etc.
+           if present, it can be accessed by `self.inputs[id]` i.e. `self.inputs["email"]`
 
 Sample use cases:
 
 ```python TextArea("Your Blog") ```
 
-```python TextArea("Your Blog", value = self.blogs[blog_id].content) ```
+```python
+TextArea("Your Blog", value = self.blogs[blog_id].content,
+                      default_rows = 5)
+```
+
+
+DropDown
+------------
+It's used for creating a dropdown, so that a user can choose one of many options provided.
+
+Fixed params:
+ - **label_string**:
+
+Optional params:
+ - **disabled** : 
+ - **allow_multiple** :  
 
 
