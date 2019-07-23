@@ -225,4 +225,43 @@ HDiv(
 ```
 
 
+Additional Details
+=======================
+1. `onclick` or `onchange` methods expects a action handler, which has to be lambda function or any other callable python object, expecting 0 input argument. These lambda-function should not refer to temporary variables (ex: loop iterator variable etc.), because these action handlers will be executed outside the scope of `Render` method and python's lambda function doesn't capture the refered variable by value.
 
+Solution is: use custom functors instead of python's lambda function. 
+
+
+**webio.Action** is a functor, which expects a lambda method, followed by arbetery number of arguments, followed by arbetery number of labeled-arguments.. It returns a callable object, which internally calls the underlying lambda method. This functor captures the provided arguments by value to be used when required.
+
+
+```python
+# Wrong Way
+for i in range(3):
+  j = i*100;
+  frame << Button("Print("+str(i)+")", onclick = lambda: print(i, j))
+```
+
+onclick for the button, should be used with help of Action functor. In this example: i,j are temporary. `lambda: print(i,j)` doesn't capture the current value of i and j.
+
+```python
+# Correct Way
+for i in range(3):
+  j = i*100;
+  frame << Button("Print("+str(i)+")", onclick = Action(lambda i, j: print(i, j), i, j))
+```
+
+However in this object `Action(lambda i,j: print(i, j), i, j)`, i and j are captured by value and lambda-function is not dependent on current value of i and j.
+
+--------------
+
+Implementation of `webio.Action`
+```python
+class Action:
+  def __init__(self, main_lambda, *args, **params):
+    self.main_lambda = main_lambda;
+    self.args = args;
+    self.params = params;
+  def __call__(self, *x):
+    return self.main_lambda(*x, *self.args, **self.params);
+```
