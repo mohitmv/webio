@@ -37,6 +37,7 @@ Fixed params:
 
 Optional params:
  - **disabled**: True|False
+
              if a button is disabled, user won't be able to click on it.
  - **onclick**: lambda function to be executed whenever user click on this button.
  - **font_size**: font size with pixel unit. ex: "26px".
@@ -80,6 +81,7 @@ Optional params:
  - **value**: default value to be present in rendered input box. ex: "123"
  - **default_rows** : number of rows by default. ex: 5
  - **id**: identifier of this input box. ex: "name", "email" etc.
+
            if present, it can be accessed by `self.inputs[id]` i.e. `self.inputs["email"]`
 
 Sample use cases:
