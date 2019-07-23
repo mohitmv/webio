@@ -60,7 +60,7 @@ In this example: value of `self.num` is incremented whenever user click on Butto
 
 webio reference
 ----------
-[python3](https://github.com/mohitmv/webio/blob/master/docs/reference.md)
+[webio reference for python3](https://github.com/mohitmv/webio/blob/master/docs/reference.md)
 
 
 How to install webio in python3 ?
