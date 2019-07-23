@@ -24,8 +24,7 @@ VDiv(
   )
 )
 ```
-
-![alt text](https://i.imgur.com/xRUdDdw.png "webio frame tree demo")
+Demo: https://i.imgur.com/xRUdDdw.png
 
 In this frame, VDiv is used for creating vertical divison. VDiv displays the child elements in vertical list. HDiv is used for creating horizontal division. HDiv displays the child elements in horizontal list. By default HDiv allocates equal width to each of it's children from available width. However in case of VDiv, height is allocated as much as used.
 
