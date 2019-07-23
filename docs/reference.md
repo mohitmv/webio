@@ -270,3 +270,9 @@ class Action:
     return self.main_lambda(*x, *self.args, **self.params);
 ```
 
+
+Google's Material Icons
+--------
+[google's material](https://material.io/tools/icons) icons are interally imported by webio. If you want to use any icon, just search for suitable icon and use the icon name. ex: "menu", "more_vert" etc.
+
+
