@@ -1,6 +1,6 @@
+Front-end Elements
+=======================
 
-- icon: icon name of google's material icon. ex: "menu"
-- disabled: True|False
 
 Button
 --------
@@ -166,7 +166,11 @@ Possible use:
 
 VDiv
 ------------
-VDiv is used for rendering the vertically aligned front-end elements.
+VDiv(Vertical Divison) is used for rendering the vertically aligned front-end elements.
+
+Fixed params: variable arguments, each of them should be front-end element. These arguments are called child elements. A `VDiv` element can be children of another `VDiv` or `HDiv` element to suppport complete mix and match.
+
+- `VDiv` support `<<` operator for adding more children to an `VDiv` element.
 
 Possible use:
 
@@ -185,10 +189,29 @@ VDiv(
 )
 ```
 
+-----------------------------------------
+
+```python
+frame = VDiv(
+          Button("Click Me"),
+        );
+frame << Text("Hello");
+hdiv = HDiv();
+hdiv << Button("Click-1");
+hdiv << Button("Click-2");
+hdiv << VDiv(
+          Button("Click-3"),
+          Text("Some text below Click-3")
+        );
+frame << hdiv;
+```
+https://i.imgur.com/xRUdDdw.png
 
 HDiv
 ------------
-HDiv is used for rendering the horizontally aligned front-end elements. Each child element is allocated same width by default.
+HDiv( Horizontal divisin) is used for rendering the horizontally aligned front-end elements. Each child element is allocated same width by default.
+
+Possible use:
 
 ```python
 HDiv(
@@ -200,3 +223,6 @@ HDiv(
   )
 )
 ```
+
+
+
