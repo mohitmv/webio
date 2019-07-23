@@ -45,7 +45,6 @@ Optional parameters:
  - **onclick**: lambda function to be executed whenever user click on this button.
 
 Possible use:
-
 ```Python
 Button("Submit")
 Button("Click Me", onclick = lambda: self.set_current_tab(4))
