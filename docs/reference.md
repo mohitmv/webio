@@ -54,4 +54,9 @@ Optional params:
  - **disabled**: True|False
              if a TextInput box is disabled, user won't be able to type anything.
  - **onchange**: lambda function to be executed whenever user edit (type something or delete something) on this input box.
- - 
+ - **value**: default value to be present in rendered input box. ex: "123"
+
+```python TextInput("Your Name") ```
+```python TextInput("Your Name", value="120") ```
+
+
