@@ -1,16 +1,16 @@
-Definitions
-----------
 
 - icon: icon name of google's material icon. ex: "menu"
 - disabled: True|False
 
-**VDiv**
+VDiv
+------------
 
 VDiv is used for rendering the front-end elements in vertical alignment.
 
 
 
-**Button**
+Button
+--------
 
 It's used for rendering a labeled button.
 Fixed parameters:
@@ -26,7 +26,9 @@ Optional parameters:
 
 
 
-**IconButton**
+IconButton
+--------
+
 
 It's used for rendering a icon-button.
 
@@ -41,7 +43,8 @@ Optional params:
  - label_string: A hint-string to be displayed when user hover on this icon. ex: "Jump to Previous Page"
 
 
-**TextInput**
+TextInput
+------------
 It's used for rendering a input box, where user can type a string.
 
 Fixed params:
