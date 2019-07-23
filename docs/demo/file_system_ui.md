@@ -25,7 +25,8 @@ class MyWebsite:
     self.copied_moved_file = self.current_dir + "/" + file_folder_name;
 
   def Paste(self):
-    os.system(("cp -r " if self.is_copied else "mv ") + self.copied_moved_file + " " + self.current_dir);
+    os.system(("cp -r " if self.is_copied else "mv ") + self.copied_moved_file
+                + " " + self.current_dir);
     self.copied_moved_file = None;
 
   def Render(self):
