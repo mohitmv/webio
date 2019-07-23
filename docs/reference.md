@@ -228,7 +228,7 @@ HDiv(
 Additional Details
 =======================
 
-**Action Handlers**
+**1. Action Handlers**
 
 `onclick` or `onchange` methods expects a action handler, which has to be lambda function or any other callable python object, expecting 0 input argument. These lambda-function should not refer to temporary variables (ex: loop iterator variable etc.), because these action handlers will be executed outside the scope of `Render` method and python's lambda function doesn't capture the refered variable by value.
 
