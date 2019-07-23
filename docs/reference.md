@@ -57,8 +57,31 @@ Optional params:
  - **value**: default value to be present in rendered input box. ex: "123"
 
 Sample use cases:
+
 ```python TextInput("Your Name") ```
 
 ```python TextInput("Your Name", value="120") ```
+
+
+
+TextArea
+------------
+It's used for rendering multiline input box, where user can type a paragraph.
+
+Fixed params:
+ - **label_string**: label of the input box. ex: "First Name", "Email", "Password"
+
+Optional params:
+ - **disabled**: True|False
+             if a TextInput box is disabled, user won't be able to type anything.
+ - **onchange**: lambda function to be executed whenever user edit (type something or delete something) on this input box.
+ - **value**: default value to be present in rendered input box. ex: "123"
+ - **default_rows** : number of rows by default.
+
+Sample use cases:
+
+```python TextArea("Your Blog") ```
+
+```python TextArea("Your Blog", value = self.blogs[blog_id].content) ```
 
 

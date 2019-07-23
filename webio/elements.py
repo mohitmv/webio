@@ -99,12 +99,13 @@ def TextInput(label_string, **params):
                          **params);
 
 def TextArea(label_string, **params):
-  return FrontEndElement(ElementType.TEXT_AREA,
+  output = FrontEndElement(ElementType.TEXT_AREA,
                          label_string = label_string,
                          value = "",
                          disabled = False,
-                         default_rows = 5,
-                         **params);
+                         default_rows = 5);
+  output.update(params);
+  return output;
 
 def DropDown(label_string, **params):
   output = FrontEndElement(ElementType.DROP_DOWN,
