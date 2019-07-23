@@ -81,9 +81,13 @@ Optional params:
 
 Possible use:
 
-```python TextInput("Your Name") ```
+```python
+TextInput("Your Name")
+```
 
-```python TextInput("Your Name", value="120") ```
+```python
+TextInput("Your Name", value="120")
+```
 
 
 
@@ -103,7 +107,9 @@ Optional params:
 
 Possible use:
 
-```python TextArea("Your Blog") ```
+```python
+TextArea("Your Blog")
+```
 
 ```python
 TextArea("Your Blog", value = self.blogs[blog_id].content,
@@ -188,7 +194,9 @@ Fixed params:
 
 Possible use:
 
-```python VSpace("20px") ```
+```python
+VSpace("20px")
+```
 
 
 
