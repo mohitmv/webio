@@ -13,13 +13,6 @@ build a fully functional web interface as desired. Once webio is integrated in p
 webio is extremely easy to use, having a 3-pager user manual.
 
 
-How to use webio in python3 ?
-----------
-[Demo-1](https://github.com/mohitmv/webio/blob/master/docs/demo/tabs_and_card.md) : Navbar with 4 tabs, each having cards and option to add more cards.
-
-[Demo-2](https://github.com/mohitmv/webio/blob/master/docs/demo/file_system_ui.md) : GUI of linux file system
-
-
 How to install webio in python3 ?
 ----------
 `sudo pip3.6 install git+https://github.com/mohitmv/webio.git`
@@ -33,10 +26,14 @@ How to uninstall webio in python3 ?
 `sudo pip3.6 uninstall webio`
 
 
-webio-python documentation
+How to use webio in python3 ?
 ----------
 
-1. Syntax
+[Demo-1](https://github.com/mohitmv/webio/blob/master/docs/demo/tabs_and_card.md) : Navbar with 4 tabs, each having cards and option to add more cards.
+
+[Demo-2](https://github.com/mohitmv/webio/blob/master/docs/demo/file_system_ui.md) : GUI of linux file system
+
+**Syntax**
 
 ```python
 import webio
@@ -51,7 +48,7 @@ To create a web interface using webio-python, you need to create a python-class,
 
 Serving-class can have static variable to maintain the persistent state across different instances of web interface. ( To store global information ex: comments, posts, etc..). Similarly serving-class can have non-static variables to maintain and manipulation of current state of an instance of web-interface. Ex: variable `current_tab` is non-static variable, since it's specific to an instance of web-interface.
 
-2. Frame Rendering and state 
+**Frame Rendering and state**
 
 webio supports various front-end elements to help you design the GUI. Render function is used for building the current frame of web-interfac. A frame is the tree-like-combination of front-end elements, programmatically built by `Render` function. Current frame is built using current state. Whenever current state is changed, current frame is recalculated and rerendered on front-end.
 
@@ -75,12 +72,6 @@ Serve(MyWebsite, port = 5004);
 In this example: value of `button_data["num]` is incremented whenever user click on Button. Which cause re-calculation of current frame and re-rendering of front-end elements displayed. Note that re-rendering doesn't reload the entire front-end. In the process of re-rendering, differences from previous frame are updated in current frame to reflect the minimum change in front-end.
 
 
-3. Front-end elements
-Front-end elements are used in `Render` method to create current frame of web interface. A frame is nothing but combination of front-end elements in tree like structure.
-These front-end elements can be divided into 2 catogeries
-1. Atomic Elements - elements, which are used for rendering an atomic entity on front-end. ex: icon, button, text-area, text etc. These elements remains leaf node in frame-tree.
-2. Combining Elements - elements, which are used for combining other front-end elements. ex: HDiv (Horizontal-Division), VDiv (vertical division), etc.. These elements remains intermediate node in frame-tree.
-Example:
 ```
 VDiv(
   Button("Click Me"),

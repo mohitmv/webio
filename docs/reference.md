@@ -1,6 +1,31 @@
 Front-end Elements
 =======================
 
+Front-end elements are used in `Render` method to create current frame of web interface. A frame is nothing but combination of front-end elements in tree like structure.
+These front-end elements can be divided into 2 catogeries
+**Atomic Elements** - elements, which are used for rendering an atomic entity on front-end. ex: icon, button, text-area, text etc. These elements work as leaf node in frame-tree.
+**Combining Elements** - elements, which are used for combining other front-end elements. ex: HDiv (Horizontal-Division), VDiv (vertical division), etc.. These elements work as intermediate node in frame-tree.
+
+Example:
+
+```
+VDiv(
+  Button("Click Me"),
+  Text("Hello"),
+  HDiv(
+    Button("Click-1"),
+    Button("Click-2"),
+    VDiv(
+      Button("Click-3"),
+      Text("Some text below Click-3")
+    )
+  )
+)
+```
+Demo: https://i.imgur.com/xRUdDdw.png
+
+In this frame, VDiv is used for creating vertical divison. VDiv displays the child elements in vertical list. HDiv is used for creating horizontal division. HDiv displays the child elements in horizontal list. By default HDiv allocates equal width to each of it's children from available width. However in case of VDiv, height is allocated as much as used.
+
 
 Button
 --------
@@ -289,16 +314,16 @@ If constructor of the web-interface class require some parameter, then those par
 
 Exception and Error Messages
 --------------
-**webio internal exceptions**
-1. CLIENT_INSTANCE_TIMEOUT - Everytime web interface is opened in url, a new instance of web-interface-class is created. Life cycle of the instance object (of web-interface-class) is fundamentally responsible for what is being rendered on the front-end. if a client doesn't do any activity for more than 3600 seconds, then instance object is destroyed at backend. Once backend doesn't own the instance object for a front-end instance, it will give CLIENT_INSTANCE_TIMEOUT error. In this situation client has to refresh the page (i.e. create a new instance and proceed).
+**exceptions**
+1. **CLIENT_INSTANCE_TIMEOUT** - Everytime web interface is opened in url, a new instance of web-interface-class is created. Life cycle of the instance object (of web-interface-class) is fundamentally responsible for what is being rendered on the front-end. if a client doesn't do any activity for more than 3600 seconds, then instance object is destroyed at backend. Once backend doesn't own the instance object for a front-end instance, it will give CLIENT_INSTANCE_TIMEOUT error. In this situation client has to refresh the page (i.e. create a new instance and proceed).
 
-2. INCORRECT_SERVER_INSTANCE - Whenever backend server is executed (i.e. python webio script), it is attached with a unique id. If server is restarted, it can't serve the client, which was instanted by different backend server. In such situation, client will face INCORRECT_SERVER_INSTANCE. In this situation, client has to refresh the page.
+2. **INCORRECT_SERVER_INSTANCE** - Whenever backend server is executed (i.e. python webio script), it is attached with a unique id. If server is restarted, it can't serve the client, which was instanted by different backend server. In such situation, client will face INCORRECT_SERVER_INSTANCE. In this situation, client has to refresh the page.
 
-3. INTERNAL_ERROR - It occures whenever action handlers (ex: onclick, onchange) fails with exception.
+3. **INTERNAL_ERROR** - It occures whenever action handlers (ex: onclick, onchange) fails with exception.
 
-4. SUCCESS
+4. **SUCCESS**
 
-5. INVALID_ACTION - It won't occure unless webio's front-end is fiddled.
+5. **INVALID_ACTION** - It won't occure unless webio's front-end is fiddled.
 
-6. INCOMPLETE_INPUT_VALUES - It won't occure unless webio's front-end is fiddled.
+6. **INCOMPLETE_INPUT_VALUES** - It won't occure unless webio's front-end is fiddled.
 
