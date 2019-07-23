@@ -72,24 +72,6 @@ Serve(MyWebsite, port = 5004);
 In this example: value of `button_data["num]` is incremented whenever user click on Button. Which cause re-calculation of current frame and re-rendering of front-end elements displayed. Note that re-rendering doesn't reload the entire front-end. In the process of re-rendering, differences from previous frame are updated in current frame to reflect the minimum change in front-end.
 
 
-```
-VDiv(
-  Button("Click Me"),
-  Text("Hello"),
-  HDiv(
-    Button("Click-1"),
-    Button("Click-2"),
-    VDiv(
-      Button("Click-3"),
-      Text("Some text below Click-3")
-    )
-  )
-)
-```
-Demo: https://i.imgur.com/xRUdDdw.png
-
-In this frame, VDiv is used for creating vertical divison. VDiv displays the child elements in vertical list.
-HDiv is used for creating horizontal division. HDiv displays the child elements in horizontal list. By default HDiv allocates equal width to each of it's children from available width. However height is allocated as much as used.
 
 
 4. Reserved variables in serving-class

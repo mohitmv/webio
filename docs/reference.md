@@ -33,6 +33,7 @@ Button
 --------
 
 It's used for rendering a labeled button.
+
 Fixed parameters:
  - **label_string**: label of the button. ex: "Submit", "Click Me"
 
@@ -43,6 +44,8 @@ Optional parameters:
  - **color_theme**: "back_in_white"| "blue"
  - **onclick**: lambda function to be executed whenever user click on this button.
 
+Possible use:
+
 ```Python
 Button("Submit")
 Button("Click Me", onclick = lambda: self.set_current_tab(4))
@@ -50,7 +53,6 @@ Button("Click Me", onclick = lambda: self.set_current_tab(4))
 
 IconButton
 --------
-
 
 It's used for rendering a icon-button.
 
@@ -75,10 +77,9 @@ Optional params:
  - **disabled**: True|False. if a TextInput box is disabled, user won't be able to type anything.
  - **onchange**: lambda function to be executed whenever user edit (type something or delete something) on this input box.
  - **value**: default value to be present in rendered input box. ex: "123"
- - **id**: identifier of this input box. ex: "name", "email" etc.
-           if present, it can be accessed by `self.inputs[id]` i.e. `self.inputs["email"]`
+ - **id**: identifier of this input box. ex: "name", "email" etc. if present, it can be accessed by `self.inputs[id]` i.e. `self.inputs["email"]`
 
-Sample use cases:
+Possible use:
 
 ```python TextInput("Your Name") ```
 
@@ -100,7 +101,7 @@ Optional params:
  - **default_rows** : number of rows by default. ex: 5
  - **id**: identifier of this input box. ex: "blog_content" etc. if present, it can be accessed by `self.inputs[id]` i.e. `self.inputs["blog_content"]`
 
-Sample use cases:
+Possible use:
 
 ```python TextArea("Your Blog") ```
 
@@ -115,19 +116,25 @@ DropDown
 It's used for creating a dropdown, so that a user can choose one of many options provided.
 
 Fixed params:
+
  - **label_string**: label of the input box. ex: "First Name", "Email", "Password".
+
  - **options**: list of options to choose from. It can be one of two formats.
     - list of non-tuple objects. All the `option` objects must be convertiable to string. In this format `str(option)` will be displayed at front-end and `self.inputs[dropdown_id]` will return the python-object (original object without string conversion).
     - list of 2-sized tuple. second element of tuple must be convertiable to string. In this format, `str(option.second)` will be displayed as dropdown option to front-end and `self.inputs[dropdown_id]` will return the `option.first` python object (corrosponding to selected option).
 
 Optional params:
  - **disabled** : True|False. if a DropDown is disabled, user won't be able to choose any option.
+
  - **allow_multiple** : True|False. if true, user can choose multiple options.
+
  - **value** : default value to be presented in rendered dropdown. In case of `allow_multiple=True`, value should be list of default-selected options.
+
  - **onchange**: lambda function to be executed whenever a option is chosen/modified.
+
  - **id**: identifier of this dropdown. ex: "age_group". if present, it can be accessed by `self.inputs[id]` i.e. `self.inputs["age_group"]`.
 
-Sample use cases:
+Possible use:
 
 ```python
 DropDown("Age Group", options=[(enum.MID_AGE, "20-30 years"),
@@ -160,6 +167,8 @@ Optional params:
  - **icon** : [default: "menu"] icon name of [google's material](https://material.io/tools/icons) icon. ex: "menu". if present a different icon will be used for menu.
  - **font_size** : font size with pixel unit. ex: "26px". (size of menu icon)
 
+Possible use:
+
 ```python
 Menu(options = [
                 ["Delete", lambda: os.system("rm -rf " + self.current_dir)],
@@ -172,8 +181,13 @@ Menu(options = [
 VSpace
 -------
 It's used for creating dummy vertical space.
+
 Fixed params:
+
  - **size**: space size with pixel unit. ex: "20px".
+
+Possible use:
+
 ```python VSpace("20px") ```
 
 
@@ -286,7 +300,7 @@ However in this object `Action(lambda i,j: print(i, j), i, j)`, i and j are capt
 
 --------------
 
-Implementation of `webio.Action`
+Possible implementation of `webio.Action`
 ```python
 class Action:
   def __init__(self, main_lambda, *args, **params):
