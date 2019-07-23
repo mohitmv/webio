@@ -33,14 +33,14 @@ IconButton
 It's used for rendering a icon-button.
 
 Fixed params:
- - icon: icon name of [google's material](https://material.io/tools/icons) icon. ex: "arrow_right".
+ - **icon**: icon name of [google's material](https://material.io/tools/icons) icon. ex: "arrow_right".
 
 Optional params:
- - disabled: True|False
+ - **disabled**: True|False
              if a button is disabled, user won't be able to click on it.
- - onclick: lambda function to be executed whenever user click on this button.
- - font_size: font size with pixel unit. ex: "26px".
- - label_string: A hint-string to be displayed when user hover on this icon. ex: "Jump to Previous Page"
+ - **onclick**: lambda function to be executed whenever user click on this button.
+ - **font_size**: font size with pixel unit. ex: "26px".
+ - **label_string**: A hint-string to be displayed when user hover on this icon. ex: "Jump to Previous Page"
 
 
 TextInput
