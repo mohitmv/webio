@@ -12,20 +12,6 @@ webio offers a simple set of web elements to be included in your backend code ( 
 build a fully functional web interface as desired. Once webio is integrated in program, it does everything to support backend API handling, as well as auto-generate the front-end of desired web-interface.
 webio is extremely easy to use, having a 3-pager user manual.
 
-
-How to install webio in python3 ?
-----------
-`sudo pip3.6 install git+https://github.com/mohitmv/webio.git`
-
-or
-
-`sudo pip3.6 install git+https://github.com/mohitmv/webio.git@v1.0.0`
-
-How to uninstall webio in python3 ?
-----------
-`sudo pip3.6 uninstall webio`
-
-
 How to use webio in python3 ?
 ----------
 
@@ -69,18 +55,19 @@ Serve(MyWebsite, port = 5004);
 ```
 ![alt text](https://i.imgur.com/2WwVRv4.gif "webio demo variable buttons")
 
-In this example: value of `button_data["num]` is incremented whenever user click on Button. Which cause re-calculation of current frame and re-rendering of front-end elements displayed. Note that re-rendering doesn't reload the entire front-end. In the process of re-rendering, differences from previous frame are updated in current frame to reflect the minimum change in front-end.
+In this example: value of `self.num` is incremented whenever user click on Button. Which cause re-calculation of current frame and re-rendering of front-end elements displayed. Note that re-rendering doesn't reload the entire front-end. In the process of re-rendering, differences from previous frame are updated in current frame to reflect the minimum change in front-end.
 
+[Complete Reference](https://github.com/mohitmv/webio/blob/master/docs/reference.md)
 
+How to install webio in python3 ?
+----------
+`sudo pip3.6 install git+https://github.com/mohitmv/webio.git`
 
+or
 
-4. Reserved variables in serving-class
-- `Render`: this method must be defined by developer. It should return the current frame.
-- `inputs`: this dictionary object can be used for accessing front-end-values. example: self.inputs["email"] can be used for getting user-filled email id on TextInput element, which is having id="email".
+`sudo pip3.6 install git+https://github.com/mohitmv/webio.git@v1.0.0`
 
-5. [Front-end elements complete reference](https://github.com/mohitmv/webio/blob/master/docs/reference.md)
+How to uninstall webio in python3 ?
+----------
+`sudo pip3.6 uninstall webio`
 
-VDiv - Vertical division. Renders the provided list of front-end elements, aligning them vertically.
-HDiv - Horizontal division. Renders the provided list of front-end elements, aligning them horizontally.
-Button - Renders a button.
-Text - Displays simple text.

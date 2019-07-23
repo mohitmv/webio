@@ -349,3 +349,12 @@ Exception and Error Messages
 
 6. **INCOMPLETE_INPUT_VALUES** - It won't occure unless webio's front-end is fiddled.
 
+
+Reserved Variables and Input
+----------------------
+Reserved variables in web-interface-class
+
+- **Render**: This method must be defined by developer. It should return the current frame.
+
+- **inputs**: This dictionary object can be used for accessing front-end-values. example: self.inputs["email"] can be used for getting user-filled email id on TextInput element, which is having id="email".
+
