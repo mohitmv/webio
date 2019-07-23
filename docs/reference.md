@@ -37,7 +37,7 @@ Fixed params:
 
 Optional params:
  - **disabled**: True|False
-
+    
              if a button is disabled, user won't be able to click on it.
  - **onclick**: lambda function to be executed whenever user click on this button.
  - **font_size**: font size with pixel unit. ex: "26px".
