@@ -23,7 +23,10 @@ Optional parameters:
  - **color_theme**: "back_in_white"| "blue"
  - **onclick**: lambda function to be executed whenever user click on this button.
 
-
+```Python
+Button("Submit")
+Button("Click Me", onclick = lambda: self.set_current_tab(4))
+```
 
 IconButton
 --------
@@ -101,6 +104,7 @@ Optional params:
  - **disabled** : True|False. if a DropDown is disabled, user won't be able to choose any option.
  - **allow_multiple** : True|False. if true, user can choose multiple options.
  - **value** : default value to be presented in rendered dropdown. In case of `allow_multiple=True`, value should be list of default-selected options.
+ - **onchange**: lambda function to be executed whenever a option is chosen/modified.
  - **id**: identifier of this dropdown. ex: "age_group". if present, it can be accessed by `self.inputs[id]` i.e. `self.inputs["age_group"]`.
 
 Sample use cases:
@@ -126,3 +130,29 @@ DropDown("Your Favorite Year", options=[1994, 1995, 1996],
 
 Menu
 ---------
+It's used for creating a menu of options. Each option in menu can trigger some action.
+
+Fixed params:
+ - **options** : List of 2-sized tuple. First element of tuple should be convertiable to string, which will be displayed as option. Second element of tuple should either be None or a lambda function. If a user click on any option, corrosponding lambda function will be executed.
+
+Optional params:
+ - **disabled** : True|False. if Menu is disabled, user won't be able to choose any option.
+ - **icon** : [default: "menu"] icon name of [google's material](https://material.io/tools/icons) icon. ex: "menu". if present a different icon will be used for menu.
+ - **font_size** : font size with pixel unit. ex: "26px". (size of menu icon)
+
+```python
+Menu(options = [
+                ["Delete", lambda: os.system("rm -rf " + self.current_dir)],
+                ["Copy", Action(self.CopyMove, i, True)],
+                ["Move", Action(self.CopyMove, i, False)],
+               ],
+     icon = "more_vert");
+```
+
+VSpace
+-------
+It's used for creating dummy vertical space.
+Fixed params:
+ - **size**: space size with pixel unit. ex: "20px".
+```python VSpace("20px") ```
+

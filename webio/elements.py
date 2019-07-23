@@ -136,10 +136,10 @@ def Toggle(label_string, **params):
 
 def Menu(icon = "menu", **params):
   output = FrontEndElement(ElementType.MENU,
-                         icon = icon,  # https://material.io/tools/icons
-                         font_size = "16px",
-                         disabled = False,
-                         options = []);
+                           icon = icon,  # https://material.io/tools/icons
+                           font_size = "16px",
+                           disabled = False,
+                           options = []);
   output.update(params);
   return output;
 
