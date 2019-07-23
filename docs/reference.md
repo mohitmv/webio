@@ -3,7 +3,9 @@ Front-end Elements
 
 Front-end elements are used in `Render` method to create current frame of web interface. A frame is nothing but combination of front-end elements in tree like structure.
 These front-end elements can be divided into 2 catogeries
+
 **Atomic Elements** - elements, which are used for rendering an atomic entity on front-end. ex: icon, button, text-area, text etc. These elements work as leaf node in frame-tree.
+
 **Combining Elements** - elements, which are used for combining other front-end elements. ex: HDiv (Horizontal-Division), VDiv (vertical division), etc.. These elements work as intermediate node in frame-tree.
 
 Example:
