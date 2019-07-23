@@ -60,12 +60,12 @@ from webio import Serve, VDiv, Button
 
 class MyWebsite:
   def __init__(self):
-    self.button_data = {"num": 2};
+    self.num =  2;
   def Render(self):
     frame = VDiv(); 
-    for i in range(self.button_data["num"]):
+    for i in range(self.num):
       frame << Button("Button-" + str(i),
-                      onclick = lambda: self.button_data.update(num = 1+self.button_data["num"]));
+                      onclick = lambda: self.__dict__.update(num = 1+self.num));
     return frame;
 
 Serve(MyWebsite, port = 5004);
