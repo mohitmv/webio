@@ -14,15 +14,15 @@ Button
 
 It's used for rendering a labeled button.
 Fixed parameters:
- - label_string: label of the button. ex: "Submit", "Click Me"
+ - **label_string**: label of the button. ex: "Submit", "Click Me"
 
 Optional parameters:
- - icon: icon name of [google's material](https://material.io/tools/icons) icon. ex: "menu".
+ - **icon**: icon name of [google's material](https://material.io/tools/icons) icon. ex: "menu".
          if present an icon will be attached along with label of button.
- - disabled: True|False
+ - **disabled**: True|False
              if a button is disabled, user won't be able to click on it.
- - color_theme: "back_in_white"| "blue"
- - onclick: lambda function to be executed whenever user click on this button.
+ - **color_theme**: "back_in_white"| "blue"
+ - **onclick**: lambda function to be executed whenever user click on this button.
 
 
 
@@ -48,10 +48,10 @@ TextInput
 It's used for rendering a input box, where user can type a string.
 
 Fixed params:
- - label_string: label of the input box. ex: "First Name", "Email", "Password"
+ - **label_string**: label of the input box. ex: "First Name", "Email", "Password"
 
 Optional params:
- - disabled: True|False
+ - **disabled**: True|False
              if a TextInput box is disabled, user won't be able to type anything.
- - onchange: lambda function to be executed whenever user edit (type something or delete something) on this input box.
+ - **onchange**: lambda function to be executed whenever user edit (type something or delete something) on this input box.
  - 
