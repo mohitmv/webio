@@ -276,3 +276,29 @@ Google's Material Icons
 [google's material](https://material.io/tools/icons) icons are interally imported by webio. If you want to use any icon, just search for suitable icon and use the icon name. ex: "menu", "more_vert" etc.
 
 
+webio.Serve
+--------
+**webio.Serve** : is used for serving python web-interface class as web-server on a specified port.
+
+`Serve(web-interface-class, args=(), params={}, port=5001)`
+
+If constructor of the web-interface class require some parameter, then those parameters must be passed to Serve method, so that whenever a new instance of web-interface is requested, webio can create a new object of web-interface-class with given parameters.
+
+
+
+
+Exception and Error Messages
+--------------
+**webio internal exceptions**
+1. CLIENT_INSTANCE_TIMEOUT - Everytime web interface is opened in url, a new instance of web-interface-class is created. Life cycle of the instance object (of web-interface-class) is fundamentally responsible for what is being rendered on the front-end. if a client doesn't do any activity for more than 3600 seconds, then instance object is destroyed at backend. Once backend doesn't own the instance object for a front-end instance, it will give CLIENT_INSTANCE_TIMEOUT error. In this situation client has to refresh the page (i.e. create a new instance and proceed).
+
+2. INCORRECT_SERVER_INSTANCE - Whenever backend server is executed (i.e. python webio script), it is attached with a unique id. If server is restarted, it can't serve the client, which was instanted by different backend server. In such situation, client will face INCORRECT_SERVER_INSTANCE. In this situation, client has to refresh the page.
+
+3. INTERNAL_ERROR - It occures whenever action handlers (ex: onclick, onchange) fails with exception.
+
+4. SUCCESS
+
+5. INVALID_ACTION - It won't occure unless webio's front-end is fiddled.
+
+6. INCOMPLETE_INPUT_VALUES - It won't occure unless webio's front-end is fiddled.
+
