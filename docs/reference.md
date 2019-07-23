@@ -56,7 +56,9 @@ Optional params:
  - **onchange**: lambda function to be executed whenever user edit (type something or delete something) on this input box.
  - **value**: default value to be present in rendered input box. ex: "123"
 
+Sample use cases:
 ```python TextInput("Your Name") ```
+
 ```python TextInput("Your Name", value="120") ```
 
 
