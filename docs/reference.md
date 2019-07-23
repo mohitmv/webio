@@ -2,13 +2,6 @@
 - icon: icon name of google's material icon. ex: "menu"
 - disabled: True|False
 
-VDiv
-------------
-
-VDiv is used for rendering the front-end elements in vertical alignment.
-
-
-
 Button
 --------
 
@@ -156,3 +149,54 @@ Fixed params:
  - **size**: space size with pixel unit. ex: "20px".
 ```python VSpace("20px") ```
 
+
+
+Text
+-----------
+It's used for displaying text. It can have child Text elements, to control the text style and linking in a sub section.
+
+Fixed params: variable arguments, each of them can be either Text element or string.
+
+Possible use:
+
+`Text("Once upon a time, there was a ", Text("lion", color = "red"), "which jumped from a big mountain named ", Text("Super Star Mountain", link = "http://www.super_mountain.com"), ". But the lion didn't die")`
+
+
+
+
+VDiv
+------------
+VDiv is used for rendering the vertically aligned front-end elements.
+
+Possible use:
+
+```python
+VDiv(
+  Button("Click Me"),
+  Text("Hello"),
+  HDiv(
+    Button("Click-1"),
+    Button("Click-2"),
+    VDiv(
+      Button("Click-3"),
+      Text("Some text below Click-3")
+    )
+  )
+)
+```
+
+
+HDiv
+------------
+HDiv is used for rendering the horizontally aligned front-end elements. Each child element is allocated same width by default.
+
+```python
+HDiv(
+  Button("Click-1"),
+  Button("Click-2"),
+  VDiv(
+    Button("Click-3"),
+    Text("Some text below Click-3")
+  )
+)
+```
