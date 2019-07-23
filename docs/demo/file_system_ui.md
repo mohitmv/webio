@@ -2,6 +2,8 @@ Sample web interface : GUI of linux file system
 
 Here is simple GUI of linux file system, supporting file/folder navigation, deletion, cope-paste, cut-paste operation of files and folders. serving the current directory(where this python script is running) by default.
 
+![alt text](https://i.imgur.com/A5c2SuS.gif "webio demo linux file system")
+
 ```python
 import os;
 import webio;
@@ -65,5 +67,3 @@ class MyWebsite:
 
 webio.Serve(MyWebsite, port=5002);
 ```
-
-![alt text](https://i.imgur.com/A5c2SuS.gif "webio demo linux file system")
