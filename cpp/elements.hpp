@@ -17,12 +17,6 @@ class FrontEndElement {
   std::vector<FrontEndElement> children;
   int onchange_id, onclick_id;
 
-  // need to add these member fields : ["text_string", "disabled", "icon",
-  //               "label_string", "onclick_id", "onchange_id", "options",
-  //               "color_theme", "allow_multiple", "font_size",
-  //               "margin", "value_integer", "value_integer_list", "height",
-  //               "width", "element_id", "padding", "selected_tab",
-  //               "border_width", "default_rows"]
   FrontEndElement() {}
   FrontEndElement(ElementType type): element_type(type) {};
   FrontEndElement& operator<<(FrontEndElement&& child_element) {
@@ -281,7 +275,6 @@ FrontEndElement Button(const std::string& label_string) {
 FrontEndElement Image(const std::string& src) {
   return FrontEndElement(FrontEndElement::IMAGE).src(src);
 }
-
 
 // print("\n".join("case FrontEndElement::" + i + ":\n  return \"" + i + "\";" for i in a))
 std::string ElementTypeString(FrontEndElement::ElementType type) {
