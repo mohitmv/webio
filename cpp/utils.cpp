@@ -46,12 +46,19 @@ string JsonToString(const Json& json) {
         oss << lQuote(json.string_value); break;
       case Json::BOOL_TYPE:
         oss << (json.bool_value ? "true": "false"); break;
-      case Json::LIST_TYPE:
+      case Json::LIST_TYPE: {
+        bool is_first = true;
+        oss << "[";
         for (auto& child_json : json.json_values) {
-          oss << JsonToString(child_json);
+          if (not is_first) {
+            oss << ", ";
+          }
+          lJsonToStringHelper(child_json);
+          is_first = false;
         }
+        oss << "]";
         break;
-        // oss << "implement list type"; break;
+      }
       default:
         assert(false);
     }

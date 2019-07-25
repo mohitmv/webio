@@ -2,6 +2,7 @@
 #include "webio.hpp"
 
 #include "utils.cpp"
+#include "elements.cpp"
 
 using namespace std;
 
@@ -19,7 +20,8 @@ int main() {
     }
   };
 
-  FrameServer<MyWebsite>().BuildHtml("index.html");
+  // cout << FrameServer<MyWebsite>().HandleFirstTimeLoad().ToString() << endl;
 
+  FrameServer<MyWebsite>().Run(5007);
   return 0;
 }

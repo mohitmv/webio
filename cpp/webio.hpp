@@ -7,6 +7,7 @@
 
 #include "utils.hpp"
 #include "elements.hpp"
+#include "server.hpp"
 
 using std::unordered_map;
 using std::string;
@@ -17,9 +18,11 @@ using std::endl;
 namespace webio {
 
 class Rendering {
+ public:
   int element_index_counter = 0;
   std::unordered_map<int, std::function<void(void)>> registered_actions;
-  FrontEndElement& frame;
+  FrontEndElement frame;
+  Rendering() {};
   Rendering(FrontEndElement& frame): frame(frame) {
     EvaluateFrame(frame);
   }
@@ -38,9 +41,8 @@ class FrameServer {
   using ServingClassType = T;
   struct ClientInstance {
     ServingClassType client_instance;
-    FrontEndElement current_frame;
+    Rendering current_frame;
     std::size_t recent_active_timestamp;
-    ClientInstance() {};
   };
   unordered_map<int, ClientInstance> client_instances;
   int client_instance_id_counter = 1;
@@ -48,7 +50,7 @@ class FrameServer {
   FrameServer() {}
   int CreateClientInstance() {
     int instance_id = client_instance_id_counter++;
-    client_instances[instance_id] = ClientInstance();
+    client_instances[instance_id];
     return instance_id;
   }
 
@@ -62,14 +64,21 @@ class FrameServer {
 
   Json HandleFirstTimeLoad() {
     int client_instance_id = CreateClientInstance();
-    auto output = Json(Json::STRING_TYPE);
     cout << client_instance_id << endl;
-    // output.map_value = Json::MapType({
-    //   {"error", Json(Json::MapType{"error_code": "SUCCESS"})},
-    //   {"data", ReloadFrame(client_instance_id)},
-    //   {"client_instance_id", Json(client_instance_id)},
-    //   {"server_instance_id", Json(server_instance_id)}
-    // });
+    auto output =  Json(Json::MapType{
+      {"error", Json(Json::MapType{{"error_code", Json(string("SUCCESS"))}})},
+      {"data", ReloadFrame(client_instance_id)},
+      {"client_instance_id", Json(client_instance_id)},
+      {"server_instance_id", Json(server_instance_id)}
+    });
+    return output;
+  }
+
+  Json HandleActionEvent() {
+    int client_instance_id = 1;
+    auto output = Json(Json::MapType({
+      {"data", ReloadFrame(client_instance_id)}
+    }));
     return output;
   }
 
@@ -87,6 +96,30 @@ class FrameServer {
              HandleFirstTimeLoad().ToString());
     WriteFile(file_name, html_page);
   }
+
+  void Run(int port) {
+    auto lReplace = [&](string* input, const string& a, const string& b) {
+      return input->replace(input->find(a), a.size(), b);
+    };
+    HttpServer server;
+    server.get_method_handler = [&](const string& url) {
+      string html_page = ReadFile("../webio/front_end/index.html");
+      lReplace(&html_page,
+               "<!-- {inlined_css_here:template_arg_0} -->",
+               "<style>" + ReadFile("../webio/front_end/css/main.css")
+                         + "</style>");
+      lReplace(&html_page,
+               "tmp_frame_6703[1]",
+               HandleFirstTimeLoad().ToString());
+      return html_page;
+    };
+    server.post_method_handler = [&](const string& url,
+                                     const string& post_params) {
+      return HandleActionEvent().ToString();
+    };
+    server.Run(port);
+  }
+
 };
 
 }  // namespace webio
