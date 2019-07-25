@@ -17,8 +17,6 @@ struct Json {
   Json(int x): type(INT_TYPE), int_value(x) {}
   Json(const string& x): type(STRING_TYPE), string_value(x) {}
   Json(const MapType& x): type(MAP_TYPE), map_value(x) {}
-  Json(const std::vector<int>& values): integer_values(values) {} 
-  Json(const std::vector<string>& values): string_values(values) {}
   Json(const std::vector<Json>& values): type(LIST_TYPE), json_values(values) {}
   void Set(Type type) {
     this->type = type;

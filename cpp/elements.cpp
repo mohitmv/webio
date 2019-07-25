@@ -85,11 +85,19 @@ Json FrontEndElement::Export() const {
   }
 
   if (this->has_options) {
-    json_fields["options"] = Json(options_);
+    std::vector<Json> json_string_values;
+    for (const std::string& option : options_) {
+      json_string_values.push_back(Json(option));
+    }
+    json_fields["options"] = Json(std::move(json_string_values));
   }
 
   if (this->has_value_integer_list) {
-    json_fields["value_integer_list"] = Json(value_integer_list_);
+    std::vector<Json> json_integer_values;
+    for (int integer_value : value_integer_list_) {
+      json_integer_values.push_back(Json(integer_value));
+    }
+    json_fields["value_integer_list"] = Json(std::move(json_integer_values));
   }
 
   if (this->has_src) {
