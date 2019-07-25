@@ -92,14 +92,6 @@ Json FrontEndElement::Export() const {
     json_fields["options"] = Json(std::move(json_string_values));
   }
 
-  if (this->has_value_integer_list) {
-    std::vector<Json> json_integer_values;
-    for (int integer_value : value_integer_list_) {
-      json_integer_values.push_back(Json(integer_value));
-    }
-    json_fields["value_integer_list"] = Json(std::move(json_integer_values));
-  }
-
   if (this->has_src) {
     json_fields["src"] = Json(src_);
   }

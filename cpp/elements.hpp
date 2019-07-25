@@ -199,14 +199,6 @@ class FrontEndElement {
     return *this;
   }
 
-  string size_;
-  bool has_size = false;
-  FrontEndElement& size(const std::string& input) {
-    this->size_ = input;
-    this->has_size = true;
-    return *this;
-  }
-
 };
 
 FrontEndElement VDiv() {
@@ -258,18 +250,18 @@ FrontEndElement Menu(const std::vector<std::string>& options) {
 }
 
 FrontEndElement VSpace(const std::string& size) {
-  return Div().size(size);
+  return VDiv().height(size);
 }
 
 FrontEndElement Text(const std::string& text_string) {
   return FrontEndElement(FrontEndElement::TEXT).text_string(text_string);
 }
 
-FrontEndElement HorizontalTabs() {
+FrontEndElement HTabs() {
   return FrontEndElement(FrontEndElement::HORIZONTAL_TABS);
 }
 
-FrontEndElement VerticalTabs() {
+FrontEndElement VTabs() {
   return FrontEndElement(FrontEndElement::VERTICAL_TABS);
 }
 
