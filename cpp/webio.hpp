@@ -3,12 +3,16 @@
 
 #include <unordered_map>
 #include <functional>
+#include <iostream>
 
 #include "utils.hpp"
 #include "elements.hpp"
 
 using std::unordered_map;
 using std::string;
+
+using std::cout;
+using std::endl;
 
 namespace webio {
 
@@ -30,11 +34,13 @@ class Rendering {
 
 template<typename T>
 class FrameServer {
+ public:
   using ServingClassType = T;
   struct ClientInstance {
     ServingClassType client_instance;
     FrontEndElement current_frame;
     std::size_t recent_active_timestamp;
+    ClientInstance() {};
   };
   unordered_map<int, ClientInstance> client_instances;
   int client_instance_id_counter = 1;
@@ -42,7 +48,7 @@ class FrameServer {
   FrameServer() {}
   int CreateClientInstance() {
     int instance_id = client_instance_id_counter++;
-    client_instances[instance_id] = ClientInstance(ServingClassType());
+    client_instances[instance_id] = ClientInstance();
     return instance_id;
   }
 
@@ -56,7 +62,8 @@ class FrameServer {
 
   Json HandleFirstTimeLoad() {
     int client_instance_id = CreateClientInstance();
-    auto output = Json(Json::MAP_TYPE);
+    auto output = Json(Json::STRING_TYPE);
+    cout << client_instance_id << endl;
     // output.map_value = Json::MapType({
     //   {"error", Json(Json::MapType{"error_code": "SUCCESS"})},
     //   {"data", ReloadFrame(client_instance_id)},
@@ -66,7 +73,7 @@ class FrameServer {
     return output;
   }
 
-  string BuildHtml(string file_name) {
+  void BuildHtml(const string& file_name) {
     auto lReplace = [&](string* input, const string& a, const string& b) {
       return input->replace(input->find(a), a.size(), b);
     };

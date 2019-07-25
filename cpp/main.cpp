@@ -10,7 +10,7 @@ using namespace webio;
 int main() {
 
 
-  class MyWebsite {
+  struct MyWebsite {
     auto Render() {
       auto frame = VDiv();
       frame << Button("Click Me Button");
@@ -19,7 +19,7 @@ int main() {
     }
   };
 
-  FrameServer<MyWebsite>.BuildHtml("index.html");
+  FrameServer<MyWebsite>().BuildHtml("index.html");
 
   return 0;
 }

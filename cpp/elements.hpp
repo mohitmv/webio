@@ -23,9 +23,11 @@ class FrontEndElement {
   //               "margin", "value_integer", "value_integer_list", "height",
   //               "width", "element_id", "padding", "selected_tab",
   //               "border_width", "default_rows"]
+  FrontEndElement() {}
   FrontEndElement(ElementType type): element_type(type) {};
   FrontEndElement& operator<<(FrontEndElement&& child_element) {
     children.push_back(std::move(child_element));
+    return *this;
   }
   Json Export() const;
   FrontEndElement& text_string(const string& input) {
