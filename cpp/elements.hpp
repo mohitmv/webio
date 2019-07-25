@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "utils.hpp"
+#include <assert.h>
 
 namespace webio {
 
@@ -27,6 +28,10 @@ class FrontEndElement {
   FrontEndElement& operator<<(FrontEndElement&& child_element) {
     children.push_back(std::move(child_element));
     return *this;
+  }
+  bool HasChildren() {
+    // ToDo(Implement this..)
+    assert(false);
   }
   Json Export() const;
 
@@ -194,9 +199,9 @@ class FrontEndElement {
     return *this;
   }
 
-  int size_;
+  string size_;
   bool has_size = false;
-  FrontEndElement& size(int input) {
+  FrontEndElement& size(const std::string& input) {
     this->size_ = input;
     this->has_size = true;
     return *this;
@@ -252,7 +257,7 @@ FrontEndElement Menu(const std::vector<std::string>& options) {
   return FrontEndElement(FrontEndElement::MENU).options(options);
 }
 
-FrontEndElement VSpace(int size) {
+FrontEndElement VSpace(const std::string& size) {
   return Div().size(size);
 }
 
@@ -284,6 +289,56 @@ FrontEndElement Button(const std::string& label_string) {
 FrontEndElement Image(const std::string& src) {
   return FrontEndElement(FrontEndElement::IMAGE).src(src);
 }
+
+
+// print("\n".join("case FrontEndElement::" + i + ":\n  return \"" + i + "\";" for i in a))
+std::string ElementTypeString(FrontEndElement::ElementType type) {
+  switch (type) {
+    case FrontEndElement::TEXT:
+      return "TEXT";
+    case FrontEndElement::BUTTON:
+      return "BUTTON";
+    case FrontEndElement::TEXT_INPUT:
+      return "TEXT_INPUT";
+    case FrontEndElement::TEXT_AREA:
+      return "TEXT_AREA";
+    case FrontEndElement::DROP_DOWN:
+      return "DROP_DOWN";
+    case FrontEndElement::TOGGLE:
+      return "TOGGLE";
+    case FrontEndElement::MENU:
+      return "MENU";
+    case FrontEndElement::ICON:
+      return "ICON";
+    case FrontEndElement::SIMPLE_DIV:
+      return "SIMPLE_DIV";
+    case FrontEndElement::HORIZONTAL_DIV:
+      return "HORIZONTAL_DIV";
+    case FrontEndElement::CHECK_BOX:
+      return "CHECK_BOX";
+    case FrontEndElement::IMAGE:
+      return "IMAGE";
+    case FrontEndElement::CHECK_BOX_LIST:
+      return "CHECK_BOX_LIST";
+    case FrontEndElement::HORIZONTAL_TABS:
+      return "HORIZONTAL_TABS";
+    case FrontEndElement::VERTICAL_TABS:
+      return "VERTICAL_TABS";
+    case FrontEndElement::TAB:
+      return "TAB";
+    case FrontEndElement::VERTICAL_DIV:
+      return "VERTICAL_DIV";
+    case FrontEndElement::INLINED_DIV:
+      return "INLINED_DIV";
+    case FrontEndElement::ICON_BUTTON:
+      return "ICON_BUTTON";
+    default: assert(false);
+  }
+  return "";
+}
+
+
+
 
 }  // namespace webio
 

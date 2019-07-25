@@ -29,7 +29,7 @@ string JsonToString(const Json& json) {
       case Json::MAP_TYPE: {
         oss << "{";
         bool is_first = true;
-        for (auto& item: *json.map_value) {
+        for (auto& item: json.map_value) {
           if (not is_first) {
             oss << ", ";
           }
@@ -46,6 +46,12 @@ string JsonToString(const Json& json) {
         oss << lQuote(json.string_value); break;
       case Json::BOOL_TYPE:
         oss << (json.bool_value ? "true": "false"); break;
+      case Json::LIST_TYPE:
+        for (auto& child_json : json.json_values) {
+          oss << JsonToString(child_json);
+        }
+        break;
+        // oss << "implement list type"; break;
       default:
         assert(false);
     }
@@ -57,17 +63,17 @@ string JsonToString(const Json& json) {
 }
 
 string Json::ToString() const {
-  // return JsonToString(*this);
-  return "{"
-    "data: {"
-      "\"element_type\": \"BUTTON\","
-      "\"element_id\": \"6\","
-      "\"label_string\": \"Sample Button\","
-      "\"theme\": \"default\","
-      "\"icon\": null,"
-      "\"onclick_id\": undefined"
-    "}"
-  "}";
+  return JsonToString(*this);
+  // return "{"
+  //   "data: {"
+  //     "\"element_type\": \"BUTTON\","
+  //     "\"element_id\": \"6\","
+  //     "\"label_string\": \"Sample Button\","
+  //     "\"theme\": \"default\","
+  //     "\"icon\": null,"
+  //     "\"onclick_id\": undefined"
+  //   "}"
+  // "}";
 }
 
 std::string ReadFile(std::string file_name) {

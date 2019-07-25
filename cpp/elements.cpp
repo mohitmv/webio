@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <assert.h>
 
 using std::string;
 using std::map;
@@ -12,6 +13,16 @@ namespace webio {
 Json FrontEndElement::Export() const {
   Json output;
   map<string, Json> json_fields;
+
+  if (true) { // ToDo(Saharsh): replace by HasChildren()
+    std::vector<Json> children1;  // ToDo(Saharsh): fix this shit
+    for (auto &child: children) {
+      children1.push_back(std::move(child.Export()));
+    }
+    json_fields["children"] = Json(std::move(children1));
+  }
+
+  json_fields["element_type"] = ElementTypeString(this->element_type);
 
   if (this->has_icon) {
     json_fields["icon"] = Json(icon_);
