@@ -10,6 +10,7 @@ using std::map;
 
 namespace webio {
 
+// ToDo(Mohit): [Important] write python code to generate code below.
 Json FrontEndElement::Export() const {
   Json output;
   map<string, Json> json_fields;
@@ -101,12 +102,6 @@ Json FrontEndElement::Export() const {
   }
 
   output.Set(json_fields);
-//  output.Set(unordered_map{
-//    {"element_type", Json("BUTTON")},
-//    {"element_id", Json(12)},
-//    {"onclick_id", Json(JSON::NULL_TYPE)},
-//    {"icon", Json()},
-//    {"label_string": "Click Me"}});
   return output;
 }
 

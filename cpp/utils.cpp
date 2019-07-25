@@ -71,16 +71,6 @@ string JsonToString(const Json& json) {
 
 string Json::ToString() const {
   return JsonToString(*this);
-  // return "{"
-  //   "data: {"
-  //     "\"element_type\": \"BUTTON\","
-  //     "\"element_id\": \"6\","
-  //     "\"label_string\": \"Sample Button\","
-  //     "\"theme\": \"default\","
-  //     "\"icon\": null,"
-  //     "\"onclick_id\": undefined"
-  //   "}"
-  // "}";
 }
 
 std::string ReadFile(std::string file_name) {

@@ -35,8 +35,6 @@ int main() {
 
       frame << TextInput("Your name?") << TextArea("Your content goes here");
 
-      
-
       return frame;
     }
   };

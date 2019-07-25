@@ -50,8 +50,9 @@ public:
         exit(EXIT_FAILURE); 
     } 
     int count = 1;
+    cout << "Running http://127.0.0.1:" << port << endl;
     while (true) {
-      cout << "New connection------------------------------- " << count << endl;
+      cout << "New request ------------------------------- " << count << endl;
       count++;
       if ((new_socket = accept(server_fd, (struct sockaddr *)&address,  
                          (socklen_t*)&addrlen))<0) 
@@ -59,10 +60,8 @@ public:
           perror("accept"); 
           exit(EXIT_FAILURE); 
       }
-      cout << "REading" << endl;
       valread = read( new_socket , buffer, 1024);
       string input_string = buffer;
-      cout << "Input = " << buffer << endl;
       printf("%s\n",buffer );
       string response_string = "";
       if (input_string.substr(0, 3) == "GET") {
@@ -78,7 +77,6 @@ public:
                          "Connection: Closed\n"
                          "Content-Type: text/html; charset=iso-8859-1\r\n\r\n" + response_string;
 
-      cout << "sending response of size = " << response_string.size() <<  endl;
       send(new_socket , response_string.c_str() , response_string.size() , 0);
       close(new_socket);
     }
