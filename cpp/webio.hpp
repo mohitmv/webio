@@ -31,11 +31,20 @@ class Rendering {
     return element_index_counter;
   }
   FrontEndElement& EvaluateFrame(FrontEndElement& frame) {
+    return EvaluateFrameRecursive(frame);
+  }
+ private:
+  FrontEndElement& EvaluateFrameRecursive(FrontEndElement& frame) {
     if (frame.has_onclick) {
-      registered_actions[GetUniqueIndex()] = frame.onclick_;
+      frame.onclick_id = GetUniqueIndex();
+      registered_actions[frame.onclick_id] = frame.onclick_;
     }
     if (frame.has_onchange) {
-      registered_actions[GetUniqueIndex()] = frame.onchange_;
+      frame.onchange_id = GetUniqueIndex();
+      registered_actions[frame.onchange_id] = frame.onchange_;
+    }
+    for (auto& child_frame : frame.children){
+      EvaluateFrameRecursive(child_frame);
     }
     return frame;
   }

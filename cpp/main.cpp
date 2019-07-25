@@ -12,6 +12,7 @@ int main() {
 
 
   struct MyWebsite {
+    int num = 0;
     auto Render() {
       auto frame = VDiv();
       frame << Button("Click Me Button");
@@ -35,7 +36,12 @@ int main() {
 
       frame << TextInput("Your name?") << TextArea("Your content goes here");
 
-      
+      frame << Button("Click me to add more buttons").onclick([&](){num++;});
+
+      for (int i = 0; i < num; i++) {
+        frame << Button("Button number " + std::to_string(i) + "added on click");
+      }
+
 
       return frame;
     }
