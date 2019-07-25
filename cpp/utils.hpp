@@ -4,19 +4,20 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <map>
 
 namespace webio {
 
 struct Json {
   using string = std::string;
-  using MapType = std::unordered_map<string, Json>;
+  using MapType = std::map<string, Json>;
   enum Type {INT_TYPE, STRING_TYPE, NULL_TYPE, BOOL_TYPE, LIST_TYPE, MAP_TYPE};
   Json(): type(NULL_TYPE) {};
   Json(Type type): type(type) {};
   Json(int x): type(INT_TYPE), int_value(x) {}
   Json(const string& x): type(STRING_TYPE), string_value(x) {}
-  // ToDo(Mohit): Need to fix this shit.
-  Json(const MapType& x): type(MAP_TYPE), map_value(new MapType(x)) {}
+  Json(const MapType& x): type(MAP_TYPE), map_value(x) {}
+  Json(const std::vector<Json>& values): type(LIST_TYPE), json_values(values) {}
   void Set(Type type) {
     this->type = type;
   };
@@ -30,15 +31,17 @@ struct Json {
   }
   void Set(const MapType& x) {
     this->type = MAP_TYPE;
-    // ToDo(Mohit): Need to fix this shit.
-    this->map_value = new MapType(x);
+    this->map_value = x;
   }
   Type type;
   int int_value;
   bool bool_value;
   std::string string_value;
+  std::vector<int> integer_values;
+  std::vector<string> string_values;
+  std::vector<Json> json_values;
   std::vector<Json> list_value;
-  MapType* map_value;
+  MapType map_value;
   string ToString() const;
 };
 

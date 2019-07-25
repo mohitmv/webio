@@ -1,48 +1,27 @@
-#include <ctime>
+include "elements.cpp"
+#include "utils.cpp"
+
 #include <iostream>
-#include <string>
-#include <boost/asio.hpp>
 
-using boost::asio::ip::tcp;
+namespace webio {
 
-std::string make_daytime_string()
-{
-  std::time_t now = std::time(0);
-  return std::ctime(&now);
+class MyWebsite {
+public:
+	FrontEndElement Render() {
+		FrontEndElement frame = Div();
+		frame << Button("Test Button");
+		frame << VSpace("20px");
+		frame << Text("Text string");
+		return frame;
+	}
+};
+
+} // webio
+
+int main() {
+	webio::MyWebsite my_website;
+	webio::FrontEndElement frame = my_website.Render();
+	// webio::Json json = frame.Export();
+	std::cout << frame.Export().ToString() << std::endl;
+	return 0;
 }
-
-int main()
-{
-  try
-  {
-    // Any program that uses asio need to have at least one io_service object
-    boost::asio::io_service io_service;
-
-    // acceptor object needs to be created to listen for new connections
-    tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), 13));
-
-    for (;;)
-    {
-      // creates a socket
-      tcp::socket socket(io_service);
-
-      // wait and listen
-      acceptor.accept(socket);
-
-      // prepare message to send back to client
-      std::string message = make_daytime_string();
-
-      boost::system::error_code ignored_error;
-
-      // writing the message for current time
-      boost::asio::write(socket, boost::asio::buffer(message), ignored_error);
-    }
-  }
-  catch (std::exception& e)
-  {
-    std::cerr << e.what() << std::endl;
-  }
-
-  return 0;
-}
-
