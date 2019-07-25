@@ -4,12 +4,13 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <map>
 
 namespace webio {
 
 struct Json {
   using string = std::string;
-  using MapType = std::unordered_map<string, Json>;
+  using MapType = std::map<string, Json>;
   enum Type {INT_TYPE, STRING_TYPE, NULL_TYPE, BOOL_TYPE, LIST_TYPE, MAP_TYPE};
   Json(): type(NULL_TYPE) {};
   Json(Type type): type(type) {};
