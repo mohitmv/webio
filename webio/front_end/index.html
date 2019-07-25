@@ -8,6 +8,7 @@
   <!-- {inlined_css_here:template_arg_0} -->
 </head>
 <body>
+<div id="loader" ></div>
 <div id="main" style="border: solid #ccc 0px;" ></div>
 <script type="text/javascript">
 	var webio = new (function() {
@@ -327,9 +328,17 @@
 			// console.log(tab_index, event);
 		}
 
+		this.is_loading = false;
+
 		this.action_api = function(action_id, event) {
-			thiso.hide_all_dropdowns();
 			console.log("Triggered action: " + action_id);
+			if (this.is_loading) {
+				console.log("Abandoned action. Another action was going on.");
+				return;
+			}
+			document.getElementById("loader").style.display = "block";
+			this.is_loading = true;
+			thiso.hide_all_dropdowns();
 			api_call(api_url, {action_id: parseInt(action_id),
 												 inputs: thiso.get_input_values(),
 												 client_instance_id: initial_frame_info.client_instance_id,
@@ -337,6 +346,8 @@
 												}, function(d) {
 				var json_response = JSON.parse(d);
 				if(json_response.error.error_code == "ErrorCodes.SUCCESS") {
+					thiso.is_loading = false;
+					document.getElementById("loader").style.display = "none";
 					render_frame(json_response.data);
 				} else {
 					alert(json_response.error.error_code + " - Please reload !");

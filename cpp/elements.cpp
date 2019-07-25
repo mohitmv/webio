@@ -15,15 +15,12 @@ Json FrontEndElement::Export() const {
   Json output;
   map<string, Json> json_fields;
 
-  if (true) { // ToDo(Saharsh): replace by HasChildren()
-    std::vector<Json> children1;  // ToDo(Saharsh): fix this shit
-    for (auto &child: children) {
-      children1.push_back(std::move(child.Export()));
-    }
-    json_fields["children"] = Json(std::move(children1));
-  }
-
-  json_fields["element_type"] = ElementTypeString(this->element_type);
+  // fields_to_export = ["text_string", "icon", "label_string", "color_theme", "font_size", "margin", "height", "width", "padding", "border_width", "src"];
+  // output = "";
+  // for field in fields_to_export:
+  //   output += "if (this->has_" + field + ") {\n"
+  //   output += "  json_fields[\"" + field + "\"] = Json(icon_);\n"
+  //   output += "}\n"
 
   if (this->has_icon) {
     json_fields["icon"] = Json(icon_);
@@ -85,6 +82,14 @@ Json FrontEndElement::Export() const {
     json_fields["allow_multiple"] = Json(allow_multiple_);
   }
 
+  if (this->has_src) {
+    json_fields["src"] = Json(src_);
+  }
+
+  if (this->has_id) {
+    json_fields["id"] = Json(id_);
+  }
+
   if (this->has_options) {
     std::vector<Json> json_string_values;
     for (const std::string& option : options_) {
@@ -93,13 +98,14 @@ Json FrontEndElement::Export() const {
     json_fields["options"] = Json(std::move(json_string_values));
   }
 
-  if (this->has_src) {
-    json_fields["src"] = Json(src_);
+  if (true) { // ToDo(Saharsh): replace by HasChildren()
+    std::vector<Json> children1;  // ToDo(Saharsh): fix this shit
+    for (auto &child: children) {
+      children1.push_back(std::move(child.Export()));
+    }
+    json_fields["children"] = Json(std::move(children1));
   }
-
-  if (this->has_id) {
-    json_fields["id"] = Json(id_);
-  }
+  json_fields["element_type"] = ElementTypeString(this->element_type);
 
   output.Set(json_fields);
   return output;

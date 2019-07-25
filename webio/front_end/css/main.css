@@ -265,3 +265,19 @@ div.card_div {
   margin-bottom: 10px;
   box-sizing: border-box;
 }
+
+
+#loader {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  display: none;
+  background-repeat: no-repeat;
+  background-color: white;
+  z-index: 10000;
+  background-image: url(https://steamuserimages-a.akamaihd.net/ugc/267223080226461303/985912CAD9866AE8997702BB87823D78E1E66110/)
+}
+
+

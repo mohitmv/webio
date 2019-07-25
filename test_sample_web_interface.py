@@ -1,4 +1,4 @@
-import webio;
+import webio, time;
 from webio import Action, Div, HDiv, HTabs, Tab, TitleText, Button, TextInput
 from webio import TextArea, VSpace, Tab, HTabs, Card, Text;
 
@@ -29,8 +29,8 @@ class MyWebsite:
     frame << TextInput("Your Name ?") << TextArea("Your content goes here",
                                                   id = "content");
     frame << Button("Submit", onclick =
-               lambda: self.content_for_tabs[self.current_tab].append(
-                                                     self.inputs["content"]));
+               lambda: (self.content_for_tabs[self.current_tab].append(
+                                                     self.inputs["content"])));
     return frame;
 
   def set_current_tab(self, index):

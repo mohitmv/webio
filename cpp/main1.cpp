@@ -16,7 +16,6 @@ int main() {
     auto Render() {
       auto frame = VDiv();
       frame << Button("Click Me Button");
-      frame << Button("One more click me button");
 
       frame << Text("Welcome to webio") << VSpace("20 px");
 
