@@ -98,14 +98,47 @@ Json FrontEndElement::Export() const {
     json_fields["options"] = Json(std::move(json_string_values));
   }
 
+<<<<<<< HEAD
   if (true) { // ToDo(Saharsh): replace by HasChildren()
     std::vector<Json> children1;  // ToDo(Saharsh): fix this shit
     for (auto &child: children) {
       children1.push_back(std::move(child.Export()));
     }
     json_fields["children"] = Json(std::move(children1));
+=======
+  if (this->has_actionable_menu_options) {
+    std::vector<Json> json_actionable_menu_options;
+    for (const std::pair<std::string, std::function<void(void)> >& option : actionable_menu_options_) {
+      json_actionable_menu_options.push_back(Json(option.first));
+    }
+    json_fields["options"] = Json(std::move(json_actionable_menu_options));
+  }
+
+  if (this->has_frontend_menu_options) {
+    std::vector<Json> json_frontend_menu_options;
+    for (const std::pair<std::string, int>& option : frontend_menu_options_) {
+      json_frontend_menu_options.push_back(Json(option.first));
+      json_fields["options"] = Json(std::move(json_frontend_menu_options));
+    }
+  }
+
+  if (this->has_src) {
+    json_fields["src"] = Json(src_);
+  }
+
+  if (this->has_id) {
+    json_fields["id"] = Json(id_);
+>>>>>>> f025608926aab7f469f2ec75a21eef82e7a866d6
   }
   json_fields["element_type"] = ElementTypeString(this->element_type);
+
+  if (this->has_onclick) {
+    json_fields["onclick"] = Json(onclick_id);
+  }
+
+  if (this->has_onchange) {
+    json_fields["onchange"] = Json(onchange_id);
+  }
 
   output.Set(json_fields);
   return output;

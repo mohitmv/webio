@@ -198,6 +198,22 @@ class FrontEndElement {
     return *this;
   }
 
+  std::vector<std::pair<std::string, std::function<void(void)> > > actionable_menu_options_;
+  bool has_actionable_menu_options = false;
+  FrontEndElement& options(const std::vector<std::pair<std::string, std::function<void(void)> > >& input) {
+    this->actionable_menu_options_ = input;
+    this->has_actionable_menu_options = true;
+    return *this;
+  }
+
+  std::vector<std::pair<std::string, int> > frontend_menu_options_;
+  bool has_frontend_menu_options = false;
+  FrontEndElement& options(const std::vector<std::pair<std::string, int> >& input) {
+    this->frontend_menu_options_ = input;
+    this->has_frontend_menu_options = true;
+    return *this;
+  }
+
   std::function<void(void)> onclick_;
   bool has_onclick = false;
   FrontEndElement& onclick(const std::function<void(void)>& input) {
@@ -226,6 +242,10 @@ FrontEndElement HDiv() {
 
 FrontEndElement Div() {
   return FrontEndElement(FrontEndElement::SIMPLE_DIV);
+}
+
+FrontEndElement Icon(const std::string& icon) {
+  return FrontEndElement(FrontEndElement::ICON).icon(icon);
 }
 
 FrontEndElement IconButton(const std::string& icon) {
@@ -258,7 +278,7 @@ FrontEndElement CheckBoxList(const std::string& label_string) {
       .label_string(label_string);
 }
 
-FrontEndElement Menu(const std::vector<std::string>& options) {
+FrontEndElement Menu(const std::vector<std::pair<std::string, int> >& options) {
   return FrontEndElement(FrontEndElement::MENU).options(options);
 }
 
