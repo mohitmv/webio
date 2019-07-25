@@ -96,10 +96,6 @@ Json FrontEndElement::Export() const {
     json_fields["src"] = Json(src_);
   }
 
-  if (this->has_size) {
-    json_fields["size"] = Json(size_);
-  }
-
   output.Set(json_fields);
 //  output.Set(unordered_map{
 //    {"element_type", Json("BUTTON")},
