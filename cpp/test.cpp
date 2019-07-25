@@ -3,15 +3,30 @@
 
 #include <iostream>
 
+
 namespace webio {
 
 class MyWebsite {
 public:
 	FrontEndElement Render() {
 		FrontEndElement frame = Div();
-		frame << Button("Test Button");
-		frame << VSpace("20px");
-		frame << Text("Text string");
+
+		frame << Text("Welcome to webio") << VSpace("20 px");
+
+		FrontEndElement htab = HTabs().padding("0px 0px 0px 0px").selected_tab(0);
+
+		htab << Tab("Sample tab");
+
+		frame << htab;
+
+		frame << VSpace("10 px");
+
+		frame << Text("Want to create more content?");
+
+		frame << VSpace("20 px");
+
+		frame << TextInput("Your name?") << TextArea("Your content goes here");
+
 		return frame;
 	}
 };

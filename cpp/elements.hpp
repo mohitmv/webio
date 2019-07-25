@@ -23,18 +23,23 @@ class FrontEndElement {
     children.push_back(std::move(child_element));
     return *this;
   }
+  FrontEndElement& operator<<(const FrontEndElement& child_element) {
+    children.push_back(child_element);
+    return *this;
+  }
   bool HasChildren() {
     // ToDo(Implement this..)
-    assert(false);
+    // assert(false);
+    return (children.size() > 0);
   }
   Json Export() const;
 
   // members_type_map = {
-  //   "string": ["text_string", "icon", "label_string", "color_theme", "font_size", "margin", "height", "width", "padding", "border_width"],
+  //   "string": ["text_string", "icon", "label_string", "color_theme", "font_size", "margin", "height", "width", "padding", "border_width", "src", "id"],
   //   "int":  ["value_integer", "default_rows", "selected_tab"],
   //   "bool": ["disabled", "allow_multiple"],
   //   "std::vector<string>": ["options"],
-  //   "std::vector<int>": ["value_integer_list"],
+  //   "std::vector<int>": [],
   //   "std::function<void(void)>": ["onclick", "onchange"]
   // };
   // output = "";
@@ -129,6 +134,22 @@ class FrontEndElement {
     return *this;
   }
 
+  string src_;
+  bool has_src = false;
+  FrontEndElement& src(const string& input) {
+    this->src_ = input;
+    this->has_src = true;
+    return *this;
+  }
+
+  string id_;
+  bool has_id = false;
+  FrontEndElement& id(const string& input) {
+    this->id_ = input;
+    this->has_id = true;
+    return *this;
+  }
+
   int value_integer_;
   bool has_value_integer = false;
   FrontEndElement& value_integer(const int& input) {
@@ -177,19 +198,19 @@ class FrontEndElement {
     return *this;
   }
 
-  std::vector<int> value_integer_list_;
-  bool has_value_integer_list = false;
-  FrontEndElement& value_integer_list(const std::vector<int>& input) {
-    this->value_integer_list_ = input;
-    this->has_value_integer_list = true;
+  std::function<void(void)> onclick_;
+  bool has_onclick = false;
+  FrontEndElement& onclick(const std::function<void(void)>& input) {
+    this->onclick_ = input;
+    this->has_onclick = true;
     return *this;
   }
 
-  string src_;
-  bool has_src = false;
-  FrontEndElement& src(const std::string& input) {
-    this->src_ = input;
-    this->has_src = true;
+  std::function<void(void)> onchange_;
+  bool has_onchange = false;
+  FrontEndElement& onchange(const std::function<void(void)>& input) {
+    this->onchange_ = input;
+    this->has_onchange = true;
     return *this;
   }
 
@@ -219,10 +240,9 @@ FrontEndElement TextArea(const std::string& label_string) {
   return FrontEndElement(FrontEndElement::TEXT_AREA).label_string(label_string);
 }
 
-FrontEndElement DropDown(const std::string& label_string, const std::vector<std::string>& options) {
+FrontEndElement DropDown(const std::string& label_string) {
   return FrontEndElement(FrontEndElement::DROP_DOWN)
-      .label_string(label_string)
-      .options(options);
+      .label_string(label_string);
 }
 
 FrontEndElement Toggle(const std::string& label_string) {
@@ -233,10 +253,9 @@ FrontEndElement CheckBox(const std::string& label_string) {
   return FrontEndElement(FrontEndElement::CHECK_BOX).label_string(label_string);
 }
 
-FrontEndElement CheckBoxList(const std::string& label_string, const std::vector<std::string>& options) {
+FrontEndElement CheckBoxList(const std::string& label_string) {
   return FrontEndElement(FrontEndElement::CHECK_BOX_LIST)
-      .label_string(label_string)
-      .options(options);
+      .label_string(label_string);
 }
 
 FrontEndElement Menu(const std::vector<std::string>& options) {

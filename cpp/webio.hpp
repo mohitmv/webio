@@ -31,6 +31,12 @@ class Rendering {
     return element_index_counter;
   }
   FrontEndElement& EvaluateFrame(FrontEndElement& frame) {
+    if (frame.has_onclick) {
+      registered_actions[GetUniqueIndex()] = frame.onclick_;
+    }
+    if (frame.has_onchange) {
+      registered_actions[GetUniqueIndex()] = frame.onchange_;
+    }
     return frame;
   }
 };
