@@ -158,13 +158,13 @@ class Rendering:
       self.registered_actions[frame.onclick_id] = frame.onclick;
     return frame;
 
-  def HandleDropDown():
+  def HandleDropDown(self, frame):
     option_values = list((i[0] if type(i) == tuple else i) for i in frame.options)
-    self.registered_resources[frame.unique_id] = dict(
+    self.registered_resources[frame.element_id] = dict(
       element = frame,
       options = option_values
     );
-    frame.options = list((index, str(option[1] if type(option) == tuple else option))
+    frame.options = list((str(option[1] if type(option) == tuple else option))
                             for index, option in enumerate(frame.options));
     if frame.allow_multiple:
       frame.value = none_default(frame.value, []);
