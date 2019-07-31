@@ -247,9 +247,9 @@
 					}
 					attrs += ' class="'+class_str+'" ';
 					attrs += (design_object.align  ? 'align="'+design_object.align+'"': '');
-					attrs += ' style="' + style_code(design_object, ["bgcolor", "width", "height", "border_width", "border_color", "margin", "color"]) + '" ';
+					attrs += ' style="' + style_code(design_object, ["bgcolor", "width", "height", "border_color", "margin", "color"]) + '" ';
 					output = "<div " + attrs + ">";
-					var cell_style = style_code(design_object, ["valign", "padding"]);
+					var cell_style = style_code(design_object, ["valign", "padding", "border_width"]);
 					for (var i = 0; i < design_object.children.length; i++) {
 						var child_width = design_object.children[i].width;
 						design_object.children[i].width = undefined;
@@ -344,10 +344,10 @@
 												 client_instance_id: initial_frame_info.client_instance_id,
 												 server_instance_id: initial_frame_info.server_instance_id
 												}, function(d) {
+				thiso.is_loading = false;
+				document.getElementById("loader").style.display = "none";
 				var json_response = JSON.parse(d);
 				if(json_response.error.error_code == "ErrorCodes.SUCCESS") {
-					thiso.is_loading = false;
-					document.getElementById("loader").style.display = "none";
 					render_frame(json_response.data);
 				} else {
 					alert(json_response.error.error_code + " - Please reload !");

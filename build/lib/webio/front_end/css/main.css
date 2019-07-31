@@ -200,6 +200,7 @@ div.table {
 	table-layout: fixed;
 	border-collapse: collapse;
 	box-sizing: border-box;
+  border: solid #ccc 0px;
 }
 
 div.table > div.table_cell {
