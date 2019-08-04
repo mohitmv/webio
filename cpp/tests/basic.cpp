@@ -1,0 +1,8 @@
+namespace webio {
+
+void Basic() {
+
+}
+
+}
+
