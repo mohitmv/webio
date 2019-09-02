@@ -122,6 +122,14 @@ Json FrontEndElement::Export() const {
     json_fields["src"] = Json(src_);
   }
 
+  if (this->has_onclick) {
+    json_fields["onclick_id"] = Json(onclick_id);
+  }
+  if (this->has_onchange) {
+    json_fields["onchange_id"] = Json(onchange_id);
+  }
+
+
   json_fields["element_type"] = ElementTypeString(this->element_type);
 
   output.Set(json_fields);

@@ -17,6 +17,8 @@ using std::endl;
 
 namespace webio {
 
+bool kDebugMode = false;
+
 class Rendering {
  public:
   int element_index_counter = 0;
@@ -135,6 +137,11 @@ class FrameServer {
     server.Run(port);
   }
 
+};
+
+class BaseInterface {
+public:
+  int x;
 };
 
 }  // namespace webio

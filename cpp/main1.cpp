@@ -4,14 +4,17 @@
 #include "utils.cpp"
 #include "elements.cpp"
 
-using namespace std;
+using std::cout;
+using std::endl;
 
-using namespace webio;
+static int x = 4;
+
 
 int main() {
+  webio::kDebugMode = true;
+  using namespace webio;
 
-
-  struct MyWebsite {
+  struct MyWebsite: public webio::BaseInterface {
     int num = 0;
     auto Render() {
       auto frame = VDiv();
@@ -35,7 +38,7 @@ int main() {
 
       frame << TextInput("Your name?") << TextArea("Your content goes here");
 
-      frame << Button("Click me to add more buttons").onclick([&](){num++;});
+      frame << Button("Click me to add more buttons -8").onclick([&](){num++;});
 
       for (int i = 0; i < num; i++) {
         frame << Button("Button number " + std::to_string(i) + "added on click");
@@ -46,6 +49,8 @@ int main() {
 
   // cout << FrameServer<MyWebsite>().HandleFirstTimeLoad().ToString() << endl;
 
-  FrameServer<MyWebsite>().Run(5007);
+  FrameServer<MyWebsite>().Run(5008);
   return 0;
 }
+
+
