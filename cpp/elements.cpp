@@ -12,7 +12,6 @@ namespace webio {
 
 // ToDo(Mohit): [Important] write python code to generate code below.
 Json FrontEndElement::Export() const {
-  Json output;
   map<string, Json> json_fields;
 
   // fields_to_export = ["text_string", "icon", "label_string", "color_theme", "font_size", "margin", "height", "width", "padding", "border_width", "src"];
@@ -128,12 +127,9 @@ Json FrontEndElement::Export() const {
   if (this->has_onchange) {
     json_fields["onchange_id"] = Json(onchange_id);
   }
-
-
   json_fields["element_type"] = ElementTypeString(this->element_type);
-
-  output.Set(json_fields);
-  return output;
+  json_fields["element_id"] = this->element_id;
+  return json_fields;
 }
 
 } // namespace webio

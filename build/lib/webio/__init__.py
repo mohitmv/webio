@@ -302,8 +302,15 @@ class FrameServer:
                                     json.dumps(self.HandleFirstTimeLoad()));
       return html_page;
 
-    @app.route("/v1/api", methods=["POST"])
-    def v1_api():
+    @app.route("/v1/start", methods=["POST"])
+    def v1_start():
+      return flask.Response(
+        response = json.dumps(self.HandleFirstTimeLoad()),
+        mimetype = "application/json"
+      );
+
+    @app.route("/v1/action", methods=["POST"])
+    def v1_action():
       return flask.Response(
         response = json.dumps(self.HandleActionEvent(flask.request.json)),
         mimetype = "application/json"

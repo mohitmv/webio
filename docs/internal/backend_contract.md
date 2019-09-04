@@ -20,14 +20,18 @@ Backend should support following APIs
 
 Backend frame must support following front-end-elements:
 1. Input Elements: TextInput, TextArea, DropDown, CheckBox, Toggle, CheckBoxList
-2. Non-Atomic Elements: Div, HDiv, HTabs, VTabs, VDiv, InlinedDiv
-3. Display Elements: Text, Button, Menu, Icon, Image, IconButton
+2. Non-Atomic Elements: Text, Div, HDiv, HTabs, VTabs, VDiv, InlinedDiv
+3. Others Elements: Button, Menu, Icon, Image, IconButton
 
 
-Rules:
+Frame Rules:
 1. Every element must have element_id.
 2. Every variant of button (i.e. Button, IconButton.. etc) and Every variant of Division (ie. HDiv, VDiv, Div, InlineDiv... etc) for which onclick is defined, must have onclick_id.
 3. Every input, for which onchange is defined, must have onchange_id.
 4. Every menu-item of menu, for which onclick is not null, must have onclick_id.
 
 
+Checking validity of a frame:
+1. Every frame element must have element_id.
+2. Every Non-Atomic element must have children field.
+3. 

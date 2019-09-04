@@ -6,14 +6,18 @@
 
 #include "utils.hpp"
 #include <assert.h>
+#include "toolchain/json11/json11.hpp"
 
 namespace webio {
+using std::vector;
+using json11::Json;
 
 class FrontEndElement {
  public:
   using string = std::string;
   enum ElementType {TEXT, BUTTON, TEXT_INPUT, TEXT_AREA, DROP_DOWN, TOGGLE, MENU, ICON, SIMPLE_DIV, HORIZONTAL_DIV, CHECK_BOX, IMAGE, CHECK_BOX_LIST, HORIZONTAL_TABS, VERTICAL_TABS, TAB, VERTICAL_DIV, INLINED_DIV, ICON_BUTTON};
   ElementType element_type;
+  int element_id;
   std::vector<FrontEndElement> children;
   int onchange_id, onclick_id;
 
@@ -34,20 +38,23 @@ class FrontEndElement {
   }
   Json Export() const;
 
+  // Auto Generated Block starts here
+
   // members_type_map = {
-  //   "string": ["text_string", "icon", "label_string", "color_theme", "font_size", "margin", "height", "width", "padding", "border_width", "src", "id"],
-  //   "int":  ["value_integer", "default_rows", "selected_tab"],
-  //   "bool": ["disabled", "allow_multiple"],
+  //   "string": ["text_string", "icon", "label_string", "color_theme", "font_size", "margin", "height", "width", "padding", "border_width", "src", "id", "value"],
+  //   "int":  ["default_rows", "selected_tab", "selected"],
+  //   "bool": ["disabled", "allow_multiple", "on"],
   //   "std::vector<string>": ["options"],
-  //   "std::vector<int>": [],
+  //   "std::vector<int>": ["selected_list"],
   //   "std::function<void(void)>": ["onclick", "onchange"]
   // };
+  // to_up = lambda x: x.title().replace("_", "")
   // output = "";
   // for (type, members) in members_type_map.items():
   //   for member in members:
   //     output += type + " " + member+"_;\n"
   //     output += "bool has_"+member+" = false;\n"
-  //     output += "FrontEndElement& " + member + "(const " + type  + "& input) {\n"
+  //     output += "FrontEndElement& " + to_up(member) + "(const " + type  + "& input) {\n"
   //     output += "  this->" + member + "_ = input;\n"
   //     output += "  this->has_" + member + " = true;\n"
   //     output += "  return *this;\n"
@@ -56,7 +63,7 @@ class FrontEndElement {
 
   string text_string_;
   bool has_text_string = false;
-  FrontEndElement& text_string(const string& input) {
+  FrontEndElement& TextString(const string& input) {
     this->text_string_ = input;
     this->has_text_string = true;
     return *this;
@@ -64,7 +71,7 @@ class FrontEndElement {
 
   string icon_;
   bool has_icon = false;
-  FrontEndElement& icon(const string& input) {
+  FrontEndElement& Icon(const string& input) {
     this->icon_ = input;
     this->has_icon = true;
     return *this;
@@ -72,7 +79,7 @@ class FrontEndElement {
 
   string label_string_;
   bool has_label_string = false;
-  FrontEndElement& label_string(const string& input) {
+  FrontEndElement& LabelString(const string& input) {
     this->label_string_ = input;
     this->has_label_string = true;
     return *this;
@@ -80,7 +87,7 @@ class FrontEndElement {
 
   string color_theme_;
   bool has_color_theme = false;
-  FrontEndElement& color_theme(const string& input) {
+  FrontEndElement& ColorTheme(const string& input) {
     this->color_theme_ = input;
     this->has_color_theme = true;
     return *this;
@@ -88,7 +95,7 @@ class FrontEndElement {
 
   string font_size_;
   bool has_font_size = false;
-  FrontEndElement& font_size(const string& input) {
+  FrontEndElement& FontSize(const string& input) {
     this->font_size_ = input;
     this->has_font_size = true;
     return *this;
@@ -96,7 +103,7 @@ class FrontEndElement {
 
   string margin_;
   bool has_margin = false;
-  FrontEndElement& margin(const string& input) {
+  FrontEndElement& Margin(const string& input) {
     this->margin_ = input;
     this->has_margin = true;
     return *this;
@@ -104,7 +111,7 @@ class FrontEndElement {
 
   string height_;
   bool has_height = false;
-  FrontEndElement& height(const string& input) {
+  FrontEndElement& Height(const string& input) {
     this->height_ = input;
     this->has_height = true;
     return *this;
@@ -112,7 +119,7 @@ class FrontEndElement {
 
   string width_;
   bool has_width = false;
-  FrontEndElement& width(const string& input) {
+  FrontEndElement& Width(const string& input) {
     this->width_ = input;
     this->has_width = true;
     return *this;
@@ -120,7 +127,7 @@ class FrontEndElement {
 
   string padding_;
   bool has_padding = false;
-  FrontEndElement& padding(const string& input) {
+  FrontEndElement& Padding(const string& input) {
     this->padding_ = input;
     this->has_padding = true;
     return *this;
@@ -128,7 +135,7 @@ class FrontEndElement {
 
   string border_width_;
   bool has_border_width = false;
-  FrontEndElement& border_width(const string& input) {
+  FrontEndElement& BorderWidth(const string& input) {
     this->border_width_ = input;
     this->has_border_width = true;
     return *this;
@@ -136,7 +143,7 @@ class FrontEndElement {
 
   string src_;
   bool has_src = false;
-  FrontEndElement& src(const string& input) {
+  FrontEndElement& Src(const string& input) {
     this->src_ = input;
     this->has_src = true;
     return *this;
@@ -144,23 +151,23 @@ class FrontEndElement {
 
   string id_;
   bool has_id = false;
-  FrontEndElement& id(const string& input) {
+  FrontEndElement& Id(const string& input) {
     this->id_ = input;
     this->has_id = true;
     return *this;
   }
 
-  int value_integer_;
-  bool has_value_integer = false;
-  FrontEndElement& value_integer(const int& input) {
-    this->value_integer_ = input;
-    this->has_value_integer = true;
+  string value_;
+  bool has_value = false;
+  FrontEndElement& Value(const string& input) {
+    this->value_ = input;
+    this->has_value = true;
     return *this;
   }
 
   int default_rows_;
   bool has_default_rows = false;
-  FrontEndElement& default_rows(const int& input) {
+  FrontEndElement& DefaultRows(const int& input) {
     this->default_rows_ = input;
     this->has_default_rows = true;
     return *this;
@@ -168,15 +175,23 @@ class FrontEndElement {
 
   int selected_tab_;
   bool has_selected_tab = false;
-  FrontEndElement& selected_tab(const int& input) {
+  FrontEndElement& SelectedTab(const int& input) {
     this->selected_tab_ = input;
     this->has_selected_tab = true;
     return *this;
   }
 
+  int selected_;
+  bool has_selected = false;
+  FrontEndElement& Selected(const int& input) {
+    this->selected_ = input;
+    this->has_selected = true;
+    return *this;
+  }
+
   bool disabled_;
   bool has_disabled = false;
-  FrontEndElement& disabled(const bool& input) {
+  FrontEndElement& Disabled(const bool& input) {
     this->disabled_ = input;
     this->has_disabled = true;
     return *this;
@@ -184,39 +199,39 @@ class FrontEndElement {
 
   bool allow_multiple_;
   bool has_allow_multiple = false;
-  FrontEndElement& allow_multiple(const bool& input) {
+  FrontEndElement& AllowMultiple(const bool& input) {
     this->allow_multiple_ = input;
     this->has_allow_multiple = true;
     return *this;
   }
 
+  bool on_;
+  bool has_on = false;
+  FrontEndElement& On(const bool& input) {
+    this->on_ = input;
+    this->has_on = true;
+    return *this;
+  }
+
   std::vector<string> options_;
   bool has_options = false;
-  FrontEndElement& options(const std::vector<string>& input) {
+  FrontEndElement& Options(const std::vector<string>& input) {
     this->options_ = input;
     this->has_options = true;
     return *this;
   }
 
-  std::vector<std::pair<std::string, std::function<void(void)> > > actionable_menu_options_;
-  bool has_actionable_menu_options = false;
-  FrontEndElement& options(const std::vector<std::pair<std::string, std::function<void(void)> > >& input) {
-    this->actionable_menu_options_ = input;
-    this->has_actionable_menu_options = true;
-    return *this;
-  }
-
-  std::vector<std::pair<std::string, int> > frontend_menu_options_;
-  bool has_frontend_menu_options = false;
-  FrontEndElement& options(const std::vector<std::pair<std::string, int> >& input) {
-    this->frontend_menu_options_ = input;
-    this->has_frontend_menu_options = true;
+  std::vector<int> selected_list_;
+  bool has_selected_list = false;
+  FrontEndElement& SelectedList(const std::vector<int>& input) {
+    this->selected_list_ = input;
+    this->has_selected_list = true;
     return *this;
   }
 
   std::function<void(void)> onclick_;
   bool has_onclick = false;
-  FrontEndElement& onclick(const std::function<void(void)>& input) {
+  FrontEndElement& Onclick(const std::function<void(void)>& input) {
     this->onclick_ = input;
     this->has_onclick = true;
     return *this;
@@ -224,24 +239,57 @@ class FrontEndElement {
 
   std::function<void(void)> onchange_;
   bool has_onchange = false;
-  FrontEndElement& onchange(const std::function<void(void)>& input) {
+  FrontEndElement& Onchange(const std::function<void(void)>& input) {
     this->onchange_ = input;
     this->has_onchange = true;
     return *this;
   }
 
+  // Auto Generated Block ends here
+
 };
 
+FrontEndElement InlinedDiv() {
+  return FrontEndElement(FrontEndElement::INLINED_DIV);
+}
+
 FrontEndElement VDiv() {
-  return FrontEndElement(FrontEndElement::VERTICAL_DIV);
+  auto output = FrontEndElement(FrontEndElement::VERTICAL_DIV);
+  return output;
 }
 
 FrontEndElement HDiv() {
-  return FrontEndElement(FrontEndElement::HORIZONTAL_DIV);
+  auto output = FrontEndElement(FrontEndElement::HORIZONTAL_DIV);
+  return output;
 }
 
 FrontEndElement Div() {
-  return FrontEndElement(FrontEndElement::SIMPLE_DIV);
+  auto output = FrontEndElement(FrontEndElement::SIMPLE_DIV);
+  return output;
+}
+
+FrontEndElement VDiv(vector<FrontEndElement>&& input) {
+  auto output = FrontEndElement(FrontEndElement::VERTICAL_DIV);
+  output.children = input;
+  return output;
+}
+
+FrontEndElement HDiv(vector<FrontEndElement>&& input) {
+  auto output = FrontEndElement(FrontEndElement::HORIZONTAL_DIV);
+  output.children = input;
+  return output;
+}
+
+FrontEndElement Div(vector<FrontEndElement>&& input) {
+  auto output = FrontEndElement(FrontEndElement::SIMPLE_DIV);
+  output.children = input;
+  return output;
+}
+
+FrontEndElement InlinedDiv(vector<FrontEndElement>&& input) {
+  auto output = FrontEndElement(FrontEndElement::INLINED_DIV);
+  output.children = input;
+  return output;
 }
 
 FrontEndElement Icon(const std::string& icon) {
@@ -270,16 +318,17 @@ FrontEndElement Toggle(const std::string& label_string) {
 }
 
 FrontEndElement CheckBox(const std::string& label_string) {
-  return FrontEndElement(FrontEndElement::CHECK_BOX).label_string(label_string);
+  return FrontEndElement(FrontEndElement::CHECK_BOX)
+            .LabelString(label_string);
 }
 
-FrontEndElement CheckBoxList(const std::string& label_string) {
+FrontEndElement CheckBoxList(const std::vector<string>& input) {
   return FrontEndElement(FrontEndElement::CHECK_BOX_LIST)
-      .label_string(label_string);
+            .LabelString(label_string);
 }
 
-FrontEndElement Menu(const std::vector<std::pair<std::string, int> >& options) {
-  return FrontEndElement(FrontEndElement::MENU).options(options);
+FrontEndElement Menu(const std::string& icon) {
+  return FrontEndElement(FrontEndElement::MENU).Icon(icon).FontSize("16px");
 }
 
 FrontEndElement VSpace(const std::string& size) {
@@ -287,7 +336,13 @@ FrontEndElement VSpace(const std::string& size) {
 }
 
 FrontEndElement Text(const std::string& text_string) {
-  return FrontEndElement(FrontEndElement::TEXT).text_string(text_string);
+  return FrontEndElement(FrontEndElement::TEXT).TextString(text_string);
+}
+
+FrontEndElement Text(const std::vector<FrontEndElement>& inputs) {
+  auto output = FrontEndElement(FrontEndElement::TEXT);
+  output.children = inputs;
+  return output;
 }
 
 FrontEndElement HTabs() {
@@ -300,10 +355,6 @@ FrontEndElement VTabs() {
 
 FrontEndElement Tab(const std::string& text_string) {
   return FrontEndElement(FrontEndElement::TAB).text_string(text_string);
-}
-
-FrontEndElement InlinedDiv() {
-  return FrontEndElement(FrontEndElement::INLINED_DIV);
 }
 
 FrontEndElement Button(const std::string& label_string) {

@@ -13,6 +13,11 @@
 <script type="text/javascript">
 	var webio = new (function() {
 		var thiso = this;
+
+		var is_null = function(a) {
+			return (a === undefined || a === null);
+		};
+
 		this.opened_menu = null;//replaced by dropdown-DOM of opened menu.
 		this.hide_all_dropdowns = function() {
 			if(thiso.opened_menu !== null) {
@@ -73,14 +78,14 @@
 
 		var get_html = function(design_object) { //assert - design_object is valid.
 			var onclick_code = function(onclick_id) {
-				return (onclick_id === undefined ? '': 'webio.action_api(\''+onclick_id+'\', event); ');
+				return (is_null(onclick_id) ? '': 'webio.action_api(\''+onclick_id+'\', event); ');
 			};
 			var onclick_code1 = function(onclick_id) {
-				return (onclick_id === undefined ? '': ' onclick="webio.action_api(\''+onclick_id+'\', event)" ');
+				return (is_null(onclick_id) ? '': ' onclick="webio.action_api(\''+onclick_id+'\', event)" ');
 			};
 
 			var onchange_code = function(onchange_id) {
-				return (onchange_id === undefined ? '': ' onchange="webio.action_api(\''+onchange_id+'\', event)" ');
+				return (is_null(onchange_id) ? '': ' onchange="webio.action_api(\''+onchange_id+'\', event)" ');
 			};
 			var style_code = function(design_object, attrs) {//assert ( attrs <= style_attr_mapping.keys() )
 				var style_attr_mapping = {
@@ -152,7 +157,7 @@
 					return '<i '+onclick_code1(design_object.onclick_id)+' class="my-material-icon-button" title="444" >'+design_object.icon+'</i>';
 				} else if(design_object.element_type === "BUTTON") {
 					return '<button class="btn ' +(design_object.theme === "black_in_white" ? "btn-default": "btn-primary")+'"  '+(design_object.disabled ? "disabled": "")+' '
-						+ onclick_code1(design_object.onclick_id)+' >'+(design_object.label_string||"")+(design_object.icon === null ? '': '<i class="my-material-icons" >'+design_object.icon+'</i>')+ '</button>';
+						+ onclick_code1(design_object.onclick_id)+' >'+(design_object.label_string||"")+(is_null(design_object.icon) ? '': '<i class="my-material-icons" >'+design_object.icon+'</i>')+ '</button>';
 				} else if (design_object.element_type === "IMAGE") {
 					return '<img src="'+design_object.src+'" width="'+design_object.width+'" height="'+design_object.height+'" style="opacity: '+design_object.opacity+'; '+(design_object.rounded ? 'border-radius: 50%;': '')+' " >';
 				} else if (design_object.element_type === "TEXT") {
@@ -194,7 +199,7 @@
 					var attrs = " ";
 					attrs += onclick_code1(design_object.onclick_id);
 					var class_str = "vertical_table ";
-					if (design_object.onclick_id !== undefined) {
+					if (!is_null(design_object.onclick_id)) {
 						class_str += "hover_cell";
 					}
 					attrs += ' class="'+class_str+'" ';
@@ -210,7 +215,7 @@
 					var attrs = " ";
 					attrs += onclick_code1(design_object.onclick_id);
 					var class_str = "vertical_table ";
-					if (design_object.onclick_id !== undefined) {
+					if (!is_null(design_object.onclick_id)) {
 						class_str += "hover_cell";
 					}
 					attrs += ' class="'+class_str+'" ';
@@ -226,7 +231,7 @@
 					var attrs = " ";
 					attrs += onclick_code1(design_object.onclick_id);
 					var class_str = "vertical_table ";
-					if (design_object.onclick_id !== undefined) {
+					if (!is_null(design_object.onclick_id)) {
 						class_str += "hover_cell";
 					}
 					attrs += ' class="'+class_str+'" ';
@@ -242,7 +247,7 @@
 					var attrs = " ";
 					attrs += onclick_code1(design_object.onclick_id);
 					var class_str = "table ";
-					if (design_object.onclick_id !== undefined) {
+					if (!is_null(design_object.onclick_id)) {
 						class_str += "hover_cell";
 					}
 					attrs += ' class="'+class_str+'" ';
@@ -265,7 +270,7 @@
 			return get_html_helper(design_object);
 		};
 
-		var api_url = "/v1/api";
+		var api_url = "/v1/action";
 		var api_call = function(url, data, callback) {
 			var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
@@ -347,8 +352,8 @@
 				thiso.is_loading = false;
 				document.getElementById("loader").style.display = "none";
 				var json_response = JSON.parse(d);
-				if(json_response.error.error_code == "ErrorCodes.SUCCESS") {
-					render_frame(json_response.data);
+				if(json_response.error.error_code == "SUCCESS") {
+					render_frame(json_response.frame);
 				} else {
 					alert(json_response.error.error_code + " - Please reload !");
 				}
@@ -361,7 +366,7 @@
 		}
 	})();
 	var tmp_frame_6703 = [null, {
-		data: {
+		frame: {
 			"element_type": "BUTTON",
 			"element_id": "6",
 			"label_string": "Sample Button",
@@ -372,7 +377,7 @@
 	}];
 	// tmp_frame_6703[0] = {"children": [{"children": [{"children": [{"children": [], "element_type": "TEXT", "text_string": "Mohit"}, {"children": [], "element_type": "TEXT", "text_string": "  "}, {"children": [], "element_type": "TEXT", "text_string": "Saini", "onclick_id": 1}], "element_type": "TEXT", "onclick_id": 2}], "element_type": "VLIST", "onclick_id": 3}, {"children": [{"children": [{"children": [], "element_type": "TEXT", "text_string": "Mohit"}, {"children": [], "element_type": "TEXT", "text_string": "  "}, {"children": [], "element_type": "TEXT", "text_string": "Saini", "onclick_id": 4}], "element_type": "TEXT", "onclick_id": 5}], "element_type": "VLIST", "onclick_id": 6}], "element_type": "HLIST"};
 	var initial_frame_info = tmp_frame_6703[1];
-	webio.render_frame(initial_frame_info.data);
+	webio.render_frame(initial_frame_info.frame);
 	window.onclick = function(event) {
 		webio.window_onclick();
 	}

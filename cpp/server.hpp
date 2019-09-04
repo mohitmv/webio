@@ -9,6 +9,7 @@
 #include <string.h> 
 #include <functional>
 #include <iostream>
+#include "utils.hpp"
 
 using std::cout;
 using std::endl;
@@ -18,73 +19,9 @@ using std::endl;
 class HttpServer {
 public:
   using string = std::string;
-  std::function<string(const string&)> get_method_handler;
-  std::function<string(const string&, const string&)> post_method_handler;
-  void Run(int port) {
-    int server_fd, new_socket, valread;
-    struct sockaddr_in address;
-    int opt = 1;
-    int addrlen = sizeof(address);
-    char buffer[1024] = {0};
-    // Creating socket file descriptor
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-      perror("socket failed");
-      exit(EXIT_FAILURE);
-    }
-    // Forcefully attaching socket to the port
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, 
-                                                  &opt, sizeof(opt))) {
-        perror("setsockopt");
-        exit(EXIT_FAILURE);
-    }
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons( port );
-    ::bind(server_fd, (struct sockaddr *)&address,  
-                                 sizeof(address));
-    if (0) {
-        perror("bind failed"); 
-        exit(EXIT_FAILURE); 
-    }
-    if (listen(server_fd, 3) < 0) {
-        perror("listen"); 
-        exit(EXIT_FAILURE); 
-    }
-    int count = 1;
-    cout << "Running http://127.0.0.1:" << port << endl;
-    while (true) {
-      cout << "New request ------------------------------- " << count << endl;
-      count++;
-      if ((new_socket = accept(server_fd, (struct sockaddr *)&address,  
-                         (socklen_t*)&addrlen))<0) 
-      {
-        cout << "Accept error" << endl;
-          perror("accept"); 
-          exit(EXIT_FAILURE); 
-      }
-      cout << "Accepted" << endl;
-      valread = read( new_socket , buffer, 1024);
-      string input_string = buffer;
-      printf("%s\n", buffer);
-      cout << endl;
-      string response_string = "";
-      if (input_string.substr(0, 3) == "GET") {
-        response_string = get_method_handler("");
-      } else if (input_string.substr(0, 4) == "POST") {
-        response_string = post_method_handler("", input_string);
-      } else {
-        //  kuchh to fatt gya...
-        response_string = "Some Error! Shit happened!";
-      }
-      response_string = string("") + "HTTP/1.1 200 OK\n"
-                         "Content-Length: " + std::to_string(response_string.size())+ "\n"
-                         "Connection: Closed\n"
-                         "Content-Type: text/html; charset=iso-8859-1\r\n\r\n" + response_string;
-
-      send(new_socket , response_string.c_str() , response_string.size() , 0);
-      close(new_socket);
-    }
-  }
+  std::function<string(const string& url)> get_method_handler;
+  std::function<string(const string& url, const string& body)> post_method_handler;
+  void Run(int port);
 };
 
 // int main(int argc, char const *argv[]) {

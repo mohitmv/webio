@@ -8,9 +8,11 @@
 #include "utils.hpp"
 #include "elements.hpp"
 #include "server.hpp"
+#include "toolchain/json11/json11.hpp"
 
 using std::unordered_map;
 using std::string;
+using json11::Json;
 
 using std::cout;
 using std::endl;
@@ -26,7 +28,7 @@ class Rendering {
   FrontEndElement frame;
   Rendering() {};
   Rendering(FrontEndElement& frame): frame(frame) {
-    EvaluateFrame(frame);
+    EvaluateFrame(this->frame);
   }
   int GetUniqueIndex() {
     element_index_counter += 1;
@@ -37,6 +39,7 @@ class Rendering {
   }
  private:
   FrontEndElement& EvaluateFrameRecursive(FrontEndElement& frame) {
+    frame.element_id = GetUniqueIndex();
     if (frame.has_onclick) {
       frame.onclick_id = GetUniqueIndex();
       registered_actions[frame.onclick_id] = frame.onclick_;
@@ -63,7 +66,7 @@ class FrameServer {
   };
   unordered_map<int, ClientInstance> client_instances;
   int client_instance_id_counter = 1;
-  int server_instance_id = 11;
+  int server_instance_id = 11255;
   FrameServer() {}
   int CreateClientInstance() {
     int instance_id = client_instance_id_counter++;
@@ -81,20 +84,19 @@ class FrameServer {
 
   Json HandleFirstTimeLoad() {
     int client_instance_id = CreateClientInstance();
-    cout << client_instance_id << endl;
-    auto output =  Json(Json::MapType{
-      {"error", Json(Json::MapType{{"error_code", Json(string("SUCCESS"))}})},
-      {"data", ReloadFrame(client_instance_id)},
-      {"client_instance_id", Json(client_instance_id)},
-      {"server_instance_id", Json(server_instance_id)}
-    });
+    Json output =  Json::object {
+      {"error", Json(Json::object{{"error_code", "SUCCESS"}})},
+      {"frame", ReloadFrame(client_instance_id)},
+      {"client_instance_id", client_instance_id},
+      {"server_instance_id", server_instance_id}
+    };
     return output;
   }
 
-  Json HandleActionEvent() {
-    int client_instance_id = 1;
-    auto output = Json(Json::MapType({
-      {"data", ReloadFrame(client_instance_id)}
+  Json HandleActionEvent(const Json& params) {
+    int client_instance_id = params.object_items().at("client_instance_id").int_value();
+    auto output = Json(Json::object({
+      {"frame", ReloadFrame(client_instance_id)}
     }));
     return output;
   }
@@ -120,19 +122,33 @@ class FrameServer {
     };
     HttpServer server;
     server.get_method_handler = [&](const string& url) {
-      string html_page = ReadFile("../webio/front_end/index.html");
-      lReplace(&html_page,
-               "<!-- {inlined_css_here:template_arg_0} -->",
-               "<style>" + ReadFile("../webio/front_end/css/main.css")
-                         + "</style>");
-      lReplace(&html_page,
-               "tmp_frame_6703[1]",
-               HandleFirstTimeLoad().ToString());
-      return html_page;
+      if (url == "/") {
+        string html_page = ReadFile("../webio/front_end/index.html");
+        lReplace(&html_page,
+                 "<!-- {inlined_css_here:template_arg_0} -->",
+                 "<style>" + ReadFile("../webio/front_end/css/main.css")
+                           + "</style>");
+        lReplace(&html_page,
+                 "tmp_frame_6703[1]",
+                 HandleFirstTimeLoad().dump());
+        return html_page;
+      } else {
+        return string("404");
+      }
     };
     server.post_method_handler = [&](const string& url,
                                      const string& post_params) {
-      return HandleActionEvent().ToString();
+      if (url == "/v1/start") {
+        return HandleFirstTimeLoad().dump();
+      } else if (url == "/v1/action") {
+        string error;
+        Json params = Json::parse(post_params, error);
+        assert(error.size() == 0);
+        return HandleActionEvent(params).dump();
+      } else {
+        return string("404");
+      }
+      
     };
     server.Run(port);
   }
@@ -141,7 +157,6 @@ class FrameServer {
 
 class BaseInterface {
 public:
-  int x;
 };
 
 }  // namespace webio

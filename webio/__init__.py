@@ -49,6 +49,7 @@ class Rendering:
     return self.element_index_counter;
 
   def EvaluateFrame(self, frame):
+    frame.element_id = self.GetUniqueIndex();
     if frame.element_type == ElementType.TEXT:
       self.EvaluateText(frame);
       self.HandleOnClick(frame);
@@ -66,12 +67,10 @@ class Rendering:
       self.HandleOnClick(frame);
     elif frame.element_type in set([ElementType.DROP_DOWN,
                                     ElementType.CHECK_BOX_LIST]):
-      frame.element_id = self.GetUniqueIndex();
       self.HandleDropDown(frame);
       self.HandleOnChange(frame);
     elif frame.element_type in set([ElementType.TEXT_INPUT,
                                     ElementType.TEXT_AREA]):
-      frame.element_id = self.GetUniqueIndex();
       self.HandleOnChange(frame);
     self.input_acceser = self.CreateInputAccesser(frame);
     return frame;
@@ -188,6 +187,8 @@ class ErrorCodes(IntEnum):
   SUCCESS = 4
   INVALID_ACTION = 5
   INCOMPLETE_INPUT_VALUES = 6
+  def String(self):
+    return self.__str__().split(".")[-1];
 
 class FrameServer:
   def __init__(self, cls, args=[], params={}):
@@ -221,8 +222,8 @@ class FrameServer:
   def HandleFirstTimeLoad(self):
     client_instance_id = self.CreateClientInstance();
     output = Object(
-      error = Object(error_code = ErrorCodes.SUCCESS.__str__()),
-      data = self.ReloadFrame(client_instance_id),
+      error = Object(error_code = ErrorCodes.SUCCESS.String()),
+      frame = self.ReloadFrame(client_instance_id),
       client_instance_id = client_instance_id,
       server_instance_id = self.server_instance_id,
     );
@@ -250,27 +251,27 @@ class FrameServer:
     instance.client_instance.all_inputs = output_findall;
 
   def HandleActionEvent(self, input_data):
-    output = Object(error = Object(error_code = ErrorCodes.SUCCESS.__str__()));
+    output = Object(error = Object(error_code = ErrorCodes.SUCCESS.String()));
     instance_id = input_data["client_instance_id"];
     if input_data["server_instance_id"] != self.server_instance_id:
-      output.error.error_code = ErrorCodes.INCORRECT_SERVER_INSTANCE.__str__();
+      output.error.error_code = ErrorCodes.INCORRECT_SERVER_INSTANCE.String();
     elif instance_id not in self.client_instances:
-      output.error.error_code = ErrorCodes.CLIENT_INSTANCE_TIMEOUT.__str__();
+      output.error.error_code = ErrorCodes.CLIENT_INSTANCE_TIMEOUT.String();
     else:
       instance = self.client_instances[instance_id];
       current_frame = instance.current_frame;
       if input_data.get("action_id") not in current_frame.registered_actions:
-        output.error.error_code = ErrorCodes.INVALID_ACTION.__str__();
+        output.error.error_code = ErrorCodes.INVALID_ACTION.String();
       else:
         try:
           self.PopulateInputs(instance_id, input_data.get('inputs', {}));
           current_frame.registered_actions[input_data["action_id"]]();
-          output.error.error_code = ErrorCodes.SUCCESS.__str__();
-          output.data = self.ReloadFrame(instance_id);
+          output.error.error_code = ErrorCodes.SUCCESS.String();
+          output.frame = self.ReloadFrame(instance_id);
         except Exception as e:
           error_trace = traceback.format_exc();
           print(error_trace);
-          output.error.error_code = ErrorCodes.INTERNAL_ERROR.__str__();
+          output.error.error_code = ErrorCodes.INTERNAL_ERROR.String();
     return output;
 
   def CleanupOldInstancesIfRequired(self):
@@ -302,8 +303,15 @@ class FrameServer:
                                     json.dumps(self.HandleFirstTimeLoad()));
       return html_page;
 
+    @app.route("/v1/start", methods=["POST"])
+    def v1_start_json():
+      return flask.Response(
+        response = json.dumps(self.HandleFirstTimeLoad()),
+        mimetype = "application/json"
+      );
+
     @app.route("/v1/action", methods=["POST"])
-    def v1_api():
+    def v1_action():
       return flask.Response(
         response = json.dumps(self.HandleActionEvent(flask.request.json)),
         mimetype = "application/json"
