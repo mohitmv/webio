@@ -302,7 +302,7 @@ class FrameServer:
                                     json.dumps(self.HandleFirstTimeLoad()));
       return html_page;
 
-    @app.route("/v1/api", methods=["POST"])
+    @app.route("/v1/action", methods=["POST"])
     def v1_api():
       return flask.Response(
         response = json.dumps(self.HandleActionEvent(flask.request.json)),
