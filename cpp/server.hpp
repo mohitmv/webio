@@ -11,8 +11,6 @@
 #include <iostream>
 #include "utils.hpp"
 
-using std::cout;
-using std::endl;
 
 // ToDo(Mohit): this http_server is highly buggy. Don't use it unless you know
 // what you are doing.

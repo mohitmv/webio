@@ -3,6 +3,8 @@
 
 namespace {
 using webio::SplitString;
+using std::cout;
+using std::endl;
 
 struct HttpHeader {
   string request_type;
@@ -81,9 +83,11 @@ void HttpServer::Run(int port) {
     char c;
     bool got_new_line = false;
     std::ostringstream oss;
+    bool header_reading_done = false;
     while(read(new_socket, &c, 1)) {
       if (c == '\n') {
         if (got_new_line) {
+          header_reading_done = true;
           break;
         }
         got_new_line = true;
@@ -93,31 +97,35 @@ void HttpServer::Run(int port) {
       }
       oss << c;
     }
-    HttpHeader header;
-    header.Parse(oss.str());
-    cout << "Request[" << count << "]: " << header.request_type << " " << header.url << endl;
-    // cout << header.DebugString();
-    string body;
-    if (header.content_length > 0) {
-      char tmp_string[header.content_length+1];
-      tmp_string[header.content_length] = 0;
-      assert(read(new_socket, tmp_string, header.content_length) >= 0);
-      body = tmp_string;
-    }
-    // cout << "body size = " << body.size() << endl << endl;
-    string response_string = "";
-    if (header.request_type == "GET") {
-      response_string = get_method_handler(header.url);
-    } else if (header.request_type == "POST") {
-      response_string = post_method_handler(header.url, body);
+    if (header_reading_done) {
+      HttpHeader header;
+      header.Parse(oss.str());
+      cout << "Request[" << count << "]: " << header.request_type << " " << header.url << endl;
+      // cout << header.DebugString();
+      string body;
+      if (header.content_length > 0) {
+        char tmp_string[header.content_length+1];
+        tmp_string[header.content_length] = 0;
+        assert(read(new_socket, tmp_string, header.content_length) >= 0);
+        body = tmp_string;
+      }
+      // cout << "body size = " << body.size() << endl << endl;
+      string response_string = "";
+      if (header.request_type == "GET") {
+        response_string = get_method_handler(header.url);
+      } else if (header.request_type == "POST") {
+        response_string = post_method_handler(header.url, body);
+      } else {
+        response_string = "[Internal]: HttpServer error";
+      }
+      response_string = string("") + "HTTP/1.1 200 OK\n"
+                         "Content-Length: " + std::to_string(response_string.size())+ "\n"
+                         "Connection: Closed\n"
+                         "Content-Type: text/html; charset=iso-8859-1\r\n\r\n" + response_string;
+      send(new_socket , response_string.c_str() , response_string.size() , 0);
     } else {
-      response_string = "[Internal]: HttpServer error";
+      cout << "Header was empty. Didn't nothing. Ignoring the request" << endl;
     }
-    response_string = string("") + "HTTP/1.1 200 OK\n"
-                       "Content-Length: " + std::to_string(response_string.size())+ "\n"
-                       "Connection: Closed\n"
-                       "Content-Type: text/html; charset=iso-8859-1\r\n\r\n" + response_string;
-    send(new_socket , response_string.c_str() , response_string.size() , 0);
     close(new_socket);
   }
 }
