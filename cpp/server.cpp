@@ -53,8 +53,9 @@ void HttpServer::Run(int port) {
   // Forcefully attaching socket to the port
   if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, 
                                                 &opt, sizeof(opt))) {
-      perror("setsockopt");
-      exit(EXIT_FAILURE);
+
+    perror("setsockopt");
+    cout << "Error : setsockopt" << endl;
   }
   address.sin_family = AF_INET;
   address.sin_addr.s_addr = INADDR_ANY;

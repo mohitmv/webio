@@ -21,7 +21,8 @@ def is_valid_frame(frame):
     assert ("children" in frame);
     list(is_valid_frame(i) for i in frame["children"]);
   else:
-    assert ("children" not in frame);
+    pass
+    # assert ("children" not in frame);
 
 def set_if_unset(dict_object, k, v):
   if k not in dict_object:

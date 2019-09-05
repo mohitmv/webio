@@ -25,7 +25,6 @@ int main() {
       });
       frame << TextInput("Your Last Name ?");
       frame << Text("Saini Mohit");
-      frame << Text(string("Num = ") + std::to_string(num_additional_bottom_text));
       for(int i = 0; i < num_additional_bottom_text; i++) {
         frame << Text("--- In the Updated Middle And Updated Saini Mohit");
       }

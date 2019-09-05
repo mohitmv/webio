@@ -5,7 +5,7 @@ def test_interface1_python(backend_url = None):
   pid = None
   try:
     if backend_url == None:
-      pid = subprocess.Popen(["python36", "test_interface1.py"]).pid;
+      pid = subprocess.Popen(["python3", "golden_test_interface1.py"]).pid;
       print("Started server [Pid = " +str(pid) + "], sleeping for 5 seconds");
       time.sleep(3);
       backend_url = "http://localhost:5002"
