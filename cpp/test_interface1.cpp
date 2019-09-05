@@ -1,13 +1,10 @@
 #include <iostream>
 #include "webio.hpp"
-#include "utils.cpp"
-#include "elements.cpp"
-#include "server.cpp"
-#include "toolchain/json11/json11.cpp"
 #include "webio.cpp"
 
 int main() {
   using namespace webio;
+  webio::kDebugMode = false;
   class MyWebsite: public webio::BaseInterface {
     int num_additional_bottom_text = 0;
     int count = 0;

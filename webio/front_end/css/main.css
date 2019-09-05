@@ -282,3 +282,13 @@ div.card_div {
 }
 
 
+.powered_by_section {
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  height: 30px;
+  margin-bottom: 0px;
+  padding-right: 40px;
+  background-color: white;
+}
+

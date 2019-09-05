@@ -11,6 +11,7 @@
 #include "utils.hpp"
 #include "elements.hpp"
 #include "server.hpp"
+#include "resources.hpp"
 #include "toolchain/json11/json11.hpp"
 
 using std::unordered_map;
@@ -185,14 +186,25 @@ class FrameServer {
     HttpServer server;
     server.get_method_handler = [&](const string& url) {
       if (url == "/") {
-        string html_page = ReadFile("../webio/front_end/index.html");
-        lReplace(&html_page,
-                 "<!-- {inlined_css_here:template_arg_0} -->",
-                 "<style>" + ReadFile("../webio/front_end/css/main.css")
-                           + "</style>");
-        lReplace(&html_page,
-                 "tmp_frame_6703[1]",
-                 HandleFirstTimeLoad().dump());
+        string html_page;
+        if (kDebugMode) {
+          html_page = ReadFile("../webio/front_end/index.html");
+          lReplace(&html_page,
+                   "<!-- {inlined_css_here:template_arg_0} -->",
+                   "<style>" + ReadFile("../webio/front_end/css/main.css")
+                             + "</style>");
+          lReplace(&html_page,
+                   "tmp_frame_6703[1]",
+                   HandleFirstTimeLoad().dump());
+        } else {
+          html_page = detail::resources::html_page_content;
+          lReplace(&html_page,
+                   "<!-- {inlined_css_here:template_arg_0} -->",
+                   "<style>" + detail::resources::css_page_content + "</style>");
+          lReplace(&html_page,
+                   "tmp_frame_6703[1]",
+                   HandleFirstTimeLoad().dump());
+        }
         return html_page;
       } else {
         return string("404");
