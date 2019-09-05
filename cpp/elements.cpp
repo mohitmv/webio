@@ -61,8 +61,8 @@ Json FrontEndElement::Export() const {
     json_fields["border_width"] = Json(border_width_);
   }
 
-  if (this->has_value_integer) {
-    json_fields["value_integer"] = Json(value_integer_);
+  if (this->has_value) {
+    json_fields["value"] = Json(value_);
   }
 
   if (this->has_default_rows) {
@@ -101,20 +101,13 @@ Json FrontEndElement::Export() const {
     json_fields["children"] = Json(std::move(children1));
   }
 
-  if (this->has_actionable_menu_options) {
-    std::vector<Json> json_actionable_menu_options;
-    for (const auto& option : actionable_menu_options_) {
-      json_actionable_menu_options.push_back(Json(option.first));
+  if (this->has_menu_options) {
+    std::vector<Json> options;
+    for (int i = 0; i < menu_options_.size(); i++) {
+      Json onclick_id = menu_options_onclick_ids[i] == -1 ? Json(nullptr): Json(menu_options_onclick_ids[i]);
+      options.push_back(Json::array {menu_options_[i].first, onclick_id});
     }
-    json_fields["options"] = Json(std::move(json_actionable_menu_options));
-  }
-
-  if (this->has_frontend_menu_options) {
-    std::vector<Json> json_frontend_menu_options;
-    for (const std::pair<std::string, int>& option : frontend_menu_options_) {
-      json_frontend_menu_options.push_back(Json(option.first));
-      json_fields["options"] = Json(std::move(json_frontend_menu_options));
-    }
+    json_fields["options"] = Json(std::move(options));
   }
 
   if (this->has_src) {

@@ -305,7 +305,7 @@
 				var dom_elm = document.getElementById("io_element_"+io.element_id);
 				if (io.element_type === 'TEXT_INPUT' ||
 					  io.element_type === 'TEXT_AREA' ||
-					  (io.input_type === 'DROP_DOWN' && !io.allow_multiple)) {
+					  (io.element_type === 'DROP_DOWN' && !io.allow_multiple)) {
 					output[io.element_id] = dom_elm.value;
 					if(io.element_type == "DROP_DOWN") {
 						output[io.element_id] = parseInt(output[io.element_id]);
@@ -316,13 +316,15 @@
 						dom_elm.options[i].selected ? selected.push(i):null;
 					}
 					output[io.element_id] = selected;
-				} else if(io.input_type === "checkbox") {
+				} else if(io.element_type === "CHECK_BOX") {
 					var radio_buttons = document.getElementsByName("radio_"+io.element_id);
 					var selected = [];
 					for(var i=0; i<radio_buttons.length; i++) {
 						radio_buttons[i].checked ? selected.push(i):null;
 					}
 					output[io.id] = io.allow_multiple ? selected: selected[0];
+				} else {
+					alert("ToDo(*): Complete this implementation !");
 				}
 			}
 			return output;

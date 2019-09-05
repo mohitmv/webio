@@ -4,6 +4,9 @@
 #include <unordered_map>
 #include <functional>
 #include <iostream>
+#include <ctime>
+#include <exception>
+
 
 #include "utils.hpp"
 #include "elements.hpp"
@@ -21,52 +24,76 @@ namespace webio {
 
 bool kDebugMode = false;
 
-class Rendering {
+namespace detail {
+// Contains all the internal information of a frame, which are not proprogated
+// to front-end.
+class FrameInternals {
  public:
-  int element_index_counter = 0;
   std::unordered_map<int, std::function<void(void)>> registered_actions;
-  FrontEndElement frame;
-  Rendering() {};
-  Rendering(FrontEndElement& frame): frame(frame) {
-    EvaluateFrame(this->frame);
+  std::unordered_map<int, std::string> element_internal_id_to_display_id_map;
+  std::unordered_map<int, std::vector<string>> options;  // DropDown options.
+};
+
+struct InputObject {
+  std::string value;
+  bool on;
+  int selected;
+  vector<int> selected_list;
+  bool On() const {
+    return on;
   }
-  int GetUniqueIndex() {
-    element_index_counter += 1;
-    return element_index_counter;
+  int Selected() const {
+    return selected;
   }
-  FrontEndElement& EvaluateFrame(FrontEndElement& frame) {
-    return EvaluateFrameRecursive(frame);
+  const vector<int>& SelectedList() const {
+    return selected_list;
   }
- private:
-  FrontEndElement& EvaluateFrameRecursive(FrontEndElement& frame) {
-    frame.element_id = GetUniqueIndex();
-    if (frame.has_onclick) {
-      frame.onclick_id = GetUniqueIndex();
-      registered_actions[frame.onclick_id] = frame.onclick_;
-    }
-    if (frame.has_onchange) {
-      frame.onchange_id = GetUniqueIndex();
-      registered_actions[frame.onchange_id] = frame.onchange_;
-    }
-    for (auto& child_frame : frame.children){
-      EvaluateFrameRecursive(child_frame);
-    }
-    return frame;
+  const std::string Value() const {
+    return value;
   }
 };
+
+void BuildFrameInternals(FrontEndElement* frame, FrameInternals* internals);
+
+namespace helpers {
+std::exception ToException(std::exception_ptr eptr);
+}
+
+void PopulateInputs(
+  const Json& input_params,
+  const FrameInternals& internals,
+  unordered_map<std::string, InputObject>* inputs_objects);
+
+
+}
+
+class BaseInterface {
+public:
+  unordered_map<std::string, detail::InputObject> __inputs_objects;
+  const detail::InputObject& Input(const std::string& id) const {
+    return __inputs_objects.at(id);
+  }
+  // BaseInterface(const BaseInterface&) = delete;
+  // BaseInterface(BaseInterface&&) = delete;
+  // BaseInterface& operator=(const BaseInterface&) = delete;
+  // BaseInterface& operator=(BaseInterface&&) = delete;
+};
+
+
 
 template<typename T>
 class FrameServer {
  public:
   using ServingClassType = T;
   struct ClientInstance {
-    ServingClassType client_instance;
-    Rendering current_frame;
+    ServingClassType serving_class_instance;
+    FrontEndElement current_frame;
+    detail::FrameInternals current_frame_internals;
     std::size_t recent_active_timestamp;
   };
   unordered_map<int, ClientInstance> client_instances;
   int client_instance_id_counter = 1;
-  int server_instance_id = 11255;
+  int server_instance_id = std::time(nullptr) + (std::rand()%1000);
   FrameServer() {}
   int CreateClientInstance() {
     int instance_id = client_instance_id_counter++;
@@ -76,10 +103,12 @@ class FrameServer {
 
   Json ReloadFrame(int instance_id) {
     auto& instance = client_instances.at(instance_id);
-    auto raw_rendered = instance.client_instance.Render();
-    instance.current_frame = Rendering(raw_rendered);
-    // instance.recent_active_timestamp = utils.GetEpochTimenow();
-    return instance.current_frame.frame.Export();
+    instance.current_frame = instance.serving_class_instance.Render();
+    instance.current_frame_internals = detail::FrameInternals();
+    detail::BuildFrameInternals(&instance.current_frame,
+                                &instance.current_frame_internals);
+    instance.recent_active_timestamp = std::time(nullptr);
+    return instance.current_frame.Export();
   }
 
   Json HandleFirstTimeLoad() {
@@ -94,10 +123,43 @@ class FrameServer {
   }
 
   Json HandleActionEvent(const Json& params) {
-    int client_instance_id = params.object_items().at("client_instance_id").int_value();
-    auto output = Json(Json::object({
-      {"frame", ReloadFrame(client_instance_id)}
-    }));
+    using detail::helpers::ToException;
+    int instance_id = params["client_instance_id"].int_value();
+    int server_instance_id = params["server_instance_id"].int_value();
+    string error = "SUCCESS";
+    auto output = Json::object {};
+    if (server_instance_id != this->server_instance_id) {
+      error = "INCORRECT_SERVER_INSTANCE";
+    } else if (not qk::ContainsKey(client_instances, instance_id)) {
+      error = "CLIENT_INSTANCE_TIMEOUT";
+    } else {
+      int action_id = params.object_items().at("action_id").int_value();
+      auto& instance = client_instances.at(instance_id);
+      auto& internals = instance.current_frame_internals;
+      if (not qk::ContainsKey(internals.registered_actions, action_id)) {
+        error = "INVALID_ACTION";
+      } else {
+        detail::PopulateInputs(
+          params["inputs"],
+          internals,
+          &instance.serving_class_instance.__inputs_objects);
+        try {
+          internals.registered_actions.at(action_id)();
+        } catch (...) {
+          error = "INTERNAL_ERROR_IN_ACTION_HANDLER";
+          std::clog << error << endl;
+          std::clog << ToException(std::current_exception()).what() << std::endl;
+        }
+        try {
+          output["frame"] = ReloadFrame(instance_id);
+        } catch (...) {
+          error = "INTERNAL_ERROR_IN_FRAME_RELOADING";
+          std::clog << error << endl;
+          std::clog << ToException(std::current_exception()).what() << std::endl;
+        }
+      }
+    }
+    output["error"] = Json::object {{"error_code", error}};
     return output;
   }
 
@@ -155,9 +217,6 @@ class FrameServer {
 
 };
 
-class BaseInterface {
-public:
-};
 
 }  // namespace webio
 

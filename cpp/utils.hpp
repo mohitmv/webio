@@ -51,6 +51,17 @@ void WriteFile(std::string file_name, std::string content);
 
 std::vector<std::string> SplitString(const std::string& input, char split_by, int limit=-1);
 
+namespace quick {
+
+template <typename ContainerType, class KeyType>
+bool ContainsKey(const ContainerType& container, const KeyType& key) {
+  return container.find(key) != container.end();
+}
+
+}
+
+namespace qk = quick;
+
 
 } // namespace webio
 

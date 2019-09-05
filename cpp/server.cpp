@@ -66,7 +66,7 @@ void HttpServer::Run(int port) {
       perror("listen"); 
       exit(EXIT_FAILURE); 
   }
-  int count = 1;
+  int count = 0;
   cout << "Running http://127.0.0.1:" << port << endl;
   while (true) {
     if ((new_socket = accept(server_fd, (struct sockaddr *)&address,  
@@ -76,7 +76,6 @@ void HttpServer::Run(int port) {
         perror("accept"); 
         exit(EXIT_FAILURE); 
     }
-    cout << "Request[" << count << "]: ";
     count++;
     char buffer[1024] = {0};
     char c;
@@ -96,7 +95,8 @@ void HttpServer::Run(int port) {
     }
     HttpHeader header;
     header.Parse(oss.str());
-    cout << header.DebugString();
+    cout << "Request[" << count << "]: " << header.request_type << " " << header.url << endl;
+    // cout << header.DebugString();
     string body;
     if (header.content_length > 0) {
       char tmp_string[header.content_length+1];
@@ -104,7 +104,7 @@ void HttpServer::Run(int port) {
       assert(read(new_socket, tmp_string, header.content_length) >= 0);
       body = tmp_string;
     }
-    cout << "body size = " << body.size() << endl << endl;
+    // cout << "body size = " << body.size() << endl << endl;
     string response_string = "";
     if (header.request_type == "GET") {
       response_string = get_method_handler(header.url);

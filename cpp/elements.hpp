@@ -19,6 +19,7 @@ class FrontEndElement {
   ElementType element_type;
   int element_id;
   std::vector<FrontEndElement> children;
+  std::vector<int> menu_options_onclick_ids;
   int onchange_id, onclick_id;
 
   FrontEndElement() {}
@@ -37,6 +38,7 @@ class FrontEndElement {
     return (children.size() > 0);
   }
   Json Export() const;
+  using Action = std::function<void(void)>;
 
   // Auto Generated Block starts here
 
@@ -46,7 +48,8 @@ class FrontEndElement {
   //   "bool": ["disabled", "allow_multiple", "on"],
   //   "std::vector<string>": ["options"],
   //   "std::vector<int>": ["selected_list"],
-  //   "std::function<void(void)>": ["onclick", "onchange"]
+  //   "Action": ["onclick", "onchange"],
+  //   "std::vector<std::pair<std::string, Action>>": ["menu_options"]
   // };
   // to_up = lambda x: x.title().replace("_", "")
   // output = "";
@@ -229,19 +232,27 @@ class FrontEndElement {
     return *this;
   }
 
-  std::function<void(void)> onclick_;
+  Action onclick_;
   bool has_onclick = false;
-  FrontEndElement& Onclick(const std::function<void(void)>& input) {
+  FrontEndElement& Onclick(const Action& input) {
     this->onclick_ = input;
     this->has_onclick = true;
     return *this;
   }
 
-  std::function<void(void)> onchange_;
+  Action onchange_;
   bool has_onchange = false;
-  FrontEndElement& Onchange(const std::function<void(void)>& input) {
+  FrontEndElement& Onchange(const Action& input) {
     this->onchange_ = input;
     this->has_onchange = true;
+    return *this;
+  }
+
+  std::vector<std::pair<std::string, Action>> menu_options_;
+  bool has_menu_options = false;
+  FrontEndElement& MenuOptions(const std::vector<std::pair<std::string, Action>>& input) {
+    this->menu_options_ = input;
+    this->has_menu_options = true;
     return *this;
   }
 
@@ -293,46 +304,75 @@ FrontEndElement InlinedDiv(vector<FrontEndElement>&& input) {
 }
 
 FrontEndElement Icon(const std::string& icon) {
-  return FrontEndElement(FrontEndElement::ICON).icon(icon);
+  return FrontEndElement(FrontEndElement::ICON)
+          .Icon(icon)
+          .FontSize("16px");
 }
 
 FrontEndElement IconButton(const std::string& icon) {
-  return FrontEndElement(FrontEndElement::ICON_BUTTON).icon(icon);
+  return FrontEndElement(FrontEndElement::ICON_BUTTON)
+            .Icon(icon)
+            .Disabled(false);
 }
 
 FrontEndElement TextInput(const std::string& label_string) {
-  return FrontEndElement(FrontEndElement::TEXT_INPUT).label_string(label_string);
+  return FrontEndElement(FrontEndElement::TEXT_INPUT)
+            .LabelString(label_string)
+            .Disabled(false)
+            .Value("");
 }
 
 FrontEndElement TextArea(const std::string& label_string) {
-  return FrontEndElement(FrontEndElement::TEXT_AREA).label_string(label_string);
+  return FrontEndElement(FrontEndElement::TEXT_AREA)
+            .LabelString(label_string)
+            .Value("")
+            .DefaultRows(5)
+            .Disabled(false);
 }
 
 FrontEndElement DropDown(const std::string& label_string) {
   return FrontEndElement(FrontEndElement::DROP_DOWN)
-      .label_string(label_string);
+            .LabelString(label_string)
+            .Disabled(false)
+            .AllowMultiple(false)
+            .Selected(0)
+            .SelectedList({})
+            .Options({});
 }
 
 FrontEndElement Toggle(const std::string& label_string) {
-  return FrontEndElement(FrontEndElement::TOGGLE).label_string(label_string);
+  return FrontEndElement(FrontEndElement::TOGGLE)
+            .LabelString(label_string)
+            .Disabled(false)
+            .On(false);
 }
 
 FrontEndElement CheckBox(const std::string& label_string) {
   return FrontEndElement(FrontEndElement::CHECK_BOX)
-            .LabelString(label_string);
+            .LabelString(label_string)
+            .On(false);
 }
 
-FrontEndElement CheckBoxList(const std::vector<string>& input) {
+FrontEndElement CheckBoxList(const std::string& label_string) {
   return FrontEndElement(FrontEndElement::CHECK_BOX_LIST)
-            .LabelString(label_string);
+            .LabelString(label_string)
+            .Disabled(false)
+            .AllowMultiple(false)
+            .Options({})
+            .Selected(0)
+            .SelectedList({});
 }
 
 FrontEndElement Menu(const std::string& icon) {
-  return FrontEndElement(FrontEndElement::MENU).Icon(icon).FontSize("16px");
+  return FrontEndElement(FrontEndElement::MENU)
+          .Icon(icon)
+          .FontSize("16px")
+          .MenuOptions({})
+          .Disabled(true);
 }
 
 FrontEndElement VSpace(const std::string& size) {
-  return VDiv().height(size);
+  return VDiv().Height(size);
 }
 
 FrontEndElement Text(const std::string& text_string) {
@@ -354,16 +394,19 @@ FrontEndElement VTabs() {
 }
 
 FrontEndElement Tab(const std::string& text_string) {
-  return FrontEndElement(FrontEndElement::TAB).text_string(text_string);
+  return FrontEndElement(FrontEndElement::TAB).TextString(text_string);
 }
 
 FrontEndElement Button(const std::string& label_string) {
-  return FrontEndElement(FrontEndElement::BUTTON).label_string(label_string);
+  return FrontEndElement(FrontEndElement::BUTTON)
+            .LabelString(label_string)
+            .Disabled(false)
+            .ColorTheme("default");
 }
 
 
 FrontEndElement Image(const std::string& src) {
-  return FrontEndElement(FrontEndElement::IMAGE).src(src);
+  return FrontEndElement(FrontEndElement::IMAGE).Src(src);
 }
 
 // print("\n".join("case FrontEndElement::" + i + ":\n  return \"" + i + "\";" for i in a))

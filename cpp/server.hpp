@@ -24,28 +24,5 @@ public:
   void Run(int port);
 };
 
-// int main(int argc, char const *argv[]) {
-
-//   HttpServer server;
-//   server.get_method_handler = [&](const string& url) {
-//     cout << "Get request arrived...: " << url << endl;
-//     return string("This is output");
-//   };
-//   server.post_method_handler = [&](const string& url,
-//                                    const string& post_params) {
-//     cout << "Post request arrived...: " << url << endl;
-//     cout << "Params = " << post_params << endl;
-//     return string("This is output");
-//   };
-
-//   int port = 5006;
-
-//   cout << "Running 127.0.0.1:" << port << endl;
-//   server.Run(port);
-
-//   return 0;
-// }
-
-
 #endif //  _WEBIO_SERVER_HPP_
 
